@@ -1,12 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -21,77 +14,74 @@ model users {
   password   String
   is_admin   Boolean
   created_at DateTime @default(now())
-
-  carts   carts[]
-  orders  orders[]
+  carts      carts[]
+  orders     orders[]
 }
 
 model categories {
-  id         Int       @id @default(autoincrement())
+  id         Int        @id @default(autoincrement())
   name       String
-  created_at DateTime  @default(now())
+  created_at DateTime   @default(now())
+  products   products[]
+}
 
-  products products[]
+model product_images {
+  id         Int      @id @default(autoincrement())
+  url        String
+  created_at DateTime @default(now())
+  product_id Int
+  product    products @relation(fields: [product_id], references: [id])
 }
 
 model products {
-  id          Int        @id @default(autoincrement())
+  id          Int              @id @default(autoincrement())
   name        String
-  price       Decimal    @db.Decimal(10,2)
+  price       Decimal          @db.Decimal(10, 2)
   stock       Int
   is_active   Boolean
-  created_at  DateTime   @default(now())
-
+  created_at  DateTime         @default(now())
   category_id Int
-  category    categories @relation(fields: [category_id], references: [id])
-
   cart_items  cart_items[]
   order_items order_items[]
+  images      product_images[]
+  category    categories       @relation(fields: [category_id], references: [id])
 }
 
 model carts {
-  id         Int       @id @default(autoincrement())
-  created_at DateTime  @default(now())
-
-  user_id String @db.Uuid
-  user    users  @relation(fields: [user_id], references: [id])
-
+  id         Int          @id @default(autoincrement())
+  created_at DateTime     @default(now())
+  user_id    String       @db.Uuid
   cart_items cart_items[]
+  user       users        @relation(fields: [user_id], references: [id])
 }
 
 model cart_items {
   id         Int      @id @default(autoincrement())
   qty        Int
-
   cart_id    Int
-  cart       carts    @relation(fields: [cart_id], references: [id])
-
   product_id Int
+  cart       carts    @relation(fields: [cart_id], references: [id])
   product    products @relation(fields: [product_id], references: [id])
 }
 
 model orders {
-  id          Int       @id @default(autoincrement())
-  total       Decimal   @db.Decimal(10,2)
-  status      String
-  address_text String   @db.Text
-  created_at  DateTime  @default(now())
-
-  user_id String @db.Uuid
-  user    users  @relation(fields: [user_id], references: [id])
-
-  order_items order_items[]
+  id           Int           @id @default(autoincrement())
+  total        Decimal       @db.Decimal(10, 2)
+  status       String
+  address_text String
+  created_at   DateTime      @default(now())
+  user_id      String        @db.Uuid
+  order_items  order_items[]
+  user         users         @relation(fields: [user_id], references: [id])
 }
 
 model order_items {
-  id        Int      @id @default(autoincrement())
-  price     Decimal  @db.Decimal(10,2)
-  qty       Int
-  subtotal  Decimal  @db.Decimal(10,2)
-
-  order_id  Int
-  order     orders   @relation(fields: [order_id], references: [id])
-
+  id         Int      @id @default(autoincrement())
+  price      Decimal  @db.Decimal(10, 2)
+  qty        Int
+  subtotal   Decimal  @db.Decimal(10, 2)
+  order_id   Int
   product_id Int
+  order      orders   @relation(fields: [order_id], references: [id])
   product    products @relation(fields: [product_id], references: [id])
 }

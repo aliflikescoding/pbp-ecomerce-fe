@@ -5,10 +5,12 @@ const bodyParser = require("body-parser");
 
 const app = express();
 const port = process.env.PORT || "5000";
+const userRoutes = require("./routes/user.routes.js");
+
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001"],
+    origin: "*",
     credentials: true,
   })
 );
@@ -19,6 +21,8 @@ app.use(bodyParser.json({ limit: "10mb" }));
 app.use(cookieParser());
 
 const apiRouter = express.Router();
+
+apiRouter.use("/user", userRoutes);
 
 app.use("/api", apiRouter);
 
