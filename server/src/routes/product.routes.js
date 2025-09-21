@@ -7,6 +7,7 @@ const {
   getProductById,
   updateProduct,
   deleteProduct,
+  uploadProductImages,
 } = require("../controllers/product.controller");
 const verifyAdmin = require("../middleware/verify.admin");
 
@@ -16,5 +17,13 @@ router.get("/", getProducts);
 router.get("/:id", getProductById);
 router.put("/:id", verifyAdmin, upload.single("image"), updateProduct);
 router.delete("/:id", verifyAdmin, deleteProduct);
+
+// Route to upload multiple images to a specific product
+router.post(
+  "/:id/images",
+  verifyAdmin,
+  upload.array("images", 10),
+  uploadProductImages
+);
 
 module.exports = router;

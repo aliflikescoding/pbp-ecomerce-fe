@@ -184,10 +184,51 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+// New function to upload multiple images to a specific product
+const uploadProductImages = async (req, res) => {
+  try {
+    const productId = parseInt(req.params.id);
+
+    // Check if product exists
+    const product = await prisma.products.findUnique({
+      where: { id: productId },
+    });
+
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    // Check if files were uploaded
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: "No images uploaded" });
+    }
+
+    // Create image records for all uploaded files
+    const imagePromises = req.files.map((file) =>
+      prisma.product_images.create({
+        data: {
+          url: `/uploads/${file.filename}`,
+          product_id: productId,
+        },
+      })
+    );
+
+    const createdImages = await Promise.all(imagePromises);
+
+    res.status(201).json({
+      message: `${createdImages.length} images uploaded successfully`,
+      images: createdImages,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = {
   createProduct,
   getProducts,
   getProductById,
   updateProduct,
   deleteProduct,
+  uploadProductImages, // Export the new function
 };

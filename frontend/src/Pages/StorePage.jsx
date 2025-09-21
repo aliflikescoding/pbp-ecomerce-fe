@@ -1,110 +1,95 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { IoIosSearch } from "react-icons/io";
 import { FaSort } from "react-icons/fa";
 import ProductCard from "../components/ProductCard";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { FaSortAmountUp, FaSortAmountDown } from "react-icons/fa";
 import { FaSortNumericDown, FaSortNumericUp } from "react-icons/fa";
+import { getCategories, getProducts } from "../api";
 
 const StorePage = () => {
-  const [selectedCategory, setSelectedCategory] = useState(1); // Default to "All"
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalProducts: 0,
+    hasNextPage: false,
+    hasPreviousPage: false,
+    limit: 6,
+  });
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
+  const [loading, setLoading] = useState(false);
 
-  const categories = [
-    {
-      id: 1,
-      name: "All",
-    },
-    {
-      id: 2,
-      name: "Men",
-    },
-    {
-      id: 3,
-      name: "Women",
-    },
-    {
-      id: 4,
-      name: "Kids",
-    },
-  ];
+  useEffect(() => {
+    fetchCategories();
+    fetchProducts();
+  }, []);
 
-  const newProducts = [
-    {
-      id: 1,
-      title: "Premium Wireless Headphones",
-      categoryText: "Electronics",
-      thumbnailSrc:
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop",
-      hoverImageSrc:
-        "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&h=300&fit=crop",
-      price: "299.99",
-      link: "/products/wireless-headphones",
-      stock: 8
-    },
-    {
-      id: 2,
-      title: "Smart Fitness Watch",
-      categoryText: "Health & Fitness",
-      thumbnailSrc:
-        "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop",
-      hoverImageSrc:
-        "https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=400&h=300&fit=crop",
-      price: "199.99",
-      link: "/products/fitness-watch",
-      stock: 12
-    },
-    {
-      id: 3,
-      title: "Eco-Friendly Water Bottle",
-      categoryText: "Health & Fitness",
-      thumbnailSrc:
-        "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&h=300&fit=crop",
-      hoverImageSrc:
-        "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=300&fit=crop",
-      price: "24.99",
-      link: "/products/water-bottle",
-      stock: 15
-    },
-    {
-      id: 4,
-      title: "Premium Wireless Headphones",
-      categoryText: "Electronics",
-      thumbnailSrc:
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop",
-      hoverImageSrc:
-        "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&h=300&fit=crop",
-      price: "299.99",
-      link: "/products/wireless-headphones",
-      stock: 8
-    },
-    {
-      id: 5,
-      title: "Smart Fitness Watch",
-      categoryText: "Health & Fitness",
-      thumbnailSrc:
-        "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop",
-      hoverImageSrc:
-        "https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=400&h=300&fit=crop",
-      price: "199.99",
-      link: "/products/fitness-watch",
-      stock: 12
-    },
-    {
-      id: 6,
-      title: "Eco-Friendly Water Bottle",
-      categoryText: "Health & Fitness",
-      thumbnailSrc:
-        "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&h=300&fit=crop",
-      hoverImageSrc:
-        "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=300&fit=crop",
-      price: "24.99",
-      link: "/products/water-bottle",
-      stock: 15
-    },
-  ];
+  useEffect(() => {
+    fetchProducts();
+  }, [selectedCategory, search, sortBy, pagination.currentPage]);
+
+  const fetchCategories = async () => {
+    try {
+      const data = await getCategories();
+      setCategories([{ id: null, name: "All" }, ...data]);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const data = await getProducts(
+        pagination.currentPage,
+        search,
+        sortBy,
+        selectedCategory
+      );
+      setProducts(data.products);
+      setPagination(data.pagination);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCategorySelect = (categoryId) => {
     setSelectedCategory(categoryId);
+    setPagination((prev) => ({ ...prev, currentPage: 1 }));
+  };
+
+  const handleSearch = () => {
+    setPagination((prev) => ({ ...prev, currentPage: 1 }));
+    fetchProducts();
+  };
+
+  const handleSort = (sortValue) => {
+    setSortBy(sortValue);
+    setPagination((prev) => ({ ...prev, currentPage: 1 }));
+  };
+
+  const handlePageChange = (page) => {
+    setPagination((prev) => ({ ...prev, currentPage: page }));
+  };
+
+  const getImageUrl = (product) => {
+    if (product.images && product.images.length > 0) {
+      return `${import.meta.env.VITE_IMAGE_URL}${product.images[0].url}`;
+    }
+    return "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop";
+  };
+
+  const getHoverImageUrl = (product) => {
+    if (product.images && product.images.length > 1) {
+      return `${import.meta.env.VITE_IMAGE_URL}${product.images[1].url}`;
+    }
+    return "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop";
   };
 
   return (
@@ -134,8 +119,11 @@ const StorePage = () => {
                 type="text"
                 className="input join-item"
                 placeholder="Product name"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && handleSearch()}
               />
-              <button className="btn join-item">
+              <button className="btn join-item" onClick={handleSearch}>
                 <IoIosSearch />
               </button>
             </div>
@@ -148,25 +136,25 @@ const StorePage = () => {
                 className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
               >
                 <li>
-                  <a>
+                  <a onClick={() => handleSort("newest")}>
                     <FaSortAmountUp />
                     Newest
                   </a>
                 </li>
                 <li>
-                  <a>
+                  <a onClick={() => handleSort("oldest")}>
                     <FaSortAmountDown />
                     Oldest
                   </a>
                 </li>
                 <li>
-                  <a>
+                  <a onClick={() => handleSort("price_asc")}>
                     <FaSortNumericUp />
                     Price: Low to High
                   </a>
                 </li>
                 <li>
-                  <a>
+                  <a onClick={() => handleSort("price_desc")}>
                     <FaSortNumericDown />
                     Price: High to Low
                   </a>
@@ -174,27 +162,44 @@ const StorePage = () => {
               </ul>
             </div>
           </div>
-          <div className="grid mt-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {newProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                title={product.title}
-                categoryText={product.categoryText}
-                thumbnailSrc={product.thumbnailSrc}
-                hoverImageSrc={product.hoverImageSrc}
-                previewText={product.previewText}
-                stock={product.stock}
-                price={product.price}
-                link={product.link}
-              />
-            ))}
-          </div>
+
+          {loading ? (
+            <div className="flex justify-center items-center mt-6 h-64">
+              <div className="loading loading-spinner loading-lg"></div>
+            </div>
+          ) : (
+            <div className="grid mt-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  title={product.name}
+                  categoryText={product.category.name}
+                  thumbnailSrc={getImageUrl(product)}
+                  hoverImageSrc={getHoverImageUrl(product)}
+                  stock={product.stock}
+                  price={product.price}
+                  link={`/products/${product.id}`}
+                />
+              ))}
+            </div>
+          )}
+
           <div className="join mt-6 gap-2">
-            <button className="btn btn-primary join-item">
+            <button
+              className="btn btn-primary join-item"
+              disabled={!pagination.hasPreviousPage}
+              onClick={() => handlePageChange(pagination.currentPage - 1)}
+            >
               <FaChevronLeft />
             </button>
-            <button className="join-item px-4">1</button>
-            <button className="btn btn-primary join-item">
+            <button className="join-item px-4">
+              {pagination.currentPage} / {pagination.totalPages}
+            </button>
+            <button
+              className="btn btn-primary join-item"
+              disabled={!pagination.hasNextPage}
+              onClick={() => handlePageChange(pagination.currentPage + 1)}
+            >
               <FaChevronRight />
             </button>
           </div>
