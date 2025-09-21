@@ -1,5 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Gideon+Roman&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair:ital,opsz,wght@0,5..1200,300..900;1,5..1200,300..900&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --font-inter: Inter, sans-serif;
+  --font-playfair: Playfair, serif;
+  --font-gideon: Gideon Roman, serif;
+}
+
 @plugin "daisyui";
+
 @plugin "daisyui/theme" {
   name: "auroranco";
   default: false;
@@ -33,4 +42,40 @@
   --border: 1px;
   --depth: 1;
   --noise: 1;
+}
+
+@utility btn {
+  @apply capitalize;
+}
+
+@layer components {
+  .custom-container {
+    @apply max-w-[1360px] mx-auto px-4;
+  }
+}
+
+@layer base {
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scrollbar-gutter: auto !important;
+  }
+
+  html:has(body.content-overflow-y) {
+    scrollbar-gutter: stable !important;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+  }
 }
