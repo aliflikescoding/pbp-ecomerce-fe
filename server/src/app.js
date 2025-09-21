@@ -10,6 +10,7 @@ const adminRoutes = require("./routes/admin.routes.js");
 const categoryRoutes = require("./routes/category.routes.js");
 const productRoutes = require("./routes/product.routes.js");
 const cartRoutes = require("./routes/cart.routes.js");
+const orderRoutes = require("./routes/order.routes.js");
 
 app.use(
   cors({
@@ -30,6 +31,7 @@ apiRouter.use("/admin", adminRoutes);
 apiRouter.use("/category", categoryRoutes);
 apiRouter.use("/product", productRoutes);
 apiRouter.use("/cart", cartRoutes);
+apiRouter.use("/order", orderRoutes);
 
 app.use("/api", apiRouter);
 
