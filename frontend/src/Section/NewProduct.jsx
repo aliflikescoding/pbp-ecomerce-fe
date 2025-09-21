@@ -1,5 +1,6 @@
 import React from "react";
 import ProductCard from "../components/ProductCard";
+import ArrowText from "../components/ArrowText";
 
 const NewProduct = () => {
   // Dummy data for products
@@ -7,36 +8,33 @@ const NewProduct = () => {
     {
       id: 1,
       title: "Premium Wireless Headphones",
+      categoryText: "Electronics",
       thumbnailSrc:
         "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop",
       hoverImageSrc:
         "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&h=300&fit=crop",
-      previewText:
-        "Experience crystal-clear audio with our latest wireless headphones featuring noise cancellation and 30-hour battery life.",
       price: "299.99",
       link: "/products/wireless-headphones",
     },
     {
       id: 2,
       title: "Smart Fitness Watch",
+      categoryText: "Health & Fitness",
       thumbnailSrc:
         "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop",
       hoverImageSrc:
         "https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=400&h=300&fit=crop",
-      previewText:
-        "Track your health and fitness goals with advanced sensors, GPS, and week-long battery life in a sleek design.",
       price: "199.99",
       link: "/products/fitness-watch",
     },
     {
       id: 3,
       title: "Eco-Friendly Water Bottle",
+      categoryText: "Health & Fitness",
       thumbnailSrc:
         "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&h=300&fit=crop",
       hoverImageSrc:
         "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=300&fit=crop",
-      previewText:
-        "Stay hydrated with our sustainable stainless steel water bottle that keeps drinks cold for 24 hours or hot for 12 hours.",
       price: "24.99",
       link: "/products/water-bottle",
     },
@@ -53,6 +51,7 @@ const NewProduct = () => {
           <ProductCard
             key={product.id}
             title={product.title}
+            categoryText={product.categoryText}
             thumbnailSrc={product.thumbnailSrc}
             hoverImageSrc={product.hoverImageSrc}
             previewText={product.previewText}
@@ -60,6 +59,9 @@ const NewProduct = () => {
             link={product.link}
           />
         ))}
+      </div>
+      <div className="mt-7">
+        <ArrowText text="Go to shop" link="/shop" />
       </div>
     </div>
   );
