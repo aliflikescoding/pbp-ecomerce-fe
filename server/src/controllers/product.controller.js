@@ -33,10 +33,90 @@ const createProduct = async (req, res) => {
 
 const getProducts = async (req, res) => {
   try {
-    const products = await prisma.products.findMany({
-      include: { images: true, category: true },
+    // Extract query parameters with defaults
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const search = req.query.search || "";
+    const sortBy = req.query.sortBy || "newest"; // newest, oldest, price_asc, price_desc
+    const category = req.query.category ? parseInt(req.query.category) : null;
+
+    // Calculate skip for pagination
+    const skip = (page - 1) * limit;
+
+    // Build where clause for filtering
+    const whereClause = {};
+
+    // Search filter - searches in product name
+    if (search) {
+      whereClause.name = {
+        contains: search,
+        mode: "insensitive", // Case insensitive search
+      };
+    }
+
+    // Category filter
+    if (category) {
+      whereClause.category_id = category;
+    }
+
+    // Build orderBy clause for sorting
+    let orderBy = {};
+    switch (sortBy) {
+      case "newest":
+        orderBy = { created_at: "desc" };
+        break;
+      case "oldest":
+        orderBy = { created_at: "asc" };
+        break;
+      case "price_asc":
+        orderBy = { price: "asc" };
+        break;
+      case "price_desc":
+        orderBy = { price: "desc" };
+        break;
+      default:
+        orderBy = { created_at: "desc" };
+    }
+
+    // Get total count for pagination info
+    const totalProducts = await prisma.products.count({
+      where: whereClause,
     });
-    res.json(products);
+
+    // Get products with filters, sorting and pagination
+    const products = await prisma.products.findMany({
+      where: whereClause,
+      orderBy: orderBy,
+      skip: skip,
+      take: limit,
+      include: {
+        images: true,
+        category: true,
+      },
+    });
+
+    // Calculate pagination metadata
+    const totalPages = Math.ceil(totalProducts / limit);
+    const hasNextPage = page < totalPages;
+    const hasPreviousPage = page > 1;
+
+    // Return products with pagination metadata
+    res.json({
+      products,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalProducts,
+        hasNextPage,
+        hasPreviousPage,
+        limit,
+      },
+      filters: {
+        search,
+        sortBy,
+        category,
+      },
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

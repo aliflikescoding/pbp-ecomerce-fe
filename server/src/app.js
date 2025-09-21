@@ -14,7 +14,7 @@ const orderRoutes = require("./routes/order.routes.js");
 
 app.use(
   cors({
-    origin: "*",
+    origin: "http://localhost:3000",
     credentials: true,
   })
 );
