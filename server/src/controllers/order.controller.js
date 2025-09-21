@@ -84,6 +84,33 @@ const getUserOrders = async (req, res) => {
   }
 };
 
+// 🟢 Get user orders by status
+const getUserOrdersByStatus = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { status } = req.params;
+
+    // only allow valid statuses
+    const validStatuses = ["pending", "shipped", "received"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
+    const orders = await prisma.orders.findMany({
+      where: { user_id: userId, status },
+      include: { order_items: { include: { product: true } } },
+      orderBy: { created_at: "desc" },
+    });
+
+    res.json(orders);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error fetching orders by status", error: err.message });
+  }
+};
+
+
 // 🟢 Get single order by ID
 const getOrderById = async (req, res) => {
   try {
@@ -154,4 +181,5 @@ module.exports = {
   getOrderById,
   updateOrderStatus,
   getAllOrders,
+  getUserOrdersByStatus,
 };

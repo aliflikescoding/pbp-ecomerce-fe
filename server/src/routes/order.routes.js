@@ -6,6 +6,7 @@ const {
   getOrderById,
   updateOrderStatus,
   getAllOrders,
+  getUserOrdersByStatus,
 } = require("../controllers/order.controller");
 const verifyUser = require("../middleware/verify.user");
 const verifyAdmin = require("../middleware/verify.admin"); // create this if not already
@@ -14,6 +15,7 @@ const verifyAdmin = require("../middleware/verify.admin"); // create this if not
 router.post("/", verifyUser, createOrder);
 router.get("/", verifyUser, getUserOrders);
 router.get("/all", verifyAdmin, getAllOrders);
+router.get("/:status", verifyUser, getUserOrdersByStatus);
 router.get("/:id", verifyUser, getOrderById);
 
 // Admin route
