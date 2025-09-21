@@ -23,10 +23,10 @@ const HeroSection = () => {
           </p>
           <div className="flex justify-center items-center gap-5">
             <NavLink to="/register">
-              <button className="btn btn-primary">Register</button>
+              <button className="btn btn-primary btn-lg">Register</button>
             </NavLink>
             <NavLink to="/shop">
-              <button className="btn btn-accent">Shop Now</button>
+              <button className="btn btn-accent btn-lg">Shop Now</button>
             </NavLink>
           </div>
         </div>
