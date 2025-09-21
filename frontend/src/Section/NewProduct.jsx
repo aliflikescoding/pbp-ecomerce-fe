@@ -15,6 +15,7 @@ const NewProduct = () => {
         "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&h=300&fit=crop",
       price: "299.99",
       link: "/products/wireless-headphones",
+      stock: 8
     },
     {
       id: 2,
@@ -26,6 +27,7 @@ const NewProduct = () => {
         "https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=400&h=300&fit=crop",
       price: "199.99",
       link: "/products/fitness-watch",
+      stock: 12
     },
     {
       id: 3,
@@ -37,6 +39,7 @@ const NewProduct = () => {
         "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=300&fit=crop",
       price: "24.99",
       link: "/products/water-bottle",
+      stock: 15
     },
   ];
 
@@ -55,6 +58,7 @@ const NewProduct = () => {
             thumbnailSrc={product.thumbnailSrc}
             hoverImageSrc={product.hoverImageSrc}
             previewText={product.previewText}
+            stock={product.stock}
             price={product.price}
             link={product.link}
           />

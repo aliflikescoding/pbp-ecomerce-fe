@@ -8,6 +8,7 @@ const ProductCard = ({
   categoryText,
   link,
   price,
+  stock,
 }) => {
   return (
     <NavLink
@@ -36,7 +37,9 @@ const ProductCard = ({
         <h3 className="text-2xl font-lora font-bold capitalize mb-3 line-clamp-2">
           {title || "Untitled"}
         </h3>
-        {price && <p>$ {price}</p>}
+        <div className="flex justify-between">{price && <p>$ {price}</p>}
+          {stock && <p>Stock: {stock}</p>}
+        </div>
       </div>
       <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full"></span>
     </NavLink>
