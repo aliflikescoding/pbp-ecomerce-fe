@@ -36,3 +36,13 @@ export const getProductById = async (id) => {
     throw error;
   }
 };
+
+export const checkUserAuth = async () => {
+  try {
+    const response = await api.get("/user/me");
+    return response.data;
+  } catch (error) {
+    console.error("Check user auth error:", error);
+    throw error;
+  }
+};

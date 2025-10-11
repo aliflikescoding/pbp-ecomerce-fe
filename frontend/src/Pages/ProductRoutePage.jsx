@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
-import { getProductById } from "../api";
+import { getProductById, checkUserAuth } from "../api";
+import { toast } from "react-toastify";
 
 const ProductRoutePage = () => {
   const { id } = useParams();
@@ -54,6 +55,21 @@ const ProductRoutePage = () => {
 
   const handleAddClick = () => {
     setCurrentAmount(currentAmount + 1);
+  };
+
+  const handleAddToCart = async () => {
+    try {
+      const res = await checkUserAuth();
+      if (res.status === "success") {
+        toast.success("Product added to cart");
+      } else {
+        toast.error("Please login to add product to cart");
+      }
+    } catch (error) {
+      // Catch the axios error when user is not authenticated
+      console.log(error);
+      toast.error("Please login to add product to cart");
+    }
   };
 
   return (
@@ -180,7 +196,7 @@ const ProductRoutePage = () => {
                     $ {product.price * currentAmount}
                   </h1>
                 </div>
-                <button className="btn btn-primary btn-block">
+                <button onClick={handleAddToCart} className="btn btn-primary btn-block">
                   Add to Cart
                 </button>
               </div>
