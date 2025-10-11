@@ -5,6 +5,7 @@ import HomePage from "./Pages/HomePage";
 import StorePage from "./Pages/StorePage";
 import { Routes, Route } from "react-router-dom";
 import NotFoundPage from "./Pages/NotFoundPage";
+import ProductRoutePage from "./Pages/ProductRoutePage";
 
 const App = () => {
   return (
@@ -14,6 +15,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/store" element={<StorePage />} />
+          <Route path="/products/:id" element={<ProductRoutePage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>

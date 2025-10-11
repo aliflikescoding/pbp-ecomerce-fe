@@ -25,7 +25,7 @@ const HeroSection = () => {
             <NavLink to="/register">
               <button className="btn btn-primary btn-lg">Register</button>
             </NavLink>
-            <NavLink to="/shop">
+            <NavLink to="/store">
               <button className="btn btn-accent btn-lg">Shop Now</button>
             </NavLink>
           </div>

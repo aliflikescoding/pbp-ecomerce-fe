@@ -26,3 +26,13 @@ export const getCategories = async () => {
     throw error;
   }
 };
+
+export const getProductById = async (id) => {
+  try {
+    const response = await api.get(`/product/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Get product by id error:", error);
+    throw error;
+  }
+};
