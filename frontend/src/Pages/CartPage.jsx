@@ -1,43 +1,49 @@
 // src/pages/CartPage.jsx
 import React from "react";
-import { getUserCart, deleteCartItem } from "../api";
+import { getUserCart, deleteCartItem, updateCartQty } from "../api";
 
 const currency = (n) => Number(n || 0).toFixed(2);
 
 const CartPage = () => {
   const [cart, setCart] = React.useState(null);
 
-  React.useEffect(() => {
-    const fetchCart = async () => {
-      try {
-        const res = await getUserCart();
-        setCart(res);
-      } catch (error) {
-        console.error("Get user cart error:", error);
-      }
-    };
-    fetchCart();
+  // track which cart_item ids are updating to disable controls
+  const [updatingIds, setUpdatingIds] = React.useState(() => new Set());
+  // hold per-item debounce timers for input typing
+  const debounceRef = React.useRef({});
+
+  const addUpdating = (id) =>
+    setUpdatingIds((s) => new Set([...Array.from(s), id]));
+  const removeUpdating = (id) =>
+    setUpdatingIds((s) => {
+      const next = new Set(s);
+      next.delete(id);
+      return next;
+    });
+
+  const fetchCart = React.useCallback(async () => {
+    try {
+      const res = await getUserCart();
+      setCart(res);
+    } catch (error) {
+      console.error("Get user cart error:", error);
+    }
   }, []);
+
+  React.useEffect(() => {
+    fetchCart();
+  }, [fetchCart]);
 
   const handleDeleteCartItem = async (id) => {
     try {
       await deleteCartItem(id);
-      const fetchCart = async () => {
-        try {
-          const res = await getUserCart();
-          setCart(res);
-        } catch (error) {
-          console.error("Get user cart error:", error);
-        }
-      };
-      fetchCart();
+      await fetchCart();
     } catch (error) {
       console.error("Delete cart item error:", error);
     }
   };
 
   if (!cart) return <div>Loading...</div>;
-
   const items = cart.cart_items || [];
 
   const clampQty = (qty, stock) => {
@@ -45,21 +51,68 @@ const CartPage = () => {
     return Math.min(n, Math.max(1, Number(stock) || 1));
   };
 
-  const updateQty = (id, nextQty) => {
+  // Optimistically set qty in state
+  const setLocalQty = (id, nextQty) => {
     setCart((prev) => {
       if (!prev) return prev;
-      const nextItems = prev.cart_items.map((it) => {
-        if (it.id !== id) return it;
-        const stock = Number(it.product?.stock || 1);
-        return { ...it, qty: clampQty(nextQty, stock) };
-      });
+      const nextItems = prev.cart_items.map((it) =>
+        it.id === id ? { ...it, qty: nextQty } : it
+      );
       return { ...prev, cart_items: nextItems };
     });
   };
 
-  const inc = (id, current, stock) =>
-    updateQty(id, Math.min(stock, current + 1));
-  const dec = (id, current) => updateQty(id, Math.max(1, current - 1));
+  // Persist qty to API; rollback on failure
+  const persistQty = async (id, nextQty, prevQty) => {
+    try {
+      addUpdating(id);
+      await updateCartQty(id, Number(nextQty));
+      // Optional: trust optimistic state; if you prefer re-fetch uncomment:
+      // await fetchCart();
+    } catch (err) {
+      console.error("Update Cart Qty error:", err);
+      // rollback
+      setLocalQty(id, prevQty);
+    } finally {
+      removeUpdating(id);
+    }
+  };
+
+  // For +/- buttons: update immediately (no debounce)
+  const inc = (id, current, stock) => {
+    const next = clampQty(current + 1, stock);
+    if (next === current) return;
+    const prev = current;
+    setLocalQty(id, next);
+    void persistQty(id, next, prev);
+  };
+  const dec = (id, current) => {
+    const next = clampQty(current - 1, Infinity);
+    if (next === current) return;
+    const prev = current;
+    setLocalQty(id, next);
+    void persistQty(id, next, prev);
+  };
+
+  // For input typing: debounce the API call per row (400ms)
+  const onInputChange = (item, raw) => {
+    const stock = Number(item.product?.stock || 1);
+    const prev = item.qty;
+    const next = clampQty(raw, stock);
+
+    setLocalQty(item.id, next);
+
+    // clear previous timer for this row
+    const timers = debounceRef.current;
+    if (timers[item.id]) clearTimeout(timers[item.id]);
+
+    timers[item.id] = setTimeout(() => {
+      // read the very latest qty from state to persist
+      const latest =
+        (cart.cart_items.find((i) => i.id === item.id) || {}).qty ?? next;
+      void persistQty(item.id, latest, prev);
+    }, 400);
+  };
 
   const lineTotal = (item) => item.qty * Number(item.product.price || 0);
   const subtotal = items.reduce((sum, it) => sum + lineTotal(it), 0);
@@ -77,6 +130,7 @@ const CartPage = () => {
                 const stock = Number(item.product?.stock || 1);
                 const unitPrice = Number(item.product.price || 0);
                 const maxed = item.qty >= stock;
+                const isUpdating = updatingIds.has(item.id);
 
                 return (
                   <div
@@ -108,7 +162,7 @@ const CartPage = () => {
                               type="button"
                               className="btn btn-primary btn-sm"
                               onClick={() => dec(item.id, item.qty)}
-                              disabled={item.qty <= 1}
+                              disabled={item.qty <= 1 || isUpdating}
                               aria-label="Decrease quantity"
                             >
                               –
@@ -120,16 +174,17 @@ const CartPage = () => {
                               max={stock}
                               value={item.qty}
                               onChange={(e) =>
-                                updateQty(item.id, e.target.value)
+                                onInputChange(item, e.target.value)
                               }
                               className="input input-bordered input-sm w-16 text-center"
+                              disabled={isUpdating}
                             />
 
                             <button
                               type="button"
                               className="btn btn-primary btn-sm"
                               onClick={() => inc(item.id, item.qty, stock)}
-                              disabled={maxed}
+                              disabled={maxed || isUpdating}
                               aria-label="Increase quantity"
                             >
                               +
@@ -142,6 +197,11 @@ const CartPage = () => {
                           >
                             {stock > 0 ? `In stock: ${stock}` : "Out of stock"}
                           </span>
+                          {isUpdating && (
+                            <span className="text-xs opacity-70 ml-2">
+                              Updating…
+                            </span>
+                          )}
                         </div>
 
                         <div className="mt-2 text-sm opacity-70">
@@ -153,6 +213,7 @@ const CartPage = () => {
                       type="button"
                       className="btn btn-error btn-sm"
                       onClick={() => handleDeleteCartItem(item.id)}
+                      disabled={updatingIds.has(item.id)}
                     >
                       Remove From Cart
                     </button>
@@ -201,9 +262,7 @@ const CartPage = () => {
                     className="input w-full"
                     placeholder="Address"
                   />
-                  <p className="label">
-                    
-                  </p>
+                  <p className="label"></p>
                 </fieldset>
                 <div className="flex gap-2 items-center justify-center">
                   <label htmlFor={"checkout_modal"} className="btn btn-neutral">

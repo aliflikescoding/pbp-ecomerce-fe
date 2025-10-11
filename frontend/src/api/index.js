@@ -107,3 +107,13 @@ export const deleteCartItem = async (cartItemId) => {
     throw error;
   }
 };
+
+export const updateCartQty = async (id, qty) => {
+  try {
+    const response = await api.put(`/cart/${id}`, { qty });
+    return response.data;
+  } catch (error) {
+    console.error("Update Cart Qty error:", error);
+    throw error;
+  }
+}
