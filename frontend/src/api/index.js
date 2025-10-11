@@ -77,4 +77,23 @@ export const logoutUser = async () => {
     throw error;
   }
 };
-  
+
+export const getUserCart = async () => {
+  try {
+    const response = await api.get("/cart");
+    return response.data;
+  } catch (error) {
+    console.error("Get user cart error:", error);
+    throw error;
+  }
+};
+
+export const addToCart = async (productId, qty) => {
+  try {
+    const response = await api.post("/cart", { productId, qty });
+    return response.data;
+  } catch (error) {
+    console.error("Add to Cart error:", error);
+    throw error;
+  }
+};

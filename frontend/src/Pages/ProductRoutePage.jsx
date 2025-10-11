@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
-import { getProductById, checkUserAuth } from "../api";
+import { getProductById, checkUserAuth, addToCart } from "../api";
 import { toast } from "react-toastify";
 
 const ProductRoutePage = () => {
@@ -57,17 +57,34 @@ const ProductRoutePage = () => {
     setCurrentAmount(currentAmount + 1);
   };
 
-  const handleAddToCart = async () => {
+  const checkAuthLocal = async () => {
     try {
       const res = await checkUserAuth();
       if (res.status === "success") {
-        toast.success("Product added to cart");
+        return true;
       } else {
-        toast.error("Please login to add product to cart");
+        return false;
       }
     } catch (error) {
-      // Catch the axios error when user is not authenticated
-      console.log(error);
+      // Catch the axios
+      console.error(error);
+      return false;
+    }
+  }
+
+  const handleAddToCart = async () => {
+    const isAuth = await checkAuthLocal();
+    if (isAuth) {
+      try {
+        const res = await addToCart(parseInt(id), parseInt(currentAmount));
+        if (res.product_id === parseInt(id)) {
+          toast.success("Product added to cart");
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to add product to cart");
+      }
+    } else {
       toast.error("Please login to add product to cart");
     }
   };
