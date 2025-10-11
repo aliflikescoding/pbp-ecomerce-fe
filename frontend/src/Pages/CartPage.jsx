@@ -69,7 +69,6 @@ const CartPage = () => {
   return (
     <div className="custom-container py-10 min-h-screen">
       <h1 className="text-3xl font-bold mb-6">Cart</h1>
-
       <div className="flex lg:flex-row flex-col gap-8 items-start">
         <div className="flex-1 w-full">
           {items.length > 0 ? (
@@ -173,15 +172,51 @@ const CartPage = () => {
             <span className="font-medium">Subtotal</span>
             <span className="text-xl font-bold">${currency(subtotal)}</span>
           </div>
-          <button
-            className="btn btn-accent w-full"
-            disabled={items.length === 0}
-            onClick={() => {
-              console.log("Proceed to checkout with all items:", items);
-            }}
+          <label
+            className={`btn btn-accent w-full ${
+              items.length === 0 ? "btn-disabled" : ""
+            }`}
+            htmlFor={"checkout_modal"}
           >
             Checkout
-          </button>
+          </label>
+          <input
+            type="checkbox"
+            id={"checkout_modal"}
+            className="modal-toggle"
+          />
+          <div className="modal" role="dialog">
+            <div className="modal-box text-base-content">
+              <div className="flex gap-2 flex-col items-center justify-center">
+                <p className="text-lg capitalize font-bold text-center">
+                  Check out these products
+                </p>
+                <p className="text-lg text-center">
+                  put in your address to checkout this product
+                </p>
+                <fieldset className="fieldset w-full">
+                  <legend className="fieldset-legend text-lg">Address</legend>
+                  <input
+                    type="text"
+                    className="input w-full"
+                    placeholder="Address"
+                  />
+                  <p className="label">
+                    
+                  </p>
+                </fieldset>
+                <div className="flex gap-2 items-center justify-center">
+                  <label htmlFor={"checkout_modal"} className="btn btn-neutral">
+                    Close
+                  </label>
+                  <button className="btn btn-accent">Checkout</button>
+                </div>
+              </div>
+            </div>
+            <label className="modal-backdrop" htmlFor={"checkout_modal"}>
+              Close
+            </label>
+          </div>
         </aside>
       </div>
     </div>
