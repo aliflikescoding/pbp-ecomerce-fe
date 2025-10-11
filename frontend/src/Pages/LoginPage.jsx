@@ -24,7 +24,7 @@ const LoginPage = () => {
           <button type="submit" className="w-full btn btn-primary">Log In</button>
 
           <div className="text-center text-sm text-neutral/60">
-            Don&apos;t have an account yet? <NavLink to="/register" className="font-semibold text-primary">Sign in</NavLink>
+            Don&apos;t have an account yet? <NavLink to="/register" className="font-semibold text-primary">Sign up now</NavLink>
           </div>
         </form>
 

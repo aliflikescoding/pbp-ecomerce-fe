@@ -46,3 +46,14 @@ export const checkUserAuth = async () => {
     throw error;
   }
 };
+
+export const registerUser = async (userData) => {
+  try {
+    const response = await api.post("/user/register", userData);
+    return response.data;
+  } catch (error) {
+    console.error("Register user error:", error);
+    throw error;
+  }
+};
+  

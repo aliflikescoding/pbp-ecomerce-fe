@@ -17,7 +17,7 @@ const ProductCard = ({
   return (
     <NavLink
       to={link}
-      className="flex flex-col h-full bg-white overflow-hidden shadow-sm hover:shadow-md cursor-pointer group relative transition-shadow duration-300 rounded-lg"
+      className="flex flex-col h-full bg-white overflow-hidden shadow-sm hover:shadow-md cursor-pointer group relative transition-shadow duration-300"
     >
       <div className="relative w-full aspect-[4/3] overflow-hidden bg-neutral">
         <img
