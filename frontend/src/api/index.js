@@ -67,4 +67,14 @@ export const loginUser = async (userData) => {
     throw error;
   }
 };
+
+export const logoutUser = async () => {
+  try {
+    const response = await api.post("/user/logout");
+    return response.data;
+  } catch (error) {
+    console.error("Logout user error:", error);
+    throw error;
+  }
+};
   
