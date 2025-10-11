@@ -1,37 +1,47 @@
 import React from "react";
 
+const features = [
+  {
+    id: 1,
+    title: "Curated Quality",
+    text: "Selected premium materials and craftsmanship for lasting wear.",
+    img: "/whyus/whyus-1.png",
+  },
+  {
+    id: 2,
+    title: "Thoughtful Design",
+    text: "Elegance and function merged to create timeless pieces.",
+    img: "/whyus/whyus-2.png",
+  },
+  {
+    id: 3,
+    title: "Sustainable Practices",
+    text: "We prioritize responsible sourcing and reduced waste.",
+    img: "/whyus/whyus-3.png",
+  },
+];
+
 const WhyUs = () => {
   return (
-    <div className="pb-12 custom-container">
-      <h1 className="text-5xl font-bold font-playfair text-center mb-8">
-        Why Choose Us?
-      </h1>
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="grid grid-cols-2 gap-4">
-          {/* Top large image spanning both columns */}
-          <div className="col-span-2 w-full">
-            <img src="/whyus/whyus-1.png" alt="Why Us 1" className="" />
-          </div>
+    <section className="py-12 custom-container">
+      <h2 className="text-4xl sm:text-5xl font-playfair font-bold text-center mb-10">
+        Why Choose Aurora & Co
+      </h2>
 
-          <div className="grid grid-cols-2 col-span-2 gap-4">
-            <div>
-              <img src="/whyus/whyus-2.png" alt="Why Us 2" className="" />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {features.map((f) => (
+          <article key={f.id} className="bg-base-100 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <div className="w-full h-52 overflow-hidden">
+              <img src={f.img} alt={f.title} className="w-full h-full object-cover transform transition-transform duration-500 hover:scale-105" />
             </div>
-            <div>
-              <img src="/whyus/whyus-3.png" alt="Why Us 3" className="" />
+            <div className="p-6">
+              <h3 className="text-xl font-semibold mb-2">{f.title}</h3>
+              <p className="text-sm text-neutral/80">{f.text}</p>
             </div>
-          </div>
-        </div>
-        <p className="sm:max-w-[50%]">
-          Choosing Aurora & Co means embracing more than just a purchase — it’s
-          an investment in timeless elegance. Each creation is crafted with
-          precision, care, and a passion for excellence. We blend modern
-          sophistication with classic artistry, ensuring every piece reflects
-          not only beauty but also lasting value. With us, luxury isn’t an
-          option — it’s a standard.
-        </p>
+          </article>
+        ))}
       </div>
-    </div>
+    </section>
   );
 };
 

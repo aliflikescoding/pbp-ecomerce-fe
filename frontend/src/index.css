@@ -79,3 +79,28 @@
     font-family: 'Inter', sans-serif;
   }
 }
+
+/* Custom visuals for the theme */
+.hero-gradient {
+  background: linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.55) 50%, rgba(0,0,0,0.65) 100%);
+}
+
+.btn-outline.btn-accent {
+  border-color: rgba(197,168,128,0.9);
+  color: var(--color-accent-content);
+}
+
+/* small utility to clamp lines */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* make product card images look consistent */
+.product-image-cover {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
