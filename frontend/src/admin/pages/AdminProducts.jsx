@@ -70,10 +70,9 @@ const AdminProducts = () => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await adminAPI.get("/admin/products");
-      if (response.data.status === "success") {
-        setProducts(response.data.data || []);
-      }
+      const response = await adminAPI.get("/product");
+      // Backend returns products with pagination info
+      setProducts(response.data.products || []);
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {
@@ -83,10 +82,9 @@ const AdminProducts = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await adminAPI.get("/admin/categories");
-      if (response.data.status === "success") {
-        setCategories(response.data.data || []);
-      }
+      const response = await adminAPI.get("/category");
+      // Backend returns categories array directly
+      setCategories(response.data || []);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
@@ -118,14 +116,14 @@ const AdminProducts = () => {
 
       if (editProduct) {
         // Update product
-        await adminAPI.put(`/admin/products/${editProduct.id}`, submitData, {
+        await adminAPI.put(`/product/${editProduct.id}`, submitData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
       } else {
         // Create product
-        await adminAPI.post("/admin/products", submitData, {
+        await adminAPI.post("/product", submitData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -164,7 +162,7 @@ const AdminProducts = () => {
   const handleDelete = async (id) => {
     if (confirm("Are you sure you want to delete this product?")) {
       try {
-        await adminAPI.delete(`/admin/products/${id}`);
+        await adminAPI.delete(`/product/${id}`);
         fetchProducts();
       } catch (error) {
         console.error("Error deleting product:", error);
@@ -175,7 +173,7 @@ const AdminProducts = () => {
 
   const toggleProductStatus = async (id, currentStatus) => {
     try {
-      await adminAPI.put(`/admin/products/${id}`, {
+      await adminAPI.put(`/product/${id}`, {
         is_active: !currentStatus,
       });
       fetchProducts();
@@ -290,35 +288,28 @@ const AdminProducts = () => {
             Add Product
           </button>
         </div>
-        <div className="mb-4">
-          <p className="text-gray-600">Manage all products in the system</p>
+        <div className="mb-1">
+          <p className="text-gray-600 text-sm">
+            Manage all products in the system
+          </p>
         </div>
 
-        {/* Search and Filter Section */}
-        <div className="bg-gradient-to-r from-white to-blue-50 rounded-lg shadow border border-blue-100 p-3 mb-3">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-3 mb-3">
-            {/* Enhanced Search Input */}
-            <div className="md:col-span-2">
-              <label className="flex items-center text-sm font-semibold text-gray-800 mb-1">
-                <div className="bg-blue-100 p-1 rounded mr-2">🔍</div>
-                Search Products
-              </label>
+        {/* Search and Filter Section with Stats in One Row */}
+        <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-100 rounded-lg shadow-sm p-3 mb-2">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            {/* Left Side - Search */}
+            <div className="flex items-center">
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Search by name, description, or ID..."
+                  placeholder="Search products..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="input input-bordered w-full pl-10 pr-8 h-10 text-sm bg-white border border-gray-200 focus:border-blue-400 focus:ring-1 focus:ring-blue-100 transition-all duration-200"
-                  onKeyDown={(e) => {
-                    if (e.key === "Escape") {
-                      setSearchTerm("");
-                    }
-                  }}
+                  className="input input-bordered input-xs w-48 pl-7 text-xs"
                 />
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                <div className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400">
                   <svg
-                    className="w-4 h-4"
+                    className="w-3 h-3"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -331,39 +322,16 @@ const AdminProducts = () => {
                     />
                   </svg>
                 </div>
-                {searchTerm && (
-                  <button
-                    onClick={() => setSearchTerm("")}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                  >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                )}
               </div>
             </div>
 
-            {/* Enhanced Category Filter */}
-            <div>
-              <label className="flex items-center text-sm font-semibold text-gray-800 mb-1">
-                <div className="bg-green-100 p-1 rounded mr-2">📂</div>
-                Category
-              </label>
+            {/* Middle - Filters with Active Filter Badges */}
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Category Filter */}
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="select select-bordered w-full h-10 text-sm bg-white border border-gray-200 focus:border-green-400 focus:ring-1 focus:ring-green-100 transition-all duration-200"
+                className="select select-bordered select-xs w-32 text-xs"
               >
                 <option value="all">All Categories</option>
                 {categories.map((category) => (
@@ -372,175 +340,95 @@ const AdminProducts = () => {
                   </option>
                 ))}
               </select>
-            </div>
 
-            {/* Enhanced Status Filter */}
-            <div>
-              <label className="flex items-center text-sm font-semibold text-gray-800 mb-1">
-                <div className="bg-purple-100 p-1 rounded mr-2">🏷️</div>
-                Status
-              </label>
+              {/* Status Filter */}
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="select select-bordered w-full h-10 text-sm bg-white border border-gray-200 focus:border-purple-400 focus:ring-1 focus:ring-purple-100 transition-all duration-200"
+                className="select select-bordered select-xs w-24 text-xs"
               >
                 <option value="all">All Status</option>
-                <option value="active">✅ Active</option>
-                <option value="inactive">❌ Inactive</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
               </select>
-            </div>
 
-            {/* Enhanced Stock Filter */}
-            <div>
-              <label className="flex items-center text-sm font-semibold text-gray-800 mb-1">
-                <div className="bg-orange-100 p-1 rounded mr-2">📦</div>
-                Stock Level
-              </label>
+              {/* Stock Filter */}
               <select
                 value={stockFilter}
                 onChange={(e) => setStockFilter(e.target.value)}
-                className="select select-bordered w-full h-10 text-sm bg-white border border-gray-200 focus:border-orange-400 focus:ring-1 focus:ring-orange-100 transition-all duration-200"
+                className="select select-bordered select-xs w-24 text-xs"
               >
                 <option value="all">All Stock</option>
-                <option value="low">⚠️ Low Stock (≤10)</option>
-                <option value="normal">✅ Normal Stock (&gt;10)</option>
+                <option value="low">Low Stock</option>
+                <option value="normal">Normal</option>
               </select>
-            </div>
-          </div>
 
-          {/* Active Filters and Clear Button */}
-          {(searchTerm ||
-            categoryFilter !== "all" ||
-            statusFilter !== "all" ||
-            stockFilter !== "all") && (
-            <div className="flex flex-wrap justify-between items-center pt-3">
-              <div className="flex flex-wrap items-center gap-2">
-                {searchTerm && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
-                    🔍 Search: "{searchTerm}"
-                  </span>
-                )}
-                {categoryFilter !== "all" && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
-                    📂{" "}
-                    {
-                      categories.find((c) => c.id.toString() === categoryFilter)
-                        ?.name
-                    }
-                  </span>
-                )}
-                {statusFilter !== "all" && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-purple-100 text-purple-800">
-                    🏷️ {statusFilter === "active" ? "Active" : "Inactive"}
-                  </span>
-                )}
-                {stockFilter !== "all" && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-orange-100 text-orange-800">
-                    📦 {stockFilter === "low" ? "Low Stock" : "Normal Stock"}
-                  </span>
-                )}
+              {/* Active Filter Badges */}
+              {categoryFilter !== "all" && (
+                <span className="badge badge-success badge-sm">
+                  📂{" "}
+                  {
+                    categories.find((c) => c.id.toString() === categoryFilter)
+                      ?.name
+                  }
+                </span>
+              )}
+              {statusFilter !== "all" && (
+                <span className="badge badge-secondary badge-sm">
+                  🏷️ {statusFilter === "active" ? "Active" : "Inactive"}
+                </span>
+              )}
+              {stockFilter !== "all" && (
+                <span className="badge badge-warning badge-sm">
+                  📦 {stockFilter === "low" ? "Low Stock" : "Normal Stock"}
+                </span>
+              )}
+            </div>
+
+            {/* Right Side - Stats and Clear Button */}
+            <div className="flex items-center gap-4">
+              {/* Stats */}
+              <div className="flex gap-4">
+                <div className="text-center">
+                  <div className="text-lg font-bold text-primary">
+                    📦 {filteredProducts.length}
+                  </div>
+                  <div className="text-xs text-gray-600 font-medium">Total</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-success">
+                    ✅ {filteredProducts.filter((p) => p.is_active).length}
+                  </div>
+                  <div className="text-xs text-gray-600 font-medium">
+                    Active
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-warning">
+                    ⚠️ {filteredProducts.filter((p) => p.stock <= 10).length}
+                  </div>
+                  <div className="text-xs text-gray-600 font-medium">Low</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-info">
+                    🏷️ {categories.length}
+                  </div>
+                  <div className="text-xs text-gray-600 font-medium">Cat</div>
+                </div>
               </div>
-              <button
-                onClick={clearAllFilters}
-                className="btn btn-outline btn-sm hover:btn-error transition-all duration-200 hover:shadow-md"
-              >
-                <svg
-                  className="w-4 h-4 mr-1"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+
+              {/* Clear All Button - Show only when filters are active */}
+              {(searchTerm ||
+                categoryFilter !== "all" ||
+                statusFilter !== "all" ||
+                stockFilter !== "all") && (
+                <button
+                  onClick={clearAllFilters}
+                  className="btn btn-xs btn-outline btn-error"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                  />
-                </svg>
-                Clear All Filters
-              </button>
-            </div>
-          )}
-
-          {/* Integrated Stats Section */}
-          <div className="pt-1">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-              <div className="bg-white bg-opacity-60 rounded border border-blue-100 p-2">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <span className="text-lg">📦</span>
-                  </div>
-                  <div className="ml-2">
-                    <p className="text-xs font-medium text-gray-600">
-                      Total Products
-                    </p>
-                    <p className="text-lg font-bold text-gray-900">
-                      {filteredProducts.length}
-                      {filteredProducts.length !== products.length && (
-                        <span className="text-xs text-gray-500 ml-1">
-                          / {products.length}
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-white bg-opacity-60 rounded border border-green-100 p-2">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <span className="text-lg">✅</span>
-                  </div>
-                  <div className="ml-2">
-                    <p className="text-xs font-medium text-gray-600">
-                      Active Products
-                    </p>
-                    <p className="text-lg font-bold text-gray-900">
-                      {filteredProducts.filter((p) => p.is_active).length}
-                      {filteredProducts.length !== products.length && (
-                        <span className="text-xs text-gray-500 ml-1">
-                          / {products.filter((p) => p.is_active).length}
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-white bg-opacity-60 rounded border border-orange-100 p-2">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <span className="text-lg">⚠️</span>
-                  </div>
-                  <div className="ml-2">
-                    <p className="text-xs font-medium text-gray-600">
-                      Low Stock
-                    </p>
-                    <p className="text-lg font-bold text-gray-900">
-                      {filteredProducts.filter((p) => p.stock <= 10).length}
-                      {filteredProducts.length !== products.length && (
-                        <span className="text-xs text-gray-500 ml-1">
-                          / {products.filter((p) => p.stock <= 10).length}
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-white bg-opacity-60 rounded border border-purple-100 p-2">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <span className="text-lg">🏷️</span>
-                  </div>
-                  <div className="ml-2">
-                    <p className="text-xs font-medium text-gray-600">
-                      Categories
-                    </p>
-                    <p className="text-lg font-bold text-gray-900">
-                      {categories.length}
-                    </p>
-                  </div>
-                </div>
-              </div>
+                  Clear All
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -548,10 +436,10 @@ const AdminProducts = () => {
 
       {/* Scrollable Table Section */}
       <div className="flex-1 overflow-hidden">
-        <div className="bg-white rounded-lg shadow h-full overflow-y-auto">
+        <div className="card bg-base-100 shadow-xl h-full overflow-y-auto">
           <table className="table table-zebra w-full">
             <thead className="sticky top-0 z-10">
-              <tr className="bg-gray-50">
+              <tr>
                 <th>Image</th>
                 <th>Product</th>
                 <th>Description</th>
@@ -759,24 +647,24 @@ const AdminProducts = () => {
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Modal for Create/Edit Product */}
       {showModal && (
         <div className="modal modal-open">
-          <div className="modal-box">
-            <h3 className="font-bold text-lg mb-4">
+          <div className="modal-box w-11/12 max-w-2xl">
+            <h3 className="font-bold text-lg mb-6">
               {editProduct ? "Edit Product" : "Add New Product"}
             </h3>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Product Name *</span>
+                  <span className="label-text font-medium">Product Name *</span>
                 </label>
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="input input-bordered"
+                  className="input input-bordered w-full"
                   required
                 />
               </div>
@@ -784,13 +672,13 @@ const AdminProducts = () => {
               {/* Description Field */}
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Description</span>
+                  <span className="label-text font-medium">Description</span>
                 </label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
-                  className="textarea textarea-bordered"
+                  className="textarea textarea-bordered w-full"
                   rows="3"
                   placeholder="Enter product description..."
                 />
@@ -799,7 +687,7 @@ const AdminProducts = () => {
               {/* Image Upload */}
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Product Image</span>
+                  <span className="label-text font-medium">Product Image</span>
                 </label>
                 <input
                   type="file"
@@ -820,14 +708,14 @@ const AdminProducts = () => {
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Price *</span>
+                  <span className="label-text font-medium">Price *</span>
                 </label>
                 <input
                   type="number"
                   name="price"
                   value={formData.price}
                   onChange={handleInputChange}
-                  className="input input-bordered"
+                  className="input input-bordered w-full"
                   min="0"
                   step="0.01"
                   required
@@ -836,14 +724,14 @@ const AdminProducts = () => {
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Stock *</span>
+                  <span className="label-text font-medium">Stock *</span>
                 </label>
                 <input
                   type="number"
                   name="stock"
                   value={formData.stock}
                   onChange={handleInputChange}
-                  className="input input-bordered"
+                  className="input input-bordered w-full"
                   min="0"
                   required
                 />
@@ -851,13 +739,13 @@ const AdminProducts = () => {
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Category *</span>
+                  <span className="label-text font-medium">Category *</span>
                 </label>
                 <select
                   name="category_id"
                   value={formData.category_id}
                   onChange={handleInputChange}
-                  className="select select-bordered"
+                  className="select select-bordered w-full"
                   required
                 >
                   <option value="">Select Category</option>
@@ -871,7 +759,7 @@ const AdminProducts = () => {
 
               <div className="form-control">
                 <label className="cursor-pointer label">
-                  <span className="label-text">Active Status</span>
+                  <span className="label-text font-medium">Active Status</span>
                   <input
                     type="checkbox"
                     name="is_active"
@@ -882,7 +770,7 @@ const AdminProducts = () => {
                 </label>
               </div>
 
-              <div className="modal-action">
+              <div className="modal-action mt-6">
                 <button
                   type="button"
                   onClick={() => {

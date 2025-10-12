@@ -25,9 +25,11 @@ export const AdminProvider = ({ children }) => {
 
   const checkAdminAuth = async () => {
     try {
-      const response = await axios.get("/api/admin/me");
-      if (response.data.status === "success") {
-        setAdmin(response.data.admin);
+      const response = await axios.get("/api/user/me");
+      if (response.data.status === "success" && response.data.user.is_admin) {
+        setAdmin(response.data.user);
+      } else {
+        setAdmin(null);
       }
     } catch (error) {
       console.log("Admin not authenticated");
@@ -37,27 +39,14 @@ export const AdminProvider = ({ children }) => {
     }
   };
 
-  const login = async (email, password) => {
-    try {
-      const response = await axios.post("/api/admin/login", {
-        email,
-        password,
-      });
-      if (response.data.status === "success") {
-        setAdmin(response.data.admin);
-        return { success: true, message: response.data.message };
-      }
-    } catch (error) {
-      return {
-        success: false,
-        message: error.response?.data?.message || "Login failed",
-      };
-    }
+  // Login is now handled by main LoginPage, this just refreshes admin state
+  const refreshAdminAuth = async () => {
+    await checkAdminAuth();
   };
 
   const logout = async () => {
     try {
-      await axios.post("/api/admin/logout");
+      await axios.post("/api/user/logout");
       setAdmin(null);
       return { success: true };
     } catch (error) {
@@ -70,8 +59,8 @@ export const AdminProvider = ({ children }) => {
   const value = {
     admin,
     loading,
-    login,
     logout,
+    refreshAdminAuth,
     isAuthenticated: !!admin,
   };
 

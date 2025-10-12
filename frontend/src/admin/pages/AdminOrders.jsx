@@ -127,80 +127,58 @@ const AdminOrders = () => {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <span className="text-2xl">📋</span>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Orders</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {orders.length}
-              </p>
-            </div>
+      <div className="stats stats-vertical lg:stats-horizontal shadow mb-8">
+        <div className="stat">
+          <div className="stat-figure text-primary">
+            <span className="text-2xl">📋</span>
+          </div>
+          <div className="stat-title">Total Orders</div>
+          <div className="stat-value text-primary">{orders.length}</div>
+        </div>
+
+        <div className="stat">
+          <div className="stat-figure text-warning">
+            <FaSpinner className="text-2xl" />
+          </div>
+          <div className="stat-title">Pending</div>
+          <div className="stat-value text-warning">
+            {orders.filter((o) => o.status === "pending").length}
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <FaSpinner className="text-2xl text-yellow-500" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Pending</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {orders.filter((o) => o.status === "pending").length}
-              </p>
-            </div>
+        <div className="stat">
+          <div className="stat-figure text-info">
+            <FaBox className="text-2xl" />
+          </div>
+          <div className="stat-title">Processing</div>
+          <div className="stat-value text-info">
+            {orders.filter((o) => o.status === "processing").length}
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <FaBox className="text-2xl text-blue-500" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Processing</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {orders.filter((o) => o.status === "processing").length}
-              </p>
-            </div>
+        <div className="stat">
+          <div className="stat-figure text-secondary">
+            <FaTruck className="text-2xl" />
+          </div>
+          <div className="stat-title">Shipped</div>
+          <div className="stat-value text-secondary">
+            {orders.filter((o) => o.status === "shipped").length}
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <FaTruck className="text-2xl text-purple-500" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Shipped</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {orders.filter((o) => o.status === "shipped").length}
-              </p>
-            </div>
+        <div className="stat">
+          <div className="stat-figure text-success">
+            <FaCheckCircle className="text-2xl" />
           </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <FaCheckCircle className="text-2xl text-green-500" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Completed</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {orders.filter((o) => o.status === "completed").length}
-              </p>
-            </div>
+          <div className="stat-title">Completed</div>
+          <div className="stat-value text-success">
+            {orders.filter((o) => o.status === "completed").length}
           </div>
         </div>
       </div>
 
       {/* Orders Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="card bg-base-100 shadow-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="table table-zebra w-full">
             <thead>

@@ -1,12 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAdmin } from "../context/AdminContext";
 
 const AdminLayout = () => {
-  const { user, logout } = useAuth();
+  const { admin, logout, isAuthenticated, loading } = useAdmin();
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Protection: redirect to main login if not authenticated
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      navigate("/login");
+    }
+  }, [isAuthenticated, loading, navigate]);
 
   const handleLogout = async () => {
     const result = await logout();
@@ -14,6 +21,20 @@ const AdminLayout = () => {
       navigate("/login");
     }
   };
+
+  // Show loading while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="loading loading-spinner loading-lg"></div>
+      </div>
+    );
+  }
+
+  // If not authenticated, don't render anything (redirect will happen)
+  if (!isAuthenticated) {
+    return null;
+  }
 
   const menuItems = [
     { path: "/admin/dashboard", label: "Dashboard", icon: "📊" },
@@ -24,9 +45,9 @@ const AdminLayout = () => {
   ];
 
   return (
-    <div className="h-screen bg-gray-50 flex flex-col">
+    <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
       {/* Navigation Bar - Fixed Header */}
-      <nav className="bg-white shadow-lg border-b fixed top-0 left-0 right-0 z-50">
+      <nav className="bg-white shadow-lg border-b fixed top-0 left-0 right-0 z-50 h-16">
         <div className="w-full pl-4 pr-4">
           <div className="flex justify-between h-16">
             {/* Left side - Admin Panel Header */}
@@ -67,17 +88,17 @@ const AdminLayout = () => {
             {/* Right side */}
             <div className="flex items-center space-x-4">
               <div className="text-sm text-gray-700">
-                Welcome, <span className="font-semibold">{user?.name}</span>
+                Welcome, <span className="font-semibold">{admin?.name}</span>
               </div>
               <Link
                 to="/"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-200 mr-2"
+                className="bg-amber-700 hover:bg-amber-800 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-200 mr-2"
               >
                 View Site
               </Link>
               <button
                 onClick={handleLogout}
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-200"
+                className="bg-gray-900 hover:bg-black text-white px-4 py-2 rounded-md text-sm font-medium transition duration-200"
               >
                 Logout
               </button>
@@ -86,15 +107,15 @@ const AdminLayout = () => {
         </div>
       </nav>
 
-      {/* Content Area with Top Margin for Fixed Header */}
-      <div className="flex flex-1 mt-16">
+      {/* Content Area - Full Height */}
+      <div className="flex flex-1 pt-16 overflow-hidden">
         {/* Sidebar - Fixed */}
         <div
           className={`${
             sidebarOpen ? "block" : "hidden"
-          } md:block md:w-64 bg-white shadow-lg fixed left-0 top-16 bottom-0 z-40`}
+          } md:block md:w-64 bg-white shadow-lg fixed left-0 top-16 bottom-0 z-40 overflow-hidden`}
         >
-          <nav className="h-full overflow-y-auto mt-5 px-2 pb-6">
+          <nav className="h-full overflow-y-auto px-2 py-4">
             <div className="space-y-1">
               {menuItems.map((item) => (
                 <Link
@@ -114,9 +135,9 @@ const AdminLayout = () => {
           </nav>
         </div>
 
-        {/* Main Content - Scrollable */}
-        <div className="flex-1 md:ml-64 overflow-y-auto h-full">
-          <div className="p-6">
+        {/* Main Content - Full Height and Scrollable */}
+        <div className="flex-1 md:ml-64 overflow-y-auto">
+          <div className="p-6 min-h-full">
             <Outlet />
           </div>
         </div>

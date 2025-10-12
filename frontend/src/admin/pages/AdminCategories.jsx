@@ -25,10 +25,9 @@ const AdminCategories = () => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const response = await adminAPI.get("/admin/categories");
-      if (response.data.status === "success") {
-        setCategories(response.data.data || []);
-      }
+      const response = await adminAPI.get("/category");
+      // Backend returns array directly, not wrapped in status/data
+      setCategories(response.data || []);
     } catch (error) {
       console.error("Error fetching categories:", error);
     } finally {
@@ -59,7 +58,10 @@ const AdminCategories = () => {
     try {
       if (editCategory) {
         // Update existing category
-        await adminAPI.put(`/admin/categories/${editCategory.id}`, formData);
+        const response = await adminAPI.put(
+          `/category/${editCategory.id}`,
+          formData
+        );
         setCategories(
           categories.map((cat) =>
             cat.id === editCategory.id ? { ...cat, ...formData } : cat
@@ -68,11 +70,10 @@ const AdminCategories = () => {
         alert("Category updated successfully");
       } else {
         // Create new category
-        const response = await adminAPI.post("/admin/categories", formData);
-        if (response.data.status === "success") {
-          setCategories([...categories, response.data.data]);
-          alert("Category created successfully");
-        }
+        const response = await adminAPI.post("/category", formData);
+        // Backend returns category object directly
+        setCategories([...categories, response.data]);
+        alert("Category created successfully");
       }
 
       setShowModal(false);
@@ -91,7 +92,7 @@ const AdminCategories = () => {
   const handleDeleteCategory = async (categoryId) => {
     if (window.confirm("Are you sure you want to delete this category?")) {
       try {
-        await adminAPI.delete(`/admin/categories/${categoryId}`);
+        await adminAPI.delete(`/category/${categoryId}`);
         setCategories(categories.filter((cat) => cat.id !== categoryId));
         alert("Category deleted successfully");
       } catch (error) {
@@ -114,7 +115,7 @@ const AdminCategories = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <div className="loading loading-spinner loading-lg"></div>
       </div>
     );
   }
@@ -131,9 +132,9 @@ const AdminCategories = () => {
         </div>
         <button
           onClick={handleCreateCategory}
-          className="bg-primary hover:bg-accent text-white px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center"
+          className="btn btn-primary flex items-center gap-2"
         >
-          <FaPlus className="mr-2" />
+          <FaPlus />
           Add Category
         </button>
       </div>
@@ -141,41 +142,38 @@ const AdminCategories = () => {
       {/* Categories Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {categories.map((category) => (
-          <div
-            key={category.id}
-            className="bg-white rounded-lg shadow-md p-6 border border-gray-200"
-          >
-            <div className="flex justify-between items-start mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">
-                {category.name}
-              </h3>
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => handleEditCategory(category)}
-                  className="p-2 text-blue-600 hover:bg-blue-100 rounded-md transition duration-200"
-                >
-                  <FaEdit size={14} />
-                </button>
-                <button
-                  onClick={() => handleDeleteCategory(category.id)}
-                  className="p-2 text-red-600 hover:bg-red-100 rounded-md transition duration-200"
-                >
-                  <FaTrash size={14} />
-                </button>
+          <div key={category.id} className="card bg-base-100 shadow-xl">
+            <div className="card-body">
+              <div className="flex justify-between items-start mb-4">
+                <h3 className="card-title text-lg">{category.name}</h3>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => handleEditCategory(category)}
+                    className="btn btn-ghost btn-sm text-blue-600"
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteCategory(category.id)}
+                    className="btn btn-ghost btn-sm text-red-600"
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
               </div>
-            </div>
 
-            {category.description && (
-              <p className="text-gray-600 text-sm mb-4">
-                {category.description}
-              </p>
-            )}
+              {category.description && (
+                <p className="text-base-content/70 text-sm mb-4">
+                  {category.description}
+                </p>
+              )}
 
-            <div className="flex justify-between items-center text-sm text-gray-500">
-              <span>{category._count?.products || 0} products</span>
-              <span>
-                Created: {new Date(category.created_at).toLocaleDateString()}
-              </span>
+              <div className="flex justify-between items-center text-sm opacity-70">
+                <span>{category._count?.products || 0} products</span>
+                <span>
+                  Created: {new Date(category.created_at).toLocaleDateString()}
+                </span>
+              </div>
             </div>
           </div>
         ))}
@@ -192,59 +190,56 @@ const AdminCategories = () => {
 
       {/* Modal for Create/Edit Category */}
       {showModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div className="mt-3">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                {editCategory ? "Edit Category" : "Add New Category"}
-              </h3>
-              <form onSubmit={handleFormSubmit}>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Name *
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="Enter category name"
-                  />
-                </div>
+        <div className="modal modal-open">
+          <div className="modal-box w-11/12 max-w-2xl">
+            <h3 className="font-bold text-lg mb-6">
+              {editCategory ? "Edit Category" : "Add New Category"}
+            </h3>
+            <form onSubmit={handleFormSubmit} className="space-y-5">
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-medium">
+                    Category Name *
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  required
+                  className="input input-bordered w-full"
+                  placeholder="Enter category name"
+                />
+              </div>
 
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Description
-                  </label>
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="Enter category description"
-                  />
-                </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-medium">Description</span>
+                </label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  rows="3"
+                  className="textarea textarea-bordered w-full"
+                  placeholder="Enter category description..."
+                />
+              </div>
 
-                <div className="flex justify-end space-x-3">
-                  <button
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition duration-200"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-primary text-white rounded-md hover:bg-accent transition duration-200"
-                  >
-                    {editCategory ? "Update" : "Create"}
-                  </button>
-                </div>
-              </form>
-            </div>
+              <div className="modal-action mt-6">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="btn btn-outline"
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  {editCategory ? "Update" : "Create"} Category
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

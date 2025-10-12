@@ -75,7 +75,12 @@ const login = async (req, res) => {
         .json({ status: "error", message: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, {
+    const tokenPayload = { userId: user.id, email: user.email };
+    if (user.is_admin) {
+      tokenPayload.isAdmin = true;
+    }
+
+    const token = jwt.sign(tokenPayload, JWT_SECRET, {
       expiresIn: `${SESSION_EXPIRY_DAYS}d`,
     });
 
@@ -106,6 +111,7 @@ const login = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
+        is_admin: user.is_admin,
         createdAt: user.created_at,
       },
     });
@@ -179,6 +185,7 @@ const me = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
+        is_admin: user.is_admin,
         createdAt: user.created_at,
       },
     });

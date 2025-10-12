@@ -5,6 +5,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginUser } from "../api";
 import { toast } from "react-toastify";
+import { useAdmin } from "../admin/context/AdminContext";
 
 // 🧩 Zod validation schema
 const loginSchema = z.object({
@@ -13,6 +14,7 @@ const loginSchema = z.object({
 });
 
 const LoginPage = () => {
+  const { refreshAdminAuth } = useAdmin();
   const {
     register,
     handleSubmit,
@@ -31,7 +33,15 @@ const LoginPage = () => {
 
       const response = await loginUser(body);
       toast.success(`✅ Login successful ${response.user.name}`);
-      document.location.href = "/";
+
+      // Redirect based on user role
+      if (response.user.is_admin) {
+        // Refresh admin context for admin panel
+        await refreshAdminAuth();
+        document.location.href = "/admin/dashboard";
+      } else {
+        document.location.href = "/";
+      }
 
       reset();
     } catch (error) {

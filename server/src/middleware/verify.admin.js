@@ -4,7 +4,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-very-secure-secret";
-const COOKIE_NAME = "admin_session";
+const COOKIE_NAME = "user_session"; // Use same cookie as user auth
 
 const verifyAdmin = async (req, res, next) => {
   try {

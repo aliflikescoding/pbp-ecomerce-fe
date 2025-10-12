@@ -175,7 +175,7 @@ const AdminUsers = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        <span className="loading loading-spinner loading-lg"></span>
       </div>
     );
   }
@@ -185,19 +185,16 @@ const AdminUsers = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
+          <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
           <p className="text-gray-600">Manage all users in the system</p>
         </div>
-        <button
-          onClick={handleCreateUser}
-          className="bg-primary hover:bg-accent text-white px-4 py-2 rounded-lg font-medium transition duration-200"
-        >
+        <button onClick={handleCreateUser} className="btn btn-primary">
           Add User
         </button>
       </div>
 
       {/* Search and Filter Section */}
-      <div className="bg-white rounded-lg shadow p-4 space-y-4">
+      <div className="card bg-base-100 shadow-xl p-6 space-y-4">
         {/* Search Bar */}
         <div className="flex items-center space-x-4">
           <div className="flex-1">
@@ -220,7 +217,7 @@ const AdminUsers = () => {
               <input
                 type="text"
                 placeholder="Search users by name or email..."
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                className="input input-bordered w-full pl-10 pr-10"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -255,30 +252,24 @@ const AdminUsers = () => {
           </span>
           <button
             onClick={() => setRoleFilter("all")}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition duration-200 ${
-              roleFilter === "all"
-                ? "bg-indigo-600 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            className={`btn btn-sm ${
+              roleFilter === "all" ? "btn-primary" : "btn-outline"
             }`}
           >
             All Users ({users.length})
           </button>
           <button
             onClick={() => setRoleFilter("admin")}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition duration-200 ${
-              roleFilter === "admin"
-                ? "bg-purple-600 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            className={`btn btn-sm ${
+              roleFilter === "admin" ? "btn-secondary" : "btn-outline"
             }`}
           >
             👑 Admins ({users.filter((user) => user.is_admin).length})
           </button>
           <button
             onClick={() => setRoleFilter("user")}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition duration-200 ${
-              roleFilter === "user"
-                ? "bg-green-600 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            className={`btn btn-sm ${
+              roleFilter === "user" ? "btn-accent" : "btn-outline"
             }`}
           >
             👤 Users ({users.filter((user) => !user.is_admin).length})
@@ -307,7 +298,7 @@ const AdminUsers = () => {
               {roleFilter !== "all" && (
                 <button
                   onClick={() => setRoleFilter("all")}
-                  className="text-sm text-indigo-600 hover:text-indigo-800 underline"
+                  className="btn btn-xs btn-outline"
                 >
                   Clear role filter
                 </button>
@@ -315,7 +306,7 @@ const AdminUsers = () => {
               {searchTerm && (
                 <button
                   onClick={() => setSearchTerm("")}
-                  className="text-sm text-indigo-600 hover:text-indigo-800 underline"
+                  className="btn btn-xs btn-outline"
                 >
                   Clear search
                 </button>
@@ -326,7 +317,7 @@ const AdminUsers = () => {
                     setRoleFilter("all");
                     setSearchTerm("");
                   }}
-                  className="text-sm text-red-600 hover:text-red-800 underline font-medium"
+                  className="btn btn-xs btn-outline btn-error"
                 >
                   Clear all filters
                 </button>
@@ -337,90 +328,76 @@ const AdminUsers = () => {
       </div>
 
       {/* Users Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <div className="card bg-base-100 shadow-xl overflow-hidden">
+        <table className="table table-zebra w-full">
+          <thead>
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                User
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Role
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Statistics
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Joined
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
+              <th>User</th>
+              <th>Role</th>
+              <th>Statistics</th>
+              <th>Joined</th>
+              <th>Actions</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody>
             {filteredUsers.map((user) => (
-              <tr key={user.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0 h-10 w-10">
-                      <div className="h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center">
-                        <span className="text-sm font-medium text-white">
+              <tr key={user.id}>
+                <td>
+                  <div className="flex items-center gap-3">
+                    <div className="avatar">
+                      <div className="mask mask-circle w-12 h-12 bg-primary flex items-center justify-center">
+                        <span className="text-primary-content font-bold">
                           {user.name.charAt(0).toUpperCase()}
                         </span>
                       </div>
                     </div>
-                    <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        {user.name}
-                      </div>
-                      <div className="text-sm text-gray-500">{user.email}</div>
+                    <div>
+                      <div className="font-bold">{user.name}</div>
+                      <div className="text-sm opacity-50">{user.email}</div>
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td>
                   <span
-                    className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      user.is_admin
-                        ? "bg-purple-100 text-purple-800"
-                        : "bg-green-100 text-green-800"
+                    className={`badge ${
+                      user.is_admin ? "badge-secondary" : "badge-accent"
                     }`}
                   >
-                    {user.is_admin ? "Admin" : "User"}
+                    {user.is_admin ? "👑 Admin" : "👤 User"}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <div>
+                <td>
+                  <div className="text-sm">
                     <div>🛒 {user._count?.carts || 0} carts</div>
                     <div>📦 {user._count?.orders || 0} orders</div>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {formatDate(user.created_at)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                  <button
-                    onClick={() => handleEditUser(user)}
-                    className="px-3 py-1 bg-blue-100 text-blue-800 hover:bg-blue-200 rounded text-xs font-semibold transition duration-200"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => toggleAdminStatus(user.id, user.is_admin)}
-                    className={`px-3 py-1 rounded text-xs font-semibold ${
-                      user.is_admin
-                        ? "bg-orange-100 text-orange-800 hover:bg-orange-200"
-                        : "bg-blue-100 text-blue-800 hover:bg-blue-200"
-                    } transition duration-200`}
-                  >
-                    {user.is_admin ? "Remove Admin" : "Make Admin"}
-                  </button>
-                  <button
-                    onClick={() => handleDeleteUser(user.id)}
-                    className="px-3 py-1 bg-red-100 text-red-800 hover:bg-red-200 rounded text-xs font-semibold transition duration-200"
-                  >
-                    Delete
-                  </button>
+                <td>{formatDate(user.created_at)}</td>
+                <td>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEditUser(user)}
+                      className="btn btn-xs btn-outline btn-info"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => toggleAdminStatus(user.id, user.is_admin)}
+                      className={`btn btn-xs ${
+                        user.is_admin
+                          ? "btn-outline btn-warning"
+                          : "btn-primary text-white"
+                      }`}
+                    >
+                      {user.is_admin ? "Remove Admin" : "Make Admin"}
+                    </button>
+                    <button
+                      onClick={() => handleDeleteUser(user.id)}
+                      className="btn btn-xs btn-outline btn-error"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -458,7 +435,7 @@ const AdminUsers = () => {
               {searchTerm && (
                 <button
                   onClick={() => setSearchTerm("")}
-                  className="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition duration-200"
+                  className="btn btn-outline btn-primary"
                 >
                   Clear search
                 </button>
@@ -466,7 +443,7 @@ const AdminUsers = () => {
               {roleFilter !== "all" && (
                 <button
                   onClick={() => setRoleFilter("all")}
-                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition duration-200"
+                  className="btn btn-outline"
                 >
                   Show all users
                 </button>
@@ -484,130 +461,122 @@ const AdminUsers = () => {
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <span className="text-2xl">👥</span>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Users</p>
-              <p className="text-2xl font-bold text-gray-900">{users.length}</p>
-            </div>
+        <div className="stat bg-base-100 shadow">
+          <div className="stat-figure text-blue-600">
+            <span className="text-2xl">👥</span>
+          </div>
+          <div className="stat-title">Total Users</div>
+          <div className="stat-value text-gray-800 font-bold">
+            {users.length}
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <span className="text-2xl">👑</span>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Admins</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {users.filter((user) => user.is_admin).length}
-              </p>
-            </div>
+        <div className="stat bg-base-100 shadow">
+          <div className="stat-figure text-purple-600">
+            <span className="text-2xl">👑</span>
+          </div>
+          <div className="stat-title">Admins</div>
+          <div className="stat-value text-gray-800 font-bold">
+            {users.filter((user) => user.is_admin).length}
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <span className="text-2xl">🛒</span>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">
-                Active Shoppers
-              </p>
-              <p className="text-2xl font-bold text-gray-900">
-                {users.filter((user) => user._count?.orders > 0).length}
-              </p>
-            </div>
+        <div className="stat bg-base-100 shadow">
+          <div className="stat-figure text-green-600">
+            <span className="text-2xl">🛒</span>
+          </div>
+          <div className="stat-title">Active Shoppers</div>
+          <div className="stat-value text-gray-800 font-bold">
+            {users.filter((user) => user._count?.orders > 0).length}
           </div>
         </div>
       </div>
 
       {/* Modal for Create/Edit User */}
       {showModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div className="mt-3">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                {editUser ? "Edit User" : "Add New User"}
-              </h3>
-              <form onSubmit={handleFormSubmit}>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
+        <div className="modal modal-open">
+          <div className="modal-box w-11/12 max-w-2xl">
+            <h3 className="font-bold text-lg mb-6">
+              {editUser ? "Edit User" : "Add New User"}
+            </h3>
+            <form onSubmit={handleFormSubmit} className="space-y-5">
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-medium">User Name *</span>
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="input input-bordered w-full"
+                  placeholder="Enter user name"
+                  required
+                />
+              </div>
 
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-medium">
+                    Email Address *
+                  </span>
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="input input-bordered w-full"
+                  placeholder="Enter email address"
+                  required
+                />
+              </div>
 
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-medium">
                     Password {editUser && "(leave blank to keep current)"}
-                  </label>
+                  </span>
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  className="input input-bordered w-full"
+                  placeholder={
+                    editUser ? "Leave blank to keep current" : "Enter password"
+                  }
+                  required={!editUser}
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="cursor-pointer label">
+                  <span className="label-text font-medium">
+                    Admin privileges
+                  </span>
                   <input
-                    type="password"
-                    name="password"
-                    value={formData.password}
+                    type="checkbox"
+                    name="is_admin"
+                    checked={formData.is_admin}
                     onChange={handleInputChange}
-                    required={!editUser}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="checkbox checkbox-primary"
                   />
-                </div>
+                </label>
+              </div>
 
-                <div className="mb-6">
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      name="is_admin"
-                      checked={formData.is_admin}
-                      onChange={handleInputChange}
-                      className="mr-2 h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-                    />
-                    <span className="text-sm font-medium text-gray-700">
-                      Admin privileges
-                    </span>
-                  </label>
-                </div>
-
-                <div className="flex justify-end space-x-3">
-                  <button
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition duration-200"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-primary text-white rounded-md hover:bg-accent transition duration-200"
-                  >
-                    {editUser ? "Update" : "Create"}
-                  </button>
-                </div>
-              </form>
-            </div>
+              <div className="modal-action mt-6">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="btn btn-outline"
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  {editUser ? "Update" : "Create"} User
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

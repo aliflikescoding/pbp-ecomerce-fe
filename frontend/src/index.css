@@ -1,5 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Gideon+Roman&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair:ital,opsz,wght@0,5..1200,300..900;1,5..1200,300..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Gideon+Roman&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair:ital,opsz,wght@0,5..1200,300..900;1,5..1200,300..900&display=swap");
 @import "tailwindcss";
+
+/* Global styles for full height layout */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
 
 @theme {
   --font-inter: Inter, sans-serif;
@@ -18,21 +27,21 @@
   --color-base-200: oklch(97% 0.001 106.424);
   --color-base-300: oklch(92% 0.003 48.717);
   --color-base-content: oklch(12% 0.042 264.695);
-  --color-primary: #2C2C2C;
+  --color-primary: #2c2c2c;
   --color-primary-content: oklch(98% 0.003 247.858);
-  --color-secondary: #E5E5E5;
+  --color-secondary: #e5e5e5;
   --color-secondary-content: oklch(12% 0.042 264.695);
-  --color-accent: #C5A880;
+  --color-accent: #c5a880;
   --color-accent-content: oklch(100% 0 0);
   --color-neutral: oklch(12% 0.042 264.695);
   --color-neutral-content: oklch(98% 0.003 247.858);
-  --color-info: #6D8B99;
+  --color-info: #6d8b99;
   --color-info-content: oklch(100% 0 0);
-  --color-success: #6BAF92;
+  --color-success: #6baf92;
   --color-success-content: oklch(100% 0 0);
-  --color-warning: #D4A373;
+  --color-warning: #d4a373;
   --color-warning-content: oklch(100% 0 0);
-  --color-error: #B85C5C;
+  --color-error: #b85c5c;
   --color-error-content: oklch(100% 0 0);
   --radius-selector: 1rem;
   --radius-field: 0rem;
@@ -55,7 +64,6 @@
 }
 
 @layer base {
-
   *,
   *::before,
   *::after {
@@ -76,17 +84,22 @@
   }
 
   body {
-    font-family: 'Inter', sans-serif;
+    font-family: "Inter", sans-serif;
   }
 }
 
 /* Custom visuals for the theme */
 .hero-gradient {
-  background: linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.55) 50%, rgba(0,0,0,0.65) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.45) 0%,
+    rgba(0, 0, 0, 0.55) 50%,
+    rgba(0, 0, 0, 0.65) 100%
+  );
 }
 
 .btn-outline.btn-accent {
-  border-color: rgba(197,168,128,0.9);
+  border-color: rgba(197, 168, 128, 0.9);
   color: var(--color-accent-content);
 }
 
