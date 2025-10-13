@@ -1,22 +1,29 @@
 import React, { useEffect, useRef, useState } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
-import { FaSearch, FaShoppingCart } from "react-icons/fa";
+import { FaShoppingCart, FaClipboardList } from "react-icons/fa";
+import { IoClose } from "react-icons/io5";
 import { useLocation, NavLink } from "react-router-dom";
-import { checkUserAuth } from "../../api";
-import Logout from "../Logout";
+import { checkUserAuth, logoutUser } from "../../api";
 
 const Header = () => {
   const links = ["about", "store", "contact"];
   const location = useLocation();
   const pathname = location.pathname;
+  const showMyOrdersShortcut = pathname === "/" || pathname === "/store";
 
   const headerRef = useRef(null);
   const [isFixed, setIsFixed] = useState(false);
   const [height, setHeight] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Auth state
   const [isAuth, setIsAuth] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
+  const [user, setUser] = useState(null);
+
+  // Check which pages should have dark header
+  const darkPages = ["/", "/contact", "/about", "/store", "/my-orders"];
+  const isDarkPage = darkPages.includes(pathname);
 
   useEffect(() => {
     const onScroll = () => setIsFixed(window.scrollY > 20);
@@ -33,86 +40,215 @@ const Header = () => {
     };
   }, []);
 
+  // Check auth on mount
   useEffect(() => {
     let mounted = true;
-    (async () => {
+    
+    const fetchAuth = async () => {
       try {
-        const res = await checkUserAuth(); // expected: { status: "success", user: {...} } OR { status: "error", message: "Not authenticated" }
+        const res = await checkUserAuth();
         if (!mounted) return;
-        setIsAuth(res?.status === "success");
-      } catch {
-        if (!mounted) return;
-        setIsAuth(false);
+        
+        if (res?.status === "success" && res?.user) {
+          setIsAuth(true);
+          setUser(res.user);
+        } else {
+          setIsAuth(false);
+          setUser(null);
+        }
+      } catch (error) {
+        console.error("Auth check error:", error);
+        if (mounted) {
+          setIsAuth(false);
+          setUser(null);
+        }
       } finally {
-        if (mounted) setAuthLoading(false);
+        if (mounted) {
+          setAuthLoading(false);
+        }
       }
-    })();
+    };
+
+    fetchAuth();
+
     return () => {
       mounted = false;
     };
   }, []);
 
-  const AuthActions = () => {
-    // While checking auth, render nothing to prevent flicker
-    if (authLoading) return null;
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      const res = await logoutUser();
+      if (res?.status === "success") {
+        setIsAuth(false);
+        setUser(null);
+        window.location.href = "/";
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
 
-    // Authenticated: show Search + Cart
-    if (isAuth) {
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
+  const AuthActions = () => {
+    const myOrdersShortcut = showMyOrdersShortcut ? (
+      <NavLink
+        to="/my-orders"
+        className={`
+          inline-flex items-center justify-center w-10 h-10 
+          border transition-all duration-500
+          ${isDarkPage 
+            ? 'border-amber-300/30 bg-amber-400/5 text-amber-200 hover:border-amber-300/60 hover:bg-amber-400/10 hover:scale-110' 
+            : 'border-slate-300 bg-slate-100 text-slate-700 hover:border-amber-400 hover:bg-amber-50 hover:scale-110'}
+        `}
+        aria-label="My Orders"
+      >
+        <FaClipboardList className="w-4 h-4" />
+      </NavLink>
+    ) : null;
+
+    if (authLoading) {
+      return (
+        <div className="flex items-center gap-3">
+          <div className={`w-10 h-10 rounded animate-pulse ${isDarkPage ? 'bg-amber-400/20' : 'bg-slate-200'}`}></div>
+          <div className={`w-20 h-10 rounded animate-pulse ${isDarkPage ? 'bg-amber-400/20' : 'bg-slate-200'}`}></div>
+        </div>
+      );
+    }
+
+    if (isAuth && user) {
       return (
         <>
+          {myOrdersShortcut}
           <NavLink
             to="/cart"
-            className="btn btn-ghost btn-square"
+            className={`
+              inline-flex items-center justify-center w-10 h-10 
+              border transition-all duration-500
+              ${isDarkPage 
+                ? 'border-amber-300/30 bg-amber-400/5 text-amber-200 hover:border-amber-300/60 hover:bg-amber-400/10 hover:scale-110' 
+                : 'border-slate-300 bg-slate-100 text-slate-700 hover:border-amber-400 hover:bg-amber-50 hover:scale-110'}
+            `}
             aria-label="Cart"
           >
-            <FaShoppingCart />
+            <FaShoppingCart className="w-4 h-4" />
           </NavLink>
-          <Logout />
+          <button 
+            onClick={handleLogout}
+            className={`
+              px-5 py-2 font-light tracking-wider uppercase text-sm 
+              transition-all duration-500
+              ${isDarkPage
+                ? 'bg-amber-400/10 border border-amber-300/50 text-amber-200 hover:bg-amber-400/20 hover:border-amber-300/80 hover:scale-105'
+                : 'bg-slate-800 border border-slate-800 text-white hover:bg-slate-900 hover:scale-105'}
+            `}
+          >
+            Logout
+          </button>
         </>
       );
     }
 
-    // Not authenticated: show Login + Register
     return (
       <>
-        <NavLink to="/login" className="btn btn-sm btn-primary ml-2">
+        {myOrdersShortcut}
+        <NavLink 
+          to="/login" 
+          className={`
+            px-5 py-2 font-light tracking-wider uppercase text-sm 
+            transition-all duration-500
+            ${isDarkPage
+              ? 'border border-amber-300/50 text-amber-200 hover:bg-amber-400/10 hover:border-amber-300/80 hover:scale-105'
+              : 'border border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 hover:scale-105'}
+          `}
+        >
           Login
         </NavLink>
-        <NavLink to="/register" className="btn btn-sm btn-outline ml-2">
+        <NavLink 
+          to="/register" 
+          className={`
+            px-5 py-2 font-light tracking-wider uppercase text-sm 
+            transition-all duration-500
+            ${isDarkPage
+              ? 'bg-amber-400/10 border border-amber-300/50 text-amber-200 hover:bg-amber-400/20 hover:border-amber-300/80 hover:scale-105'
+              : 'bg-slate-800 border border-slate-800 text-white hover:bg-slate-900 hover:scale-105'}
+          `}
+        >
           Register
         </NavLink>
       </>
     );
   };
 
-  // For mobile drawer, mirror the same conditional actions at the bottom of the menu
   const MobileAuthActions = () => {
-    if (authLoading) return null;
-    if (isAuth) {
+    if (authLoading) {
       return (
-        <li className="mt-2">
+        <li className="mt-4 px-2">
           <div className="flex gap-2">
-            <button className="btn btn-ghost btn-square" aria-label="Search">
-              <FaSearch />
-            </button>
-            <NavLink
-              to="/cart"
-              className="btn btn-ghost btn-square"
-              aria-label="Cart"
-            >
-              <FaShoppingCart />
-            </NavLink>
+            <div className="flex-1 h-12 bg-slate-200 animate-pulse rounded"></div>
+            <div className="flex-1 h-12 bg-slate-200 animate-pulse rounded"></div>
           </div>
         </li>
       );
     }
+    
+    if (isAuth && user) {
+      return (
+        <li className="mt-4 px-2">
+          <div className="flex gap-2">
+            {showMyOrdersShortcut && (
+              <NavLink
+                to="/my-orders"
+                className="flex-1 py-3 text-center border border-amber-300/50 text-amber-600 hover:bg-amber-50 transition-colors rounded"
+                aria-label="My Orders"
+              >
+                <FaClipboardList className="inline w-5 h-5" />
+              </NavLink>
+            )}
+            <NavLink
+              to="/cart"
+              className="flex-1 py-3 text-center border border-amber-300/50 text-amber-600 hover:bg-amber-50 transition-colors rounded"
+            >
+              <FaShoppingCart className="inline w-5 h-5" />
+            </NavLink>
+            <button 
+              onClick={handleLogout}
+              className="flex-1 py-3 bg-slate-800 text-white hover:bg-slate-900 transition-colors rounded font-light tracking-wider uppercase text-sm"
+            >
+              Logout
+            </button>
+          </div>
+        </li>
+      );
+    }
+    
     return (
-      <li className="mt-2">
+      <li className="mt-4 px-2">
         <div className="flex gap-2">
-          <NavLink to="/login" className="btn btn-primary btn-sm">
+          {showMyOrdersShortcut && (
+            <NavLink
+              to="/my-orders"
+              className="flex-none w-12 h-12 inline-flex items-center justify-center border border-slate-300 text-slate-600 hover:bg-slate-50 transition-colors rounded"
+              aria-label="My Orders"
+            >
+              <FaClipboardList className="w-5 h-5" />
+            </NavLink>
+          )}
+          <NavLink 
+            to="/login" 
+            className="flex-1 py-3 text-center border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors rounded font-light tracking-wider uppercase text-sm"
+          >
             Login
           </NavLink>
-          <NavLink to="/register" className="btn btn-outline btn-sm">
+          <NavLink 
+            to="/register" 
+            className="flex-1 py-3 text-center bg-slate-800 text-white hover:bg-slate-900 transition-colors rounded font-light tracking-wider uppercase text-sm"
+          >
             Register
           </NavLink>
         </div>
@@ -120,218 +256,177 @@ const Header = () => {
     );
   };
 
-  return pathname === "/" ? (
+  return (
     <>
-      {isFixed && <div style={{ height: height }} aria-hidden />}
+      {isFixed && <div style={{ height: height }} aria-hidden="true" />}
+      
       <div
         ref={headerRef}
-        className={
-          "w-full text-base-100 " +
-          (isFixed
-            ? "fixed top-0 left-0 right-0 z-40 bg-black/95 shadow-md"
-            : "absolute")
-        }
+        className={`
+          w-full transition-all duration-300 z-50
+          ${isDarkPage 
+            ? isFixed 
+              ? 'fixed top-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-b border-amber-300/20 shadow-lg' 
+              : 'absolute bg-transparent'
+            : isFixed 
+              ? 'fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-xl shadow-md' 
+              : 'bg-white border-b border-slate-200'
+          }
+        `}
       >
-        <div className="custom-container p-4 flex justify-between items-center">
-          <NavLink to="/" aria-label="Home">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+          {/* Logo */}
+          <NavLink to="/" aria-label="Home" className="transition-transform duration-300 hover:scale-105">
             <img
-              src="/logo-vertical-white.svg"
-              className="h-auto w-15"
-              alt="company logo"
+              src="/logo-horizontal-white.svg"
+              className="h-10 w-auto"
+              style={{ filter: isDarkPage ? "none" : "invert(1)" }}
+              alt="Aurora & Co"
             />
           </NavLink>
 
-          <nav className="hidden sm:flex gap-6 items-center">
-            <div className="group relative">
-              <NavLink
-                className={`capitalize transition-colors duration-300 ${
-                  pathname === "/" ? "font-semibold text-white" : ""
-                }`}
-                to="/"
-              >
-                home
-              </NavLink>
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-8">
+            <NavLink
+              to="/"
+              className={({ isActive }) => `
+                relative font-light tracking-wide transition-all duration-300 group
+                ${isActive ? "font-medium" : ""}
+                ${isDarkPage ? "text-white" : "text-slate-700"}
+              `}
+            >
+              Home
               <span
-                className={`absolute left-0 -bottom-1 h-[2px] bg-white transition-all duration-300 ${
-                  pathname === "/" ? "w-full" : "w-0 group-hover:w-full"
-                }`}
+                className={`
+                  absolute left-0 -bottom-1 h-px transition-all duration-300
+                  ${isDarkPage ? "bg-amber-300" : "bg-slate-800"}
+                  ${pathname === "/" ? "w-full" : "w-0 group-hover:w-full"}
+                `}
               ></span>
-            </div>
+            </NavLink>
             {links.map((link) => (
-              <div key={link} className="group relative">
-                <NavLink
-                  className={`transition-colors duration-300 ${
-                    pathname === `/${link}` ? "font-bold" : ""
-                  } ${link === "faq" ? "uppercase" : "capitalize"}`}
-                  to={`/${link}`}
-                >
-                  {link}
-                </NavLink>
+              <NavLink
+                key={link}
+                to={`/${link}`}
+                className={({ isActive }) => `
+                  relative capitalize font-light tracking-wide transition-all duration-300 group
+                  ${isActive ? "font-medium" : ""}
+                  ${isDarkPage ? "text-white" : "text-slate-700"}
+                `}
+              >
+                {link}
                 <span
-                  className={`absolute left-0 -bottom-1 h-[2px] bg-white transition-all duration-300 ${
-                    pathname === `/${link}`
-                      ? "w-full"
-                      : "w-0 group-hover:w-full"
-                  }`}
+                  className={`
+                    absolute left-0 -bottom-1 h-px transition-all duration-300
+                    ${isDarkPage ? "bg-amber-300" : "bg-slate-800"}
+                    ${pathname === `/${link}` ? "w-full" : "w-0 group-hover:w-full"}
+                  `}
                 ></span>
-              </div>
+              </NavLink>
             ))}
           </nav>
 
-          <div className="hidden sm:flex items-center gap-4">
+          {/* Desktop Auth Actions */}
+          <div className="hidden md:flex items-center gap-3">
             <AuthActions />
           </div>
 
-          <div className="sm:hidden">
-            <div className="drawer">
-              <input id="my-drawer" type="checkbox" className="drawer-toggle" />
-              <div className="drawer-content">
-                <label
-                  htmlFor="my-drawer"
-                  className="drawer-button"
-                  aria-label="Open menu"
-                >
-                  <GiHamburgerMenu className="text-2xl" />
-                </label>
-              </div>
-              <div className="drawer-side">
-                <label
-                  htmlFor="my-drawer"
-                  aria-label="close sidebar"
-                  className="drawer-overlay"
-                ></label>
-                <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
-                  <li className={pathname === "/" ? "bg-base-300" : ""}>
-                    <NavLink to="/" className="text-xl capitalize">
-                      home
-                    </NavLink>
-                  </li>
-                  {links.map((link) => (
-                    <li
-                      key={link}
-                      className={pathname === `/${link}` ? "bg-base-300" : ""}
-                    >
-                      <NavLink
-                        to={`/${link}`}
-                        className={`text-xl ${
-                          link === "faq" ? "uppercase" : "capitalize"
-                        }`}
-                      >
-                        {link}
-                      </NavLink>
-                    </li>
-                  ))}
-                  <MobileAuthActions />
-                </ul>
-              </div>
-            </div>
-          </div>
+          {/* Mobile Menu Toggle */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className={`
+              md:hidden inline-flex items-center justify-center w-10 h-10
+              transition-all duration-300
+              ${isDarkPage ? "text-white" : "text-slate-700"}
+            `}
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? (
+              <IoClose className="text-2xl" />
+            ) : (
+              <GiHamburgerMenu className="text-2xl" />
+            )}
+          </button>
         </div>
       </div>
-    </>
-  ) : (
-    <>
-      {isFixed && <div style={{ height: height }} aria-hidden />}
-      <div
-        ref={headerRef}
-        className={
-          "w-full bg-transparent " +
-          (isFixed ? "fixed top-0 left-0 right-0 z-40 bg-white shadow-sm" : "")
-        }
+
+      {/* Mobile Drawer */}
+      <div 
+        className={`
+          fixed inset-0 z-40 md:hidden transition-all duration-300
+          ${mobileMenuOpen ? 'visible' : 'invisible'}
+        `}
       >
-        <div className="custom-container p-4 flex justify-between items-center">
-          <NavLink to="/" aria-label="Home">
-            <img
-              src="/logo-vertical.svg"
-              className="h-auto w-15"
-              alt="company logo"
-            />
-          </NavLink>
-
-          <nav className="hidden sm:flex gap-6 ">
-            <div className="group relative">
-              <NavLink
-                className={`capitalize transition-colors duration-300 ${
-                  pathname === "/" ? "font-semibold text-primary" : ""
-                }`}
-                to="/"
+        {/* Backdrop */}
+        <div 
+          className={`
+            absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300
+            ${mobileMenuOpen ? 'opacity-100' : 'opacity-0'}
+          `}
+          onClick={() => setMobileMenuOpen(false)}
+        />
+        
+        {/* Drawer */}
+        <div 
+          className={`
+            absolute right-0 top-0 bottom-0 w-80 bg-white shadow-2xl
+            transform transition-transform duration-300
+            ${mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}
+          `}
+        >
+          <div className="p-6">
+            {/* Mobile Logo & Close */}
+            <div className="flex justify-between items-center mb-8">
+              <img
+                src="/logo-horizontal.svg"
+                className="h-8 w-auto"
+                alt="Aurora & Co"
+              />
+              <button
+                onClick={() => setMobileMenuOpen(false)}
+                className="inline-flex items-center justify-center w-10 h-10 text-slate-700 hover:bg-slate-100 rounded transition-colors"
+                aria-label="Close menu"
               >
-                home
-              </NavLink>
-              <span
-                className={`absolute left-0 -bottom-1 h-[2px] bg-black transition-all duration-300 ${
-                  pathname === "/" ? "w-full" : "w-0 group-hover:w-full"
-                }`}
-              ></span>
+                <IoClose className="text-2xl" />
+              </button>
             </div>
-            {links.map((link) => (
-              <div key={link} className="group relative">
+
+            {/* Mobile Navigation */}
+            <ul className="space-y-2">
+              <li>
                 <NavLink
-                  className={`transition-colors duration-300 ${
-                    pathname === `/${link}` ? "font-bold" : ""
-                  } ${link === "faq" ? "uppercase" : "capitalize"}`}
-                  to={`/${link}`}
+                  to="/"
+                  className={({ isActive }) => `
+                    block px-4 py-3 rounded transition-colors font-light tracking-wide
+                    ${isActive 
+                      ? "bg-amber-50 text-amber-600 font-medium" 
+                      : "text-slate-700 hover:bg-slate-50"}
+                  `}
                 >
-                  {link}
+                  Home
                 </NavLink>
-                <span
-                  className={`absolute left-0 -bottom-1 h-[2px] bg-black transition-all duration-300 ${
-                    pathname === `/${link}`
-                      ? "w-full"
-                      : "w-0 group-hover:w-full"
-                  }`}
-                ></span>
-              </div>
-            ))}
-          </nav>
+              </li>
+              {links.map((link) => (
+                <li key={link}>
+                  <NavLink
+                    to={`/${link}`}
+                    className={({ isActive }) => `
+                      block px-4 py-3 rounded capitalize transition-colors font-light tracking-wide
+                      ${isActive 
+                        ? "bg-amber-50 text-amber-600 font-medium" 
+                        : "text-slate-700 hover:bg-slate-50"}
+                    `}
+                  >
+                    {link}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
 
-          <div className="hidden sm:flex items-center gap-4">
-            <AuthActions />
-          </div>
-
-          <div className="sm:hidden">
-            <div className="drawer">
-              <input id="my-drawer" type="checkbox" className="drawer-toggle" />
-              <div className="drawer-content">
-                <label
-                  htmlFor="my-drawer"
-                  className="drawer-button"
-                  aria-label="Open menu"
-                >
-                  <GiHamburgerMenu className="text-2xl" />
-                </label>
-              </div>
-              <div className="drawer-side">
-                <label
-                  htmlFor="my-drawer"
-                  aria-label="close sidebar"
-                  className="drawer-overlay"
-                ></label>
-                <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
-                  <li className={pathname === "/" ? "bg-base-300" : ""}>
-                    <NavLink to="/" className="text-xl capitalize">
-                      home
-                    </NavLink>
-                  </li>
-                  {links.map((link) => (
-                    <li
-                      key={link}
-                      className={pathname === `/${link}` ? "bg-base-300" : ""}
-                    >
-                      <NavLink
-                        to={`/${link}`}
-                        className={`text-xl ${
-                          link === "faq" ? "uppercase" : "capitalize"
-                        }`}
-                      >
-                        {link}
-                      </NavLink>
-                    </li>
-                  ))}
-                  <MobileAuthActions />
-                </ul>
-              </div>
-            </div>
+            {/* Mobile Auth Actions */}
+            <ul>
+              <MobileAuthActions />
+            </ul>
           </div>
         </div>
       </div>

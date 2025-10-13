@@ -29,32 +29,32 @@ const RegisterPage = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(registerSchema),
   });
 
   const onSubmit = async (data) => {
-    try {
-      // Prepare JSON body
-      const body = {
-        name: data.name,
-        email: data.email,
-        password: data.password,
-      };
+    const body = {
+      name: data.name,
+      email: data.email,
+      password: data.password,
+    };
 
-      // Call your API
-      try {
-        const response = await registerUser(body);
-        toast.success(`✅ Registered successfully ${response.user.name}`);
-        document.location.href = "/login";
-      } catch (error) {
-        console.error(error)
-        toast.error("❌ Registration failed");
-      }
+    try {
+      const response = await registerUser(body);
+      const successMessage =
+        response?.message ??
+        (response?.user?.name ? `Registered successfully, ${response.user.name}` : "Registration successful");
+
+      toast.success(`✅ ${successMessage}`);
+      reset();
+      document.location.href = "/login";
     } catch (error) {
       console.error("❌ Registration failed:", error);
-      toast.error("❌ Registration failed");
+      const apiMessage = error?.response?.data?.message;
+      toast.error(apiMessage ? `❌ ${apiMessage}` : "❌ Registration failed");
     }
   };
 

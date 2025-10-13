@@ -57,7 +57,6 @@ export const registerUser = async (userData) => {
   }
 };
 
-
 export const loginUser = async (userData) => {
   try {
     const response = await api.post("/user/login", userData);
@@ -116,4 +115,4 @@ export const updateCartQty = async (id, qty) => {
     console.error("Update Cart Qty error:", error);
     throw error;
   }
-}
+};
