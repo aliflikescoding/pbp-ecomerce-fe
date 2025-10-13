@@ -3,12 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model users {
-  id         String   @id @default(uuid()) @db.Uuid
+  id         String   @id @default(uuid())
   name       String
   email      String   @unique
   password   String
@@ -36,7 +36,7 @@ model product_images {
 model products {
   id          Int              @id @default(autoincrement())
   name        String
-  price       Decimal          @db.Decimal(10, 2)
+  price       Float
   stock       Int
   is_active   Boolean
   created_at  DateTime         @default(now())
@@ -50,7 +50,7 @@ model products {
 model carts {
   id         Int          @id @default(autoincrement())
   created_at DateTime     @default(now())
-  user_id    String       @db.Uuid
+  user_id    String
   cart_items cart_items[]
   user       users        @relation(fields: [user_id], references: [id])
 }
@@ -66,20 +66,20 @@ model cart_items {
 
 model orders {
   id           Int           @id @default(autoincrement())
-  total        Decimal       @db.Decimal(10, 2)
+  total        Float
   status       String
   address_text String
   created_at   DateTime      @default(now())
-  user_id      String        @db.Uuid
+  user_id      String
   order_items  order_items[]
   user         users         @relation(fields: [user_id], references: [id])
 }
 
 model order_items {
   id         Int      @id @default(autoincrement())
-  price      Decimal  @db.Decimal(10, 2)
+  price      Float
   qty        Int
-  subtotal   Decimal  @db.Decimal(10, 2)
+  subtotal   Float
   order_id   Int
   product_id Int
   order      orders   @relation(fields: [order_id], references: [id])
