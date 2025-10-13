@@ -1,80 +1,292 @@
-import React from "react";
+import React, { useState } from "react";
 
-const TeamCard = ({ name, role, imgSrc }) => (
-  <div className="bg-white rounded-lg shadow-sm overflow-hidden w-full max-w-sm">
-    <img
-      src={imgSrc}
-      alt={name}
-      className="w-full h-40 object-cover"
-      onError={(event) => {
-        event.currentTarget.onerror = null;
-        event.currentTarget.src = "/hero-image.png";
-      }}
-    />
-    <div className="p-4">
-      <h4 className="font-semibold">{name}</h4>
-      <p className="text-sm text-neutral/70">{role}</p>
+const TeamCard = ({ name, role, imgSrc, index }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  
+  return (
+    <div 
+      className="group relative"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className={`
+        relative overflow-hidden backdrop-blur-xl bg-white/5 border border-white/10
+        transition-all duration-700
+        ${isHovered ? 'border-amber-300/50 shadow-2xl shadow-amber-500/10 scale-105' : ''}
+      `}>
+        {/* Image container */}
+        <div className="relative h-80 overflow-hidden">
+          <img
+            src={imgSrc}
+            alt={name}
+            className={`w-full h-full object-cover transition-transform duration-700 ${isHovered ? 'scale-110' : 'scale-100'}`}
+            onError={(event) => {
+              event.currentTarget.onerror = null;
+              event.currentTarget.src = "/hero-image.png";
+            }}
+          />
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent"></div>
+          
+          {/* Shimmer effect */}
+          <div className={`
+            absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent
+            transition-transform duration-1000
+            ${isHovered ? 'translate-x-full' : '-translate-x-full'}
+          `}></div>
+        </div>
+
+        {/* Content */}
+        <div className="relative p-6">
+          <div className="h-px w-12 bg-gradient-to-r from-amber-300/50 to-transparent mb-4"></div>
+          <h4 className="text-xl font-light text-neutral-content mb-2 tracking-wide font-playfair">
+            {name}
+          </h4>
+          <p className="text-sm text-amber-200 font-light tracking-wider uppercase">
+            {role}
+          </p>
+        </div>
+
+        {/* Corner accents */}
+        <div className="absolute top-0 right-0 w-16 h-16 border-t border-r border-amber-300/20"></div>
+        <div className="absolute bottom-0 left-0 w-16 h-16 border-b border-l border-amber-300/20"></div>
+      </div>
     </div>
-  </div>
-);
+  );
+};
+
+const ValueCard = ({ icon, title, description }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  
+  return (
+    <div 
+      className="relative group"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className={`
+        backdrop-blur-xl bg-white/5 border border-white/10 p-8
+        transition-all duration-700
+        ${isHovered ? 'border-amber-300/50 shadow-xl shadow-amber-500/10 -translate-y-2' : ''}
+      `}>
+        <div className={`
+          text-4xl mb-6 transition-transform duration-700
+          ${isHovered ? 'scale-110 rotate-6' : 'scale-100'}
+        `}>
+          {icon}
+        </div>
+        <div className="h-px w-12 bg-gradient-to-r from-amber-300/50 to-transparent mb-4"></div>
+        <h4 className="text-xl font-light text-neutral-content mb-3 tracking-wide font-playfair">
+          {title}
+        </h4>
+        <p className="text-neutral-content/70 font-light text-sm leading-relaxed">
+          {description}
+        </p>
+      </div>
+    </div>
+  );
+};
 
 const AboutSection = () => {
   const team = [
     { name: "Alif Putra Wibowo", role: "Founder & Creative Director", imgSrc: "/hero-image.png" },
     {
-      name: "Favian Hanindito ",
+      name: "Favian Hanindito",
       role: "Head of Product",
       imgSrc: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&q=80",
     },
     {
-      name: "Duta Adi ",
+      name: "Duta Adi",
       role: "Head of Marketing",
       imgSrc: "https://images.unsplash.com/photo-1545996124-1e9f3b7a3f5b?w=800&q=80",
     },
     {
-      name: "Diaz cahyo utomo",
+      name: "Diaz Cahyo Utomo",
       role: "Lead Engineer",
       imgSrc: "https://images.unsplash.com/photo-1529665253569-6d01c0eaf7b6?w=800&q=80",
     },
   ];
 
+  const values = [
+    {
+      icon: "✨",
+      title: "Timeless Elegance",
+      description: "We craft pieces that transcend trends, focusing on classic designs that remain beautiful through the years."
+    },
+    {
+      icon: "💎",
+      title: "Exceptional Quality",
+      description: "Every piece is meticulously crafted using premium materials and traditional techniques passed down through generations."
+    },
+    {
+      icon: "🌿",
+      title: "Sustainable Luxury",
+      description: "We believe luxury and responsibility go hand in hand, sourcing ethically and creating with minimal environmental impact."
+    },
+    {
+      icon: "🎨",
+      title: "Artisan Craftsmanship",
+      description: "Each creation is a work of art, handcrafted by skilled artisans who pour their expertise into every detail."
+    }
+  ];
+
+  const milestones = [
+    { year: "2020", event: "Aurora & Co Founded" },
+    { year: "2021", event: "First Flagship Store Opens" },
+    { year: "2023", event: "International Expansion" },
+    { year: "2024", event: "Sustainability Award Winner" },
+  ];
+
   return (
-    <section className="py-16 custom-container">
-      <div className="max-w-4xl mx-auto text-center mb-12">
-        <h2 className="text-4xl font-playfair font-bold mb-4">About Aurora & Co</h2>
-        <p className="text-neutral/70 text-lg">
-          Aurora & Co is a curated lifestyle brand focused on timeless design and quality craftsmanship.
-          We create pieces that last and tell a story — made with care, inspired by the modern wardrobe.
-        </p>
+    <section 
+      className="relative min-h-screen py-20 overflow-hidden"
+      style={{
+        backgroundImage: "url(/hero-image.png)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+      }}
+    >
+      {/* Dark elegant overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-amber-950/85 to-slate-900/90"></div>
+
+      {/* Luxury light effects */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-amber-600/15 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-yellow-600/10 rounded-full blur-3xl"></div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8 items-center mb-12">
-        <div>
-          <h3 className="text-2xl font-semibold mb-3">Our Mission</h3>
-          <p className="text-neutral/70 mb-4">
-            To craft beautifully made wardrobe staples that combine functionality with elegant design.
-            We believe in responsible sourcing and meaningful products that people love to wear.
+      <div className="relative max-w-7xl mx-auto px-6">
+        {/* Hero Header */}
+        <div className="text-center mb-20">
+          <div className="inline-block mb-6">
+            <div className="h-px w-12 bg-gradient-to-r from-transparent via-amber-400 to-transparent mb-4 mx-auto"></div>
+            <span className="text-xs font-light tracking-[0.3em] text-amber-200 uppercase">Our Story</span>
+            <div className="h-px w-12 bg-gradient-to-r from-transparent via-amber-400 to-transparent mt-4 mx-auto"></div>
+          </div>
+          <h1 className="text-5xl md:text-6xl font-light mb-6 text-neutral-content tracking-wide font-playfair">
+            Where <span className="italic">Brilliance</span>
+            <br />
+            Meets <span className="italic text-amber-200">Artistry</span>
+          </h1>
+          <p className="text-lg text-neutral-content/80 max-w-3xl mx-auto leading-relaxed font-light">
+            Since our inception, Aurora & Co has been dedicated to creating jewelry that captures the essence of timeless beauty. Each piece is a testament to our commitment to excellence, crafted with passion and precision.
           </p>
-          <ul className="space-y-2 text-neutral/80">
-            <li>• Timeless materials</li>
-            <li>• Thoughtful craftsmanship</li>
-            <li>• Sustainable practices</li>
-          </ul>
         </div>
-        <div>
-          <img src="/public/whyus/whyus-1.png" alt="about" className="w-full rounded-lg object-cover h-64" onError={(e)=>{e.target.src='/hero-image.png'}}/>
-        </div>
-      </div>
 
-      <div className="mb-8">
-        <h3 className="text-2xl font-semibold text-center mb-6">Meet the team</h3>
-        <div className="max-w-4xl mx-auto">
-          <div className="-mx-4 flex gap-6 overflow-x-auto px-4 pb-4 sm:mx-0 sm:px-0 sm:pb-0 snap-x snap-mandatory">
-            {team.map((t) => (
-              <div key={t.name} className="snap-center flex-shrink-0 w-72 sm:w-64 md:w-72 lg:w-80">
-                <TeamCard name={t.name} role={t.role} imgSrc={t.imgSrc} />
+        {/* Our Story Section */}
+        <div className="grid md:grid-cols-2 gap-12 items-center mb-32">
+          <div>
+            <h2 className="text-4xl font-light text-neutral-content mb-6 tracking-wide font-playfair">
+              The Aurora <span className="italic text-amber-200">Legacy</span>
+            </h2>
+            <div className="h-px w-16 bg-gradient-to-r from-amber-300/50 to-transparent mb-6"></div>
+            <p className="text-neutral-content/70 mb-6 font-light leading-relaxed">
+              Founded with a vision to revolutionize luxury jewelry, Aurora & Co blends centuries-old craftsmanship with contemporary design sensibilities. Our journey began in a small atelier, driven by an unwavering passion for creating pieces that tell stories.
+            </p>
+            <p className="text-neutral-content/70 mb-8 font-light leading-relaxed">
+              Today, we stand as a beacon of elegance, where every creation embodies our dedication to artistry, quality, and the celebration of life's most precious moments.
+            </p>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 text-amber-200">
+                <span className="text-2xl">→</span>
+                <span className="font-light">Handcrafted Excellence</span>
               </div>
+              <div className="flex items-center gap-3 text-amber-200">
+                <span className="text-2xl">→</span>
+                <span className="font-light">Ethically Sourced Materials</span>
+              </div>
+              <div className="flex items-center gap-3 text-amber-200">
+                <span className="text-2xl">→</span>
+                <span className="font-light">Timeless Design Philosophy</span>
+              </div>
+            </div>
+          </div>
+          <div className="relative">
+            <div className="backdrop-blur-xl bg-white/5 border border-white/10 p-2">
+              <img 
+                src="/hero-image.png" 
+                alt="Aurora & Co Craftsmanship" 
+                className="w-full h-[500px] object-cover"
+                onError={(e)=>{e.target.src='/hero-image.png'}}
+              />
+              <div className="absolute top-0 left-0 w-24 h-24 border-t border-l border-amber-300/30"></div>
+              <div className="absolute bottom-0 right-0 w-24 h-24 border-b border-r border-amber-300/30"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Values Section */}
+        <div className="mb-32">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-light text-neutral-content mb-4 tracking-wide font-playfair">
+              Our <span className="italic text-amber-200">Values</span>
+            </h2>
+            <div className="h-px w-16 bg-gradient-to-r from-transparent via-amber-300 to-transparent mx-auto"></div>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {values.map((value, index) => (
+              <ValueCard key={index} {...value} />
             ))}
+          </div>
+        </div>
+
+        {/* Journey Timeline */}
+        <div className="mb-32">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-light text-neutral-content mb-4 tracking-wide font-playfair">
+              Our <span className="italic text-amber-200">Journey</span>
+            </h2>
+            <div className="h-px w-16 bg-gradient-to-r from-transparent via-amber-300 to-transparent mx-auto"></div>
+          </div>
+          <div className="max-w-3xl mx-auto">
+            <div className="space-y-8">
+              {milestones.map((milestone, index) => (
+                <div key={index} className="flex gap-6 items-start group">
+                  <div className="backdrop-blur-xl bg-white/5 border border-amber-300/30 px-6 py-3 transition-all duration-500 group-hover:border-amber-300/60 group-hover:bg-amber-400/10">
+                    <span className="text-2xl font-light text-amber-200 font-playfair">{milestone.year}</span>
+                  </div>
+                  <div className="flex-1 pt-2">
+                    <p className="text-lg text-neutral-content font-light">{milestone.event}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Team Section */}
+        <div className="mb-20">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-light text-neutral-content mb-4 tracking-wide font-playfair">
+              Meet the <span className="italic text-amber-200">Artisans</span>
+            </h2>
+            <div className="h-px w-16 bg-gradient-to-r from-transparent via-amber-300 to-transparent mx-auto mb-6"></div>
+            <p className="text-neutral-content/70 max-w-2xl mx-auto font-light">
+              Behind every piece of Aurora & Co jewelry is a team of passionate individuals dedicated to perfection and artistry.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {team.map((member, index) => (
+              <TeamCard key={index} {...member} index={index} />
+            ))}
+          </div>
+        </div>
+
+        {/* CTA Section */}
+        <div className="text-center">
+          <div className="inline-block backdrop-blur-xl bg-white/5 border border-white/10 px-12 py-12 max-w-3xl">
+            <div className="h-px w-16 bg-gradient-to-r from-transparent via-amber-300 to-transparent mb-6 mx-auto"></div>
+            <h3 className="text-3xl font-light text-neutral-content mb-4 tracking-wide font-playfair">
+              Begin Your <span className="italic text-amber-200">Journey</span>
+            </h3>
+            <p className="text-neutral-content/70 mb-8 font-light leading-relaxed">
+              Discover our curated collections and find the piece that speaks to your soul. Each creation is waiting to become part of your story.
+            </p>
+            <button className="backdrop-blur-xl bg-amber-400/10 border border-amber-300/50 text-amber-200 px-8 py-3 font-light tracking-wider uppercase text-sm transition-all duration-500 hover:bg-amber-400/20 hover:border-amber-300/80 hover:scale-105">
+              Explore Collections
+            </button>
+            <div className="h-px w-16 bg-gradient-to-r from-transparent via-amber-300 to-transparent mt-6 mx-auto"></div>
           </div>
         </div>
       </div>
