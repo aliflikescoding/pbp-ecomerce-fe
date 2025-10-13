@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getUserOrders, getUserOrdersByStatus } from "../api";
+// import { getUserOrders, getUserOrdersByStatus } from "../api";
 import { FaClipboardList, FaShippingFast, FaCheckCircle } from "react-icons/fa";
 import { PiHourglassHighFill } from "react-icons/pi";
 

@@ -10,6 +10,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import NotFoundPage from "./Pages/NotFoundPage";
 import ProductRoutePage from "./Pages/ProductRoutePage";
 import CartPage from "./Pages/CartPage";
+import MyOrdersPage from "./Pages/MyOrdersPage";
 
 // Admin imports
 import AdminDashboard from "./admin/pages/AdminDashboard";
@@ -67,6 +68,14 @@ const App = () => {
           element={
             <RegularLayout>
               <ContactPage />
+            </RegularLayout>
+          }
+        />
+        <Route
+          path="/my-orders"
+          element={
+            <RegularLayout>
+              <MyOrdersPage />
             </RegularLayout>
           }
         />
