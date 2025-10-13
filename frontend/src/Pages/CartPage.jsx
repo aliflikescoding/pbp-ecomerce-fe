@@ -1,16 +1,32 @@
 // src/pages/CartPage.jsx
 import React from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { getUserCart, deleteCartItem, updateCartQty } from "../api";
 
 const currency = (n) => Number(n || 0).toFixed(2);
 
+// 🧩 Zod validation schema for checkout
+const checkoutSchema = z.object({
+  address: z.string().min(10, "Address must be at least 10 characters long"),
+});
+
 const CartPage = () => {
   const [cart, setCart] = React.useState(null);
-
   // track which cart_item ids are updating to disable controls
   const [updatingIds, setUpdatingIds] = React.useState(() => new Set());
   // hold per-item debounce timers for input typing
   const debounceRef = React.useRef({});
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm({
+    resolver: zodResolver(checkoutSchema),
+  });
 
   const addUpdating = (id) =>
     setUpdatingIds((s) => new Set([...Array.from(s), id]));
@@ -43,7 +59,13 @@ const CartPage = () => {
     }
   };
 
+  const onCheckoutSubmit = async (data) => {
+    console.log(data.address);
+    reset();
+  };
+
   if (!cart) return <div>Loading...</div>;
+
   const items = cart.cart_items || [];
 
   const clampQty = (qty, stock) => {
@@ -86,6 +108,7 @@ const CartPage = () => {
     setLocalQty(id, next);
     void persistQty(id, next, prev);
   };
+
   const dec = (id, current) => {
     const next = clampQty(current - 1, Infinity);
     if (next === current) return;
@@ -99,7 +122,6 @@ const CartPage = () => {
     const stock = Number(item.product?.stock || 1);
     const prev = item.qty;
     const next = clampQty(raw, stock);
-
     setLocalQty(item.id, next);
 
     // clear previous timer for this row
@@ -116,7 +138,6 @@ const CartPage = () => {
 
   const lineTotal = (item) => item.qty * Number(item.product.price || 0);
   const subtotal = items.reduce((sum, it) => sum + lineTotal(it), 0);
-
   const base = import.meta.env.VITE_IMAGE_URL || "";
 
   return (
@@ -143,7 +164,6 @@ const CartPage = () => {
                         alt={item.product.name}
                         className="w-28 h-28 md:w-40 md:h-40 object-cover object-center rounded"
                       />
-
                       <div className="ml-2 md:ml-4 w-full">
                         <div className="flex flex-col gap-2 md:flex-row md:justify-between md:items-center">
                           <h2 className="font-bold font-playfair text-xl md:text-2xl">
@@ -167,7 +187,6 @@ const CartPage = () => {
                             >
                               –
                             </button>
-
                             <input
                               type="number"
                               min={1}
@@ -179,7 +198,6 @@ const CartPage = () => {
                               className="input input-bordered input-sm w-16 text-center"
                               disabled={isUpdating}
                             />
-
                             <button
                               type="button"
                               className="btn btn-primary btn-sm"
@@ -241,6 +259,7 @@ const CartPage = () => {
           >
             Checkout
           </label>
+
           <input
             type="checkbox"
             id={"checkout_modal"}
@@ -248,29 +267,49 @@ const CartPage = () => {
           />
           <div className="modal" role="dialog">
             <div className="modal-box text-base-content">
-              <div className="flex gap-2 flex-col items-center justify-center">
-                <p className="text-lg capitalize font-bold text-center">
-                  Check out these products
-                </p>
-                <p className="text-lg text-center">
-                  put in your address to checkout this product
-                </p>
-                <fieldset className="fieldset w-full">
-                  <legend className="fieldset-legend text-lg">Address</legend>
-                  <input
-                    type="text"
-                    className="input w-full"
-                    placeholder="Address"
-                  />
-                  <p className="label"></p>
-                </fieldset>
-                <div className="flex gap-2 items-center justify-center">
-                  <label htmlFor={"checkout_modal"} className="btn btn-neutral">
-                    Close
-                  </label>
-                  <button className="btn btn-accent">Checkout</button>
+              <form onSubmit={handleSubmit(onCheckoutSubmit)}>
+                <div className="flex gap-2 flex-col items-center justify-center">
+                  <p className="text-lg capitalize font-bold text-center">
+                    Check out these products
+                  </p>
+                  <p className="text-lg text-center">
+                    Put in your address to checkout this product
+                  </p>
+
+                  <fieldset className="fieldset w-full">
+                    <legend className="fieldset-legend text-lg">Address</legend>
+                    <input
+                      type="text"
+                      className={`input w-full ${
+                        errors.address ? "input-error" : ""
+                      }`}
+                      placeholder="Enter your full address"
+                      {...register("address")}
+                    />
+                    {errors.address && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.address.message}
+                      </p>
+                    )}
+                  </fieldset>
+
+                  <div className="flex gap-2 items-center justify-center">
+                    <label
+                      htmlFor={"checkout_modal"}
+                      className="btn btn-neutral"
+                    >
+                      Close
+                    </label>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="btn btn-accent"
+                    >
+                      {isSubmitting ? "Processing..." : "Checkout"}
+                    </button>
+                  </div>
                 </div>
-              </div>
+              </form>
             </div>
             <label className="modal-backdrop" htmlFor={"checkout_modal"}>
               Close
