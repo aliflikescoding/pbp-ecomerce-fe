@@ -19,6 +19,7 @@ import AdminCategories from "./admin/pages/AdminCategories";
 import AdminOrders from "./admin/pages/AdminOrders";
 import AdminLayout from "./admin/components/AdminLayout";
 import AdminLogin from "./admin/pages/AdminLogin";
+import ContactPage from "./Pages/ContactPage";
 import { AdminProvider } from "./admin/context/AdminContext";
 
 // Layout wrapper for regular pages
@@ -58,6 +59,14 @@ const App = () => {
           element={
             <RegularLayout>
               <StorePage />
+            </RegularLayout>
+          }
+        />
+        <Route
+          path="/contact"
+          element={
+            <RegularLayout>
+              <ContactPage />
             </RegularLayout>
           }
         />
