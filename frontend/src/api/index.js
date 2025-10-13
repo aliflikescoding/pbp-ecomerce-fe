@@ -54,7 +54,7 @@ export const registerUser = async (userData) => {
   } catch (error) {
     console.error("Register user error:", error);
     throw error;
-  }
+  } 
 };
 
 
