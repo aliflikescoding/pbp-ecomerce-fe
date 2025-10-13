@@ -111,22 +111,22 @@ const AboutSection = () => {
     {
       icon: "✨",
       title: "Timeless Elegance",
-      description: "We craft pieces that transcend trends, focusing on classic designs that remain beautiful through the years."
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco."
     },
     {
       icon: "💎",
       title: "Exceptional Quality",
-      description: "Every piece is meticulously crafted using premium materials and traditional techniques passed down through generations."
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco."
     },
     {
       icon: "🌿",
       title: "Sustainable Luxury",
-      description: "We believe luxury and responsibility go hand in hand, sourcing ethically and creating with minimal environmental impact."
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco."
     },
     {
       icon: "🎨",
       title: "Artisan Craftsmanship",
-      description: "Each creation is a work of art, handcrafted by skilled artisans who pour their expertise into every detail."
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco."
     }
   ];
 
@@ -170,7 +170,7 @@ const AboutSection = () => {
             Meets <span className="italic text-amber-200">Artistry</span>
           </h1>
           <p className="text-lg text-neutral-content/80 max-w-3xl mx-auto leading-relaxed font-light">
-            Since our inception, Aurora & Co has been dedicated to creating jewelry that captures the essence of timeless beauty. Each piece is a testament to our commitment to excellence, crafted with passion and precision.
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
           </p>
         </div>
 
@@ -182,10 +182,10 @@ const AboutSection = () => {
             </h2>
             <div className="h-px w-16 bg-gradient-to-r from-amber-300/50 to-transparent mb-6"></div>
             <p className="text-neutral-content/70 mb-6 font-light leading-relaxed">
-              Founded with a vision to revolutionize luxury jewelry, Aurora & Co blends centuries-old craftsmanship with contemporary design sensibilities. Our journey began in a small atelier, driven by an unwavering passion for creating pieces that tell stories.
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
             </p>
             <p className="text-neutral-content/70 mb-8 font-light leading-relaxed">
-              Today, we stand as a beacon of elegance, where every creation embodies our dedication to artistry, quality, and the celebration of life's most precious moments.
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
             </p>
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-amber-200">
