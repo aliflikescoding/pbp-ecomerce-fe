@@ -77,4 +77,23 @@ export const logoutUser = async () => {
     throw error;
   }
 };
-  
+
+export const getUserOrders = async () => {
+  try {
+    const response = await api.get("/order");
+    return response.data;
+  } catch (error) {
+    console.error("Get user orders error:", error);
+    throw error;
+  }
+};
+
+export const getUserOrdersByStatus = async (status) => {
+  try {
+    const response = await api.get(`/order/${status}`);
+    return response.data;
+  } catch (error) {
+    console.error("Get user orders by status error:", error);
+    throw error;
+  }
+};

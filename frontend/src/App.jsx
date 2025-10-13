@@ -7,6 +7,7 @@ import AboutPage from "./Pages/AboutPage";
 import LoginPage from "./Pages/LoginPage";
 import RegisterPage from "./Pages/RegisterPage";
 import ContactPage from "./Pages/ContactPage";
+import MyOrdersPage from "./Pages/MyOrdersPage";
 import { Routes, Route } from "react-router-dom";
 import NotFoundPage from "./Pages/NotFoundPage";
 
@@ -18,6 +19,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/store" element={<StorePage />} />
+          <Route path="/my-orders" element={<MyOrdersPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/register" element={<RegisterPage />} />

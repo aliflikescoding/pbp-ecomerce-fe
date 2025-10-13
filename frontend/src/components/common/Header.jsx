@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
-import { FaShoppingCart } from "react-icons/fa";
+import { FaShoppingCart, FaClipboardList } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { useLocation, NavLink } from "react-router-dom";
 import { checkUserAuth, logoutUser } from "../../api";
@@ -9,6 +9,7 @@ const Header = () => {
   const links = ["about", "store", "contact"];
   const location = useLocation();
   const pathname = location.pathname;
+  const showMyOrdersShortcut = pathname === "/" || pathname === "/store";
 
   const headerRef = useRef(null);
   const [isFixed, setIsFixed] = useState(false);
@@ -21,7 +22,7 @@ const Header = () => {
   const [user, setUser] = useState(null);
 
   // Check which pages should have dark header
-  const darkPages = ["/", "/contact", "/about"];
+  const darkPages = ["/", "/contact", "/about", "/store", "/my-orders"];
   const isDarkPage = darkPages.includes(pathname);
 
   useEffect(() => {
@@ -95,6 +96,22 @@ const Header = () => {
   }, [pathname]);
 
   const AuthActions = () => {
+    const myOrdersShortcut = showMyOrdersShortcut ? (
+      <NavLink
+        to="/my-orders"
+        className={`
+          inline-flex items-center justify-center w-10 h-10 
+          border transition-all duration-500
+          ${isDarkPage 
+            ? 'border-amber-300/30 bg-amber-400/5 text-amber-200 hover:border-amber-300/60 hover:bg-amber-400/10 hover:scale-110' 
+            : 'border-slate-300 bg-slate-100 text-slate-700 hover:border-amber-400 hover:bg-amber-50 hover:scale-110'}
+        `}
+        aria-label="My Orders"
+      >
+        <FaClipboardList className="w-4 h-4" />
+      </NavLink>
+    ) : null;
+
     if (authLoading) {
       return (
         <div className="flex items-center gap-3">
@@ -107,6 +124,7 @@ const Header = () => {
     if (isAuth && user) {
       return (
         <>
+          {myOrdersShortcut}
           <NavLink
             to="/cart"
             className={`
@@ -138,6 +156,7 @@ const Header = () => {
 
     return (
       <>
+        {myOrdersShortcut}
         <NavLink 
           to="/login" 
           className={`
@@ -182,6 +201,15 @@ const Header = () => {
       return (
         <li className="mt-4 px-2">
           <div className="flex gap-2">
+            {showMyOrdersShortcut && (
+              <NavLink
+                to="/my-orders"
+                className="flex-1 py-3 text-center border border-amber-300/50 text-amber-600 hover:bg-amber-50 transition-colors rounded"
+                aria-label="My Orders"
+              >
+                <FaClipboardList className="inline w-5 h-5" />
+              </NavLink>
+            )}
             <NavLink
               to="/cart"
               className="flex-1 py-3 text-center border border-amber-300/50 text-amber-600 hover:bg-amber-50 transition-colors rounded"
@@ -202,6 +230,15 @@ const Header = () => {
     return (
       <li className="mt-4 px-2">
         <div className="flex gap-2">
+          {showMyOrdersShortcut && (
+            <NavLink
+              to="/my-orders"
+              className="flex-none w-12 h-12 inline-flex items-center justify-center border border-slate-300 text-slate-600 hover:bg-slate-50 transition-colors rounded"
+              aria-label="My Orders"
+            >
+              <FaClipboardList className="w-5 h-5" />
+            </NavLink>
+          )}
           <NavLink 
             to="/login" 
             className="flex-1 py-3 text-center border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors rounded font-light tracking-wider uppercase text-sm"
@@ -241,8 +278,9 @@ const Header = () => {
           {/* Logo */}
           <NavLink to="/" aria-label="Home" className="transition-transform duration-300 hover:scale-105">
             <img
-              src={isDarkPage ? "/logo-horizontal-white.svg" : "/logo-horizontal.svg"}
+              src="/logo-horizontal-white.svg"
               className="h-10 w-auto"
+              style={{ filter: isDarkPage ? "none" : "invert(1)" }}
               alt="Aurora & Co"
             />
           </NavLink>
