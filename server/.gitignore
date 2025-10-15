@@ -1,5 +1,0 @@
-node_modules
-.vs_code
-public
-/src/generated/prisma
-.env
