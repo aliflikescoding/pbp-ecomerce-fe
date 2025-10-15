@@ -1,12 +1,42 @@
-# React + Vite
+# 🧩 Frontend Setup Guide
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 1️⃣ Install Dependencies
+Setelah meng-clone repository frontend, jalankan perintah berikut di terminal:
 
-Currently, two official plugins are available:
+```bash
+npm install
+```
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Perintah ini akan menginstal semua dependencies yang tercantum di dalam `package.json`.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 2️⃣ Setup Environment Variables
+Biasanya terdapat file contoh bernama `.env.example`.
+
+1. Salin file tersebut dan ubah namanya menjadi `.env`
+2. Buka `.env.example`, **copy seluruh isinya**, lalu **paste ke `.env`**
+
+Contoh:
+```bash
+cp .env.example .env
+```
+
+---
+
+## 3️⃣ Jalankan Development Server
+Setelah file `.env` sudah dibuat dan diisi, jalankan server lokal dengan perintah:
+
+```bash
+npm run dev
+```
+
+Server biasanya akan berjalan di:
+```
+http://localhost:3000
+```
+
+---
+
+## ✅ Selesai!
+Frontend sudah siap dijalankan 🚀
