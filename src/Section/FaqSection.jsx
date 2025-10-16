@@ -65,25 +65,42 @@ const FaqSection = () => {
   ];
 
   return (
-    <div className="mb-12 custom-container">
-      <h1 className="text-5xl font-bold font-playfair text-center mb-8">
-        Frequently Asked Questions
-      </h1>
-      {faqData.map((faq, index) => (
-        <div
-          key={faq.id}
-          className="collapse collapse-arrow bg-base-100 border border-base-300"
-        >
-          <input
-            type="radio"
-            name="my-accordion-2"
-            defaultChecked={index === 0}
-          />
-          <div className="collapse-title font-semibold">{faq.question}</div>
-          <div className="collapse-content text-sm">{faq.answer}</div>
+    <section className="custom-container pb-12">
+      <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-[2rem] px-8 py-12 shadow-[0_40px_120px_-70px_rgba(0,0,0,0.9)]">
+        <div className="text-center text-neutral-content mb-10">
+          <div className="inline-block mb-6">
+            <div className="h-px w-10 bg-gradient-to-r from-transparent via-amber-400 to-transparent mb-4 mx-auto"></div>
+            <span className="text-xs font-light tracking-[0.3em] text-amber-200 uppercase">
+              Need Assistance?
+            </span>
+            <div className="h-px w-10 bg-gradient-to-r from-transparent via-amber-400 to-transparent mt-4 mx-auto"></div>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-light font-playfair">
+            Frequently Asked Questions
+          </h1>
         </div>
-      ))}
-    </div>
+        <div className="space-y-4">
+          {faqData.map((faq, index) => (
+            <div
+              key={faq.id}
+              className="collapse collapse-arrow bg-white/5 border border-white/10 text-neutral-content backdrop-blur-md rounded-2xl transition-all duration-500 hover:border-amber-300/50 hover:bg-white/10"
+            >
+              <input
+                type="radio"
+                name="faq-accordion"
+                defaultChecked={index === 0}
+              />
+              <div className="collapse-title font-light text-lg tracking-wide">
+                {faq.question}
+              </div>
+              <div className="collapse-content text-sm text-neutral-content/70 leading-relaxed">
+                {faq.answer}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 };
 

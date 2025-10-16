@@ -266,7 +266,7 @@ const Header = () => {
           w-full transition-all duration-300 z-50
           ${isDarkPage 
             ? isFixed 
-              ? 'fixed top-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-b border-amber-300/20 shadow-lg' 
+              ? 'fixed top-0 left-0 right-0 bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 backdrop-blur-2xl border-b border-amber-300/25 shadow-[0_20px_60px_rgba(8,8,12,0.45)]' 
               : 'absolute bg-transparent'
             : isFixed 
               ? 'fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-xl shadow-md' 
