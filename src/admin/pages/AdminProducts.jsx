@@ -217,9 +217,9 @@ const AdminProducts = () => {
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("id-ID", {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "IDR",
+      currency: "USD",
     }).format(amount);
   };
 
@@ -442,7 +442,6 @@ const AdminProducts = () => {
               <tr>
                 <th>Image</th>
                 <th>Product</th>
-                <th>Description</th>
                 <th>Category</th>
                 <th>Price</th>
                 <th>Stock</th>
@@ -464,21 +463,6 @@ const AdminProducts = () => {
                     <div>
                       <div className="font-bold">{product.name}</div>
                       <div className="text-sm opacity-50">ID: {product.id}</div>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="text-sm max-w-xs">
-                      {product.description ? (
-                        product.description.length > 50 ? (
-                          `${product.description.substring(0, 50)}...`
-                        ) : (
-                          product.description
-                        )
-                      ) : (
-                        <span className="text-gray-400 italic">
-                          No description
-                        </span>
-                      )}
                     </div>
                   </td>
                   <td>
@@ -669,21 +653,6 @@ const AdminProducts = () => {
                 />
               </div>
 
-              {/* Description Field */}
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-medium">Description</span>
-                </label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  className="textarea textarea-bordered w-full"
-                  rows="3"
-                  placeholder="Enter product description..."
-                />
-              </div>
-
               {/* Image Upload */}
               <div className="form-control">
                 <label className="label">
@@ -708,7 +677,7 @@ const AdminProducts = () => {
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-medium">Price *</span>
+                  <span className="label-text font-medium">Price (USD) *</span>
                 </label>
                 <input
                   type="number"
@@ -719,6 +688,7 @@ const AdminProducts = () => {
                   min="0"
                   step="0.01"
                   required
+                  placeholder="0.00"
                 />
               </div>
 

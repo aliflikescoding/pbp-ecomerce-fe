@@ -162,12 +162,6 @@ const AdminCategories = () => {
                 </div>
               </div>
 
-              {category.description && (
-                <p className="text-base-content/70 text-sm mb-4">
-                  {category.description}
-                </p>
-              )}
-
               <div className="flex justify-between items-center text-sm opacity-70">
                 <span>{category._count?.products || 0} products</span>
                 <span>
@@ -210,20 +204,6 @@ const AdminCategories = () => {
                   required
                   className="input input-bordered w-full"
                   placeholder="Enter category name"
-                />
-              </div>
-
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-medium">Description</span>
-                </label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  rows="3"
-                  className="textarea textarea-bordered w-full"
-                  placeholder="Enter category description..."
                 />
               </div>
 
