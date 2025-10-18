@@ -3,7 +3,8 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getUserCart, deleteCartItem, updateCartQty } from "../api";
+import { getUserCart, deleteCartItem, updateCartQty, createOrder } from "../api";
+import { toast } from "react-toastify";
 
 const currency = (n) => Number(n || 0).toFixed(2);
 
@@ -60,7 +61,18 @@ const CartPage = () => {
   };
 
   const onCheckoutSubmit = async (data) => {
-    console.log(data.address);
+    try {
+      await createOrder(data.address);
+      toast.success("Order created successfully");
+      const modalCheckbox = document.getElementById("checkout_modal");
+      if (modalCheckbox) {
+        modalCheckbox.checked = false;
+      }
+      await fetchCart();
+    } catch (error) {
+      console.error("Create order error:", error);
+      toast.error("Failed to create order");
+    }
     reset();
   };
 

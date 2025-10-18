@@ -166,4 +166,13 @@ export const getAllOrders = async () => {
     throw error;
   }
 };
-  
+
+export const createOrder = async (address) => {
+  try {
+    const response = await api.post("/order", { address });
+    return response.data;
+  } catch (error) {
+    console.error("Create order error:", error);
+    throw error;
+  }
+};
