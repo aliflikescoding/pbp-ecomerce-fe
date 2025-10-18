@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 import {
   FaEye,
   FaBox,
@@ -7,6 +8,7 @@ import {
   FaCheckCircle,
   FaBan,
   FaSpinner,
+  FaEdit,
 } from "react-icons/fa";
 
 // Create axios instance for admin API calls
@@ -19,6 +21,9 @@ const AdminOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [statusToUpdate, setStatusToUpdate] = useState(null);
+  const [orderToUpdate, setOrderToUpdate] = useState(null);
 
   useEffect(() => {
     fetchOrders();
@@ -38,16 +43,58 @@ const AdminOrders = () => {
     }
   };
 
-  const updateOrderStatus = async (orderId, newStatus) => {
+  const confirmStatusUpdate = (orderId, newStatus) => {
+    setOrderToUpdate(orderId);
+    setStatusToUpdate(newStatus);
+    setShowConfirmModal(true);
+  };
+
+  const updateOrderStatus = async () => {
     try {
-      await adminAPI.put(`/admin/orders/${orderId}/status`, {
-        status: newStatus,
+      await adminAPI.put(`/admin/orders/${orderToUpdate}/status`, {
+        status: statusToUpdate,
       });
+      setShowConfirmModal(false);
+      setOrderToUpdate(null);
+      setStatusToUpdate(null);
       fetchOrders(); // Refresh the list
+
+      // Success toast notification
+      toast.success("Order status updated successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } catch (error) {
       console.error("Error updating order status:", error);
-      alert("Error updating order status");
+
+      // Error toast notification
+      toast.error(
+        error.response?.data?.message || "Error updating order status",
+        {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        }
+      );
     }
+  };
+
+  const getStatusLabel = (status) => {
+    const labels = {
+      pending: "Pending",
+      processing: "Processing",
+      shipped: "Shipped",
+      completed: "Completed",
+      cancelled: "Cancelled",
+    };
+    return labels[status] || status;
   };
 
   const getStatusIcon = (status) => {
@@ -85,9 +132,9 @@ const AdminOrders = () => {
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("id-ID", {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "IDR",
+      currency: "USD",
     }).format(amount);
   };
 
@@ -241,54 +288,106 @@ const AdminOrders = () => {
                   </td>
                   <td>{formatDate(order.created_at)}</td>
                   <td>
-                    <div className="flex space-x-2">
+                    <div className="flex flex-col space-y-2">
+                      {/* View Button */}
                       <button
                         onClick={() =>
                           setSelectedOrder(
                             selectedOrder?.id === order.id ? null : order
                           )
                         }
-                        className="btn btn-sm btn-outline"
+                        className="btn btn-sm btn-outline btn-info gap-2"
                       >
                         <FaEye />
+                        View Details
                       </button>
 
-                      {/* Status Update Dropdown */}
-                      <div className="dropdown dropdown-end">
+                      {/* Change Status Dropdown - Available for All Orders */}
+                      <div className="dropdown dropdown-end w-full">
                         <div
                           tabIndex={0}
                           role="button"
-                          className="btn btn-sm btn-primary"
+                          className={`btn btn-sm w-full gap-2 ${
+                            order.status === "pending"
+                              ? "btn-warning"
+                              : order.status === "processing"
+                              ? "btn-info"
+                              : order.status === "shipped"
+                              ? "btn-secondary"
+                              : order.status === "completed"
+                              ? "btn-success"
+                              : order.status === "cancelled"
+                              ? "btn-error"
+                              : "btn-primary"
+                          }`}
                         >
-                          Update Status
+                          <FaEdit />
+                          Change Status
                         </div>
                         <ul
                           tabIndex={0}
-                          className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+                          className="dropdown-content menu bg-base-100 rounded-box z-[1] w-full p-2 shadow"
                         >
-                          {[
-                            "pending",
-                            "processing",
-                            "shipped",
-                            "completed",
-                            "cancelled",
-                          ].map((status) => (
-                            <li key={status}>
-                              <button
-                                onClick={() =>
-                                  updateOrderStatus(order.id, status)
-                                }
-                                className={`flex items-center space-x-2 ${
-                                  order.status === status
-                                    ? "bg-primary text-white"
-                                    : ""
-                                }`}
-                              >
-                                {getStatusIcon(status)}
-                                <span className="capitalize">{status}</span>
-                              </button>
-                            </li>
-                          ))}
+                          <li>
+                            <button
+                              onClick={() =>
+                                confirmStatusUpdate(order.id, "processing")
+                              }
+                              className={`flex items-center space-x-2 ${
+                                order.status === "processing"
+                                  ? "bg-info text-white"
+                                  : ""
+                              }`}
+                            >
+                              <FaBox />
+                              <span>Processing</span>
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              onClick={() =>
+                                confirmStatusUpdate(order.id, "shipped")
+                              }
+                              className={`flex items-center space-x-2 ${
+                                order.status === "shipped"
+                                  ? "bg-secondary text-white"
+                                  : ""
+                              }`}
+                            >
+                              <FaTruck />
+                              <span>Shipped</span>
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              onClick={() =>
+                                confirmStatusUpdate(order.id, "completed")
+                              }
+                              className={`flex items-center space-x-2 ${
+                                order.status === "completed"
+                                  ? "bg-success text-white"
+                                  : ""
+                              }`}
+                            >
+                              <FaCheckCircle />
+                              <span>Completed</span>
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              onClick={() =>
+                                confirmStatusUpdate(order.id, "cancelled")
+                              }
+                              className={`flex items-center space-x-2 ${
+                                order.status === "cancelled"
+                                  ? "bg-error text-white"
+                                  : ""
+                              }`}
+                            >
+                              <FaBan />
+                              <span>Cancelled</span>
+                            </button>
+                          </li>
                         </ul>
                       </div>
                     </div>
@@ -299,6 +398,49 @@ const AdminOrders = () => {
           </table>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+              {getStatusIcon(statusToUpdate)}
+              Confirm Status Change
+            </h3>
+            <div className="py-4">
+              <p className="mb-4">
+                Are you sure you want to change order #{orderToUpdate} status
+                to:
+              </p>
+              <div
+                className={`badge ${getStatusColor(
+                  statusToUpdate
+                )} badge-lg gap-2 p-4`}
+              >
+                {getStatusIcon(statusToUpdate)}
+                <span className="text-lg font-semibold">
+                  {getStatusLabel(statusToUpdate)}
+                </span>
+              </div>
+            </div>
+            <div className="modal-action">
+              <button
+                onClick={() => {
+                  setShowConfirmModal(false);
+                  setOrderToUpdate(null);
+                  setStatusToUpdate(null);
+                }}
+                className="btn btn-outline"
+              >
+                Cancel
+              </button>
+              <button onClick={updateOrderStatus} className="btn btn-primary">
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Order Details Modal */}
       {selectedOrder && (

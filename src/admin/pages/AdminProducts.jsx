@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 import {
   FaPlus,
   FaEdit,
@@ -21,6 +22,10 @@ const AdminProducts = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   // Filter and search states
   const [searchTerm, setSearchTerm] = useState("");
@@ -36,8 +41,8 @@ const AdminProducts = () => {
     category_id: "",
     is_active: true,
   });
-  const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
+  const [imageFiles, setImageFiles] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
 
   useEffect(() => {
     fetchProducts();
@@ -110,20 +115,42 @@ const AdminProducts = () => {
       submitData.append("category_id", formData.category_id);
       submitData.append("is_active", formData.is_active);
 
-      if (imageFile) {
-        submitData.append("image", imageFile);
+      // Only append first image for main product create/update (backend uses single upload)
+      if (imageFiles.length > 0) {
+        submitData.append("image", imageFiles[0]);
       }
 
+      let productId;
       if (editProduct) {
         // Update product
-        await adminAPI.put(`/product/${editProduct.id}`, submitData, {
+        const response = await adminAPI.put(
+          `/product/${editProduct.id}`,
+          submitData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        productId = editProduct.id;
+      } else {
+        // Create product
+        const response = await adminAPI.post("/product", submitData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
-      } else {
-        // Create product
-        await adminAPI.post("/product", submitData, {
+        productId = response.data.id;
+      }
+
+      // If there are additional images (more than 1), upload them separately
+      if (imageFiles.length > 1) {
+        const additionalImages = new FormData();
+        for (let i = 1; i < imageFiles.length; i++) {
+          additionalImages.append("images", imageFiles[i]);
+        }
+
+        await adminAPI.post(`/product/${productId}/images`, additionalImages, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -133,9 +160,30 @@ const AdminProducts = () => {
       fetchProducts();
       resetForm();
       setShowModal(false);
+
+      toast.success(
+        editProduct
+          ? "Product updated successfully!"
+          : "Product created successfully!",
+        {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        }
+      );
     } catch (error) {
       console.error("Error saving product:", error);
-      alert(error.response?.data?.message || "Error saving product");
+      toast.error(error.response?.data?.message || "Error saving product", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   };
 
@@ -149,25 +197,54 @@ const AdminProducts = () => {
       category_id: product.category_id,
       is_active: product.is_active,
     });
-    setImageFile(null);
-    // Set existing image preview
+    setImageFiles([]);
+    // Set existing images preview
     if (product.images && product.images.length > 0) {
-      setImagePreview(`http://localhost:5000${product.images[0].url}`);
+      const existingPreviews = product.images.map(
+        (img) => `http://localhost:5000${img.url}`
+      );
+      setImagePreviews(existingPreviews);
     } else {
-      setImagePreview(null);
+      setImagePreviews([]);
     }
     setShowModal(true);
   };
 
-  const handleDelete = async (id) => {
-    if (confirm("Are you sure you want to delete this product?")) {
-      try {
-        await adminAPI.delete(`/product/${id}`);
-        fetchProducts();
-      } catch (error) {
-        console.error("Error deleting product:", error);
-        alert("Error deleting product");
-      }
+  const handleViewDetails = (product) => {
+    setSelectedProduct(product);
+    setShowDetailsModal(true);
+  };
+
+  const handleDelete = (product) => {
+    setProductToDelete(product);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      await adminAPI.delete(`/product/${productToDelete.id}`);
+      fetchProducts();
+      setShowDeleteModal(false);
+      setProductToDelete(null);
+
+      toast.success("Product deleted successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      toast.error(error.response?.data?.message || "Error deleting product", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   };
 
@@ -177,9 +254,31 @@ const AdminProducts = () => {
         is_active: !currentStatus,
       });
       fetchProducts();
+
+      toast.success(
+        `Product ${!currentStatus ? "activated" : "deactivated"} successfully!`,
+        {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        }
+      );
     } catch (error) {
       console.error("Error updating product status:", error);
-      alert("Error updating product status");
+      toast.error(
+        error.response?.data?.message || "Error updating product status",
+        {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        }
+      );
     }
   };
 
@@ -193,20 +292,60 @@ const AdminProducts = () => {
       is_active: true,
     });
     setEditProduct(null);
-    setImageFile(null);
-    setImagePreview(null);
+    setImageFiles([]);
+    setImagePreviews([]);
   };
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImageFile(file);
+    const files = Array.from(e.target.files);
+
+    // Check if adding new files would exceed limit
+    const totalImages = imageFiles.length + files.length;
+    if (totalImages > 3) {
+      toast.warning(
+        `You can only upload ${
+          3 - imageFiles.length
+        } more image(s). Maximum 3 images allowed.`,
+        {
+          position: "top-right",
+          autoClose: 3000,
+        }
+      );
+      e.target.value = ""; // Reset input
+      return;
+    }
+
+    // Append new files to existing ones
+    const newFiles = [...imageFiles, ...files];
+    setImageFiles(newFiles);
+
+    // Create previews for new files only
+    const newPreviews = [...imagePreviews];
+    let loadedCount = 0;
+
+    files.forEach((file) => {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result);
+        newPreviews.push(reader.result);
+        loadedCount++;
+
+        // Update state only when all new files are loaded
+        if (loadedCount === files.length) {
+          setImagePreviews(newPreviews);
+        }
       };
       reader.readAsDataURL(file);
-    }
+    });
+
+    // Reset input to allow selecting same file again if needed
+    e.target.value = "";
+  };
+
+  const removeImage = (index) => {
+    const newFiles = imageFiles.filter((_, i) => i !== index);
+    const newPreviews = imagePreviews.filter((_, i) => i !== index);
+    setImageFiles(newFiles);
+    setImagePreviews(newPreviews);
   };
 
   const getImageUrl = (product) => {
@@ -294,141 +433,155 @@ const AdminProducts = () => {
           </p>
         </div>
 
-        {/* Search and Filter Section with Stats in One Row */}
-        <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-100 rounded-lg shadow-sm p-3 mb-2">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            {/* Left Side - Search */}
-            <div className="flex items-center">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search products..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="input input-bordered input-xs w-48 pl-7 text-xs"
-                />
-                <div className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400">
+        {/* Search and Filter Section */}
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4 mb-4">
+          <div className="flex items-center justify-between gap-4">
+            {/* Search Box */}
+            <div className="relative flex-1 max-w-md">
+              <input
+                type="text"
+                placeholder="Search products by name or ID..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="input input-bordered w-full pl-10"
+              />
+              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm("")}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
                   <svg
-                    className="w-3 h-3"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
                   >
                     <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clipRule="evenodd"
                     />
                   </svg>
-                </div>
-              </div>
-            </div>
-
-            {/* Middle - Filters with Active Filter Badges */}
-            <div className="flex flex-wrap items-center gap-2">
-              {/* Category Filter */}
-              <select
-                value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
-                className="select select-bordered select-xs w-32 text-xs"
-              >
-                <option value="all">All Categories</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id.toString()}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-
-              {/* Status Filter */}
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="select select-bordered select-xs w-24 text-xs"
-              >
-                <option value="all">All Status</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </select>
-
-              {/* Stock Filter */}
-              <select
-                value={stockFilter}
-                onChange={(e) => setStockFilter(e.target.value)}
-                className="select select-bordered select-xs w-24 text-xs"
-              >
-                <option value="all">All Stock</option>
-                <option value="low">Low Stock</option>
-                <option value="normal">Normal</option>
-              </select>
-
-              {/* Active Filter Badges */}
-              {categoryFilter !== "all" && (
-                <span className="badge badge-success badge-sm">
-                  📂{" "}
-                  {
-                    categories.find((c) => c.id.toString() === categoryFilter)
-                      ?.name
-                  }
-                </span>
-              )}
-              {statusFilter !== "all" && (
-                <span className="badge badge-secondary badge-sm">
-                  🏷️ {statusFilter === "active" ? "Active" : "Inactive"}
-                </span>
-              )}
-              {stockFilter !== "all" && (
-                <span className="badge badge-warning badge-sm">
-                  📦 {stockFilter === "low" ? "Low Stock" : "Normal Stock"}
-                </span>
-              )}
-            </div>
-
-            {/* Right Side - Stats and Clear Button */}
-            <div className="flex items-center gap-4">
-              {/* Stats */}
-              <div className="flex gap-4">
-                <div className="text-center">
-                  <div className="text-lg font-bold text-primary">
-                    📦 {filteredProducts.length}
-                  </div>
-                  <div className="text-xs text-gray-600 font-medium">Total</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-success">
-                    ✅ {filteredProducts.filter((p) => p.is_active).length}
-                  </div>
-                  <div className="text-xs text-gray-600 font-medium">
-                    Active
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-warning">
-                    ⚠️ {filteredProducts.filter((p) => p.stock <= 10).length}
-                  </div>
-                  <div className="text-xs text-gray-600 font-medium">Low</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-info">
-                    🏷️ {categories.length}
-                  </div>
-                  <div className="text-xs text-gray-600 font-medium">Cat</div>
-                </div>
-              </div>
-
-              {/* Clear All Button - Show only when filters are active */}
-              {(searchTerm ||
-                categoryFilter !== "all" ||
-                statusFilter !== "all" ||
-                stockFilter !== "all") && (
-                <button
-                  onClick={clearAllFilters}
-                  className="btn btn-xs btn-outline btn-error"
-                >
-                  Clear All
                 </button>
               )}
+            </div>
+
+            {/* Filters */}
+            <div className="flex items-center gap-3">
+              {/* Category Filter */}
+              <div className="form-control">
+                <select
+                  value={categoryFilter}
+                  onChange={(e) => setCategoryFilter(e.target.value)}
+                  className="select select-bordered w-40"
+                >
+                  <option value="all">All Categories</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id.toString()}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Status Filter */}
+              <div className="form-control">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="select select-bordered w-32"
+                >
+                  <option value="all">All Status</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+              </div>
+
+              {/* Stock Filter */}
+              <div className="form-control">
+                <select
+                  value={stockFilter}
+                  onChange={(e) => setStockFilter(e.target.value)}
+                  className="select select-bordered w-32"
+                >
+                  <option value="all">All Stock</option>
+                  <option value="low">Low Stock</option>
+                  <option value="normal">Normal</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Results Summary */}
+          <div className="mt-3 pt-3 border-t border-gray-100">
+            <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center gap-2">
+                <span className="text-gray-600">
+                  Showing{" "}
+                  <span className="font-semibold text-gray-900">
+                    {filteredProducts.length}
+                  </span>{" "}
+                  of{" "}
+                  <span className="font-semibold text-gray-900">
+                    {products.length}
+                  </span>{" "}
+                  products
+                </span>
+                {/* Clear All Button */}
+                {(searchTerm ||
+                  categoryFilter !== "all" ||
+                  statusFilter !== "all" ||
+                  stockFilter !== "all") && (
+                  <button
+                    onClick={clearAllFilters}
+                    className="btn btn-xs btn-ghost gap-1 text-error hover:text-error"
+                    title="Clear all filters"
+                  >
+                    <svg
+                      className="w-3 h-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                    Clear filters
+                  </button>
+                )}
+              </div>
+              <div className="flex gap-4">
+                <span className="text-gray-600">
+                  Active:{" "}
+                  <span className="font-semibold text-success">
+                    {filteredProducts.filter((p) => p.is_active).length}
+                  </span>
+                </span>
+                <span className="text-gray-600">
+                  Low Stock:{" "}
+                  <span className="font-semibold text-warning">
+                    {filteredProducts.filter((p) => p.stock <= 10).length}
+                  </span>
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -438,25 +591,26 @@ const AdminProducts = () => {
       <div className="flex-1 overflow-hidden">
         <div className="card bg-base-100 shadow-xl h-full overflow-y-auto">
           <table className="table table-zebra w-full">
-            <thead className="sticky top-0 z-10">
+            <thead className="sticky top-0 z-10 bg-base-200">
               <tr>
-                <th>Image</th>
+                <th className="w-24">Image</th>
                 <th>Product</th>
                 <th>Category</th>
                 <th>Price</th>
                 <th>Stock</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th className="w-40">Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredProducts.map((product) => (
                 <tr key={product.id}>
-                  <td>
-                    <div className="avatar">
-                      <div className="w-12 h-12 rounded">
-                        <img src={getImageUrl(product)} alt={product.name} />
-                      </div>
+                  <td className="p-2">
+                    <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                      <img
+                        src={getImageUrl(product)}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                   </td>
                   <td>
@@ -483,38 +637,25 @@ const AdminProducts = () => {
                     </span>
                   </td>
                   <td>
-                    <button
-                      onClick={() =>
-                        toggleProductStatus(product.id, product.is_active)
-                      }
-                      className={`btn btn-sm w-24 ${
-                        product.is_active ? "btn-success" : "btn-error"
-                      }`}
-                    >
-                      {product.is_active ? (
-                        <>
-                          <FaToggleOn className="mr-1" />
-                          Active
-                        </>
-                      ) : (
-                        <>
-                          <FaToggleOff className="mr-1" />
-                          Inactive
-                        </>
-                      )}
-                    </button>
-                  </td>
-                  <td>
                     <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleViewDetails(product)}
+                        className="btn btn-sm btn-outline btn-info"
+                        title="View Details"
+                      >
+                        <FaEye />
+                      </button>
                       <button
                         onClick={() => handleEdit(product)}
                         className="btn btn-sm btn-outline btn-primary"
+                        title="Edit"
                       >
                         <FaEdit />
                       </button>
                       <button
-                        onClick={() => handleDelete(product.id)}
+                        onClick={() => handleDelete(product)}
                         className="btn btn-sm btn-outline btn-error"
+                        title="Delete"
                       >
                         <FaTrash />
                       </button>
@@ -656,23 +797,74 @@ const AdminProducts = () => {
               {/* Image Upload */}
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-medium">Product Image</span>
+                  <span className="label-text font-medium">
+                    Product Images ({imagePreviews.length}/3)
+                  </span>
                 </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="file-input file-input-bordered w-full"
-                />
-                {imagePreview && (
-                  <div className="mt-2">
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="w-32 h-32 object-cover rounded-lg border"
-                    />
-                  </div>
-                )}
+
+                {/* Image Preview Grid with Add Button */}
+                <div className="grid grid-cols-3 gap-3 mb-3">
+                  {imagePreviews.map((preview, index) => (
+                    <div key={index} className="relative group">
+                      <img
+                        src={preview}
+                        alt={`Preview ${index + 1}`}
+                        className="w-full h-32 object-cover rounded-lg border"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute top-1 right-1 btn btn-circle btn-xs btn-error"
+                        title="Remove image"
+                      >
+                        ✕
+                      </button>
+                      <div className="absolute bottom-1 left-1 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded">
+                        {index + 1}
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Add Image Button - Show only if less than 3 images */}
+                  {imagePreviews.length < 3 && (
+                    <label className="relative cursor-pointer">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="hidden"
+                      />
+                      <div className="w-full h-32 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg hover:border-primary hover:bg-primary/5 transition-all">
+                        <svg
+                          className="w-8 h-8 text-gray-400 mb-2"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 4v16m8-8H4"
+                          />
+                        </svg>
+                        <span className="text-xs text-gray-500 font-medium">
+                          Add Image
+                        </span>
+                      </div>
+                    </label>
+                  )}
+                </div>
+
+                <div className="label">
+                  <span className="label-text-alt text-gray-500">
+                    {imagePreviews.length === 0
+                      ? "Click + to add images (max 3)"
+                      : `${
+                          3 - imagePreviews.length
+                        } more image(s) can be added`}
+                  </span>
+                </div>
               </div>
 
               <div className="form-control">
@@ -756,6 +948,198 @@ const AdminProducts = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && productToDelete && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg text-error mb-4">
+              🗑️ Delete Product
+            </h3>
+            <p className="py-4">
+              Are you sure you want to delete{" "}
+              <strong className="text-primary">"{productToDelete.name}"</strong>
+              ? This action cannot be undone.
+            </p>
+            <div className="modal-action">
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setProductToDelete(null);
+                }}
+                className="btn btn-outline"
+              >
+                Cancel
+              </button>
+              <button onClick={confirmDelete} className="btn btn-error">
+                <FaTrash className="mr-2" />
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View Details Modal */}
+      {showDetailsModal && selectedProduct && (
+        <div className="modal modal-open">
+          <div className="modal-box max-w-3xl">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="font-bold text-2xl">Product Details</h3>
+              <button
+                onClick={() => {
+                  setShowDetailsModal(false);
+                  setSelectedProduct(null);
+                }}
+                className="btn btn-sm btn-circle btn-ghost"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Left Column - Images */}
+              <div>
+                <h4 className="font-semibold mb-3">Product Images</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  {selectedProduct.images &&
+                  selectedProduct.images.length > 0 ? (
+                    selectedProduct.images.map((image, index) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={`http://localhost:5000${image.url}`}
+                          alt={`${selectedProduct.name} ${index + 1}`}
+                          className="w-full h-40 object-cover rounded-lg border"
+                        />
+                        <div className="absolute bottom-2 right-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded">
+                          {index + 1}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="col-span-2 flex items-center justify-center h-40 bg-gray-100 rounded-lg">
+                      <span className="text-gray-400">No images</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Right Column - Details */}
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-semibold text-gray-600">
+                    Product Name
+                  </label>
+                  <p className="text-lg font-bold">{selectedProduct.name}</p>
+                </div>
+
+                <div>
+                  <label className="text-sm font-semibold text-gray-600">
+                    Product ID
+                  </label>
+                  <p className="text-gray-800">#{selectedProduct.id}</p>
+                </div>
+
+                <div>
+                  <label className="text-sm font-semibold text-gray-600">
+                    Category
+                  </label>
+                  <p>
+                    <span className="badge badge-outline badge-lg">
+                      {selectedProduct.category?.name || "No Category"}
+                    </span>
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">
+                      Price
+                    </label>
+                    <p className="text-xl font-bold text-primary">
+                      {formatCurrency(selectedProduct.price)}
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">
+                      Stock
+                    </label>
+                    <p>
+                      <span
+                        className={`badge badge-lg ${
+                          selectedProduct.stock <= 10
+                            ? "badge-warning"
+                            : "badge-success"
+                        }`}
+                      >
+                        {selectedProduct.stock} units
+                      </span>
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-sm font-semibold text-gray-600">
+                    Status
+                  </label>
+                  <p>
+                    <span
+                      className={`badge badge-lg ${
+                        selectedProduct.is_active
+                          ? "badge-success"
+                          : "badge-error"
+                      }`}
+                    >
+                      {selectedProduct.is_active ? "Active" : "Inactive"}
+                    </span>
+                  </p>
+                </div>
+
+                <div>
+                  <label className="text-sm font-semibold text-gray-600">
+                    Created At
+                  </label>
+                  <p className="text-sm text-gray-600">
+                    {new Date(selectedProduct.created_at).toLocaleDateString(
+                      "id-ID",
+                      {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }
+                    )}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="modal-action mt-6">
+              <button
+                onClick={() => {
+                  setShowDetailsModal(false);
+                  setSelectedProduct(null);
+                }}
+                className="btn btn-outline"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => {
+                  setShowDetailsModal(false);
+                  handleEdit(selectedProduct);
+                }}
+                className="btn btn-primary"
+              >
+                <FaEdit className="mr-2" />
+                Edit Product
+              </button>
+            </div>
           </div>
         </div>
       )}

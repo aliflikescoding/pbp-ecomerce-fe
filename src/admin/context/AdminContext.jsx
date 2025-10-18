@@ -39,6 +39,32 @@ export const AdminProvider = ({ children }) => {
     }
   };
 
+  const login = async (email, password) => {
+    try {
+      const response = await axios.post("/api/admin/login", {
+        email,
+        password,
+      });
+
+      if (response.data.status === "success") {
+        setAdmin(response.data.admin);
+        return { success: true };
+      } else {
+        return {
+          success: false,
+          message: response.data.message || "Login failed",
+        };
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      return {
+        success: false,
+        message:
+          error.response?.data?.message || "An error occurred during login",
+      };
+    }
+  };
+
   // Login is now handled by main LoginPage, this just refreshes admin state
   const refreshAdminAuth = async () => {
     await checkAdminAuth();
@@ -46,7 +72,7 @@ export const AdminProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await axios.post("/api/user/logout");
+      await axios.post("/api/admin/logout");
       setAdmin(null);
       return { success: true };
     } catch (error) {
@@ -59,6 +85,7 @@ export const AdminProvider = ({ children }) => {
   const value = {
     admin,
     loading,
+    login,
     logout,
     refreshAdminAuth,
     isAuthenticated: !!admin,

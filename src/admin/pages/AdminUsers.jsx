@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 // Create axios instance for admin API calls
 const adminAPI = axios.create({
@@ -12,6 +13,8 @@ const AdminUsers = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editUser, setEditUser] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
   const [roleFilter, setRoleFilter] = useState("all"); // "all", "admin", "user"
   const [searchTerm, setSearchTerm] = useState("");
   const [formData, setFormData] = useState({
@@ -38,18 +41,26 @@ const AdminUsers = () => {
     }
   };
 
-  const handleDeleteUser = async (userId) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
-      try {
-        await adminAPI.delete(`/admin/users/${userId}`);
-        setUsers(users.filter((user) => user.id !== userId));
-        alert("User deleted successfully");
-      } catch (error) {
-        alert(
-          "Error deleting user: " +
-            (error.response?.data?.message || "Unknown error")
-        );
-      }
+  const handleDeleteUser = (user) => {
+    setUserToDelete(user);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteUser = async () => {
+    try {
+      await adminAPI.delete(`/admin/users/${userToDelete.id}`);
+      setUsers(users.filter((user) => user.id !== userToDelete.id));
+      setShowDeleteModal(false);
+      setUserToDelete(null);
+      toast.success("User deleted successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Error deleting user", {
+        position: "top-right",
+        autoClose: 3000,
+      });
     }
   };
 
@@ -63,12 +74,18 @@ const AdminUsers = () => {
           user.id === userId ? { ...user, is_admin: !currentStatus } : user
         )
       );
-      alert("User status updated successfully");
-    } catch (error) {
-      alert(
-        "Error updating user: " +
-          (error.response?.data?.message || "Unknown error")
+      toast.success(
+        `User ${!currentStatus ? "promoted to admin" : "demoted to user"}!`,
+        {
+          position: "top-right",
+          autoClose: 3000,
+        }
       );
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Error updating user", {
+        position: "top-right",
+        autoClose: 3000,
+      });
     }
   };
 
@@ -114,13 +131,19 @@ const AdminUsers = () => {
             user.id === editUser.id ? { ...user, ...updateData } : user
           )
         );
-        alert("User updated successfully");
+        toast.success("User updated successfully!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
       } else {
         // Create new user
         const response = await adminAPI.post("/admin/users", formData);
         if (response.data.status === "success") {
           setUsers([...users, response.data.data]);
-          alert("User created successfully");
+          toast.success("User created successfully!", {
+            position: "top-right",
+            autoClose: 3000,
+          });
         }
       }
 
@@ -132,10 +155,10 @@ const AdminUsers = () => {
         is_admin: false,
       });
     } catch (error) {
-      alert(
-        "Error saving user: " +
-          (error.response?.data?.message || "Unknown error")
-      );
+      toast.error(error.response?.data?.message || "Error saving user", {
+        position: "top-right",
+        autoClose: 3000,
+      });
     }
   };
 
@@ -385,7 +408,7 @@ const AdminUsers = () => {
                       {user.is_admin ? "Remove Admin" : "Make Admin"}
                     </button>
                     <button
-                      onClick={() => handleDeleteUser(user.id)}
+                      onClick={() => handleDeleteUser(user)}
                       className="btn btn-xs btn-outline btn-error"
                     >
                       Delete
@@ -570,6 +593,36 @@ const AdminUsers = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && userToDelete && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg text-error mb-4">
+              🗑️ Delete User
+            </h3>
+            <p className="py-4">
+              Are you sure you want to delete user{" "}
+              <strong className="text-primary">"{userToDelete.name}"</strong> (
+              {userToDelete.email})? This action cannot be undone.
+            </p>
+            <div className="modal-action">
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setUserToDelete(null);
+                }}
+                className="btn btn-outline"
+              >
+                Cancel
+              </button>
+              <button onClick={confirmDeleteUser} className="btn btn-error">
+                Delete User
+              </button>
+            </div>
           </div>
         </div>
       )}
