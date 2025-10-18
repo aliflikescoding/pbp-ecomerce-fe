@@ -111,22 +111,22 @@ const AboutSection = () => {
     {
       icon: "✨",
       title: "Timeless Elegance",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco."
+      description: "Koleksi kami dirancang klasik sekaligus modern dan mudah dipadu, menawan di setiap momen, dan tetap relevan dari musim ke musim."
     },
     {
       icon: "💎",
       title: "Exceptional Quality",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco."
+      description: "Material premium dan detail presisi, melalui kontrol kualitas berlapis agar nyaman dipakai setiap hari dan awet bertahun-tahun."
     },
     {
       icon: "🌿",
       title: "Sustainable Luxury",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco."
+      description: "Kami memilih bahan yang lebih bertanggung jawab, proses produksi minim limbah, dan kemasan ramah lingkungan serta kemewahan yang peduli bumi."
     },
     {
       icon: "🎨",
       title: "Artisan Craftsmanship",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco."
+      description: "Setiap produk dikerjakan pengrajin berpengalaman dengan sentuhan tangan, menghadirkan karakter unik dan finishing yang rapi."
     }
   ];
 
@@ -170,7 +170,7 @@ const AboutSection = () => {
             Meets <span className="italic text-amber-200">Artistry</span>
           </h1>
           <p className="text-lg text-neutral-content/80 max-w-3xl mx-auto leading-relaxed font-light">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+            Aurora hadir sebagai rumah bagi koleksi premium yang memadukan elegansi abadi dengan kenyamanan modern. Kami merancang produk yang mudah dipadu, menawan di setiap momen, dan tahan lama untuk menemani perjalanan Anda.
           </p>
         </div>
 
@@ -182,10 +182,10 @@ const AboutSection = () => {
             </h2>
             <div className="h-px w-16 bg-gradient-to-r from-amber-300/50 to-transparent mb-6"></div>
             <p className="text-neutral-content/70 mb-6 font-light leading-relaxed">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+              Berawal dari ketertarikan pada desain yang sederhana namun bermakna, kami membangun Aurora dengan tujuan menghadirkan kualitas tanpa kompromi. Setiap material dipilih dengan cermat, melalui proses produksi rapi dan kontrol kualitas berlapis.
             </p>
             <p className="text-neutral-content/70 mb-8 font-light leading-relaxed">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+              Kami juga berkomitmen pada praktik yang lebih bertanggung jawab, mulai dari bahan yang lebih ramah lingkungan hingga kemasan minim limbah. Hasilnya adalah produk dengan karakter hangat dan sentuhan pengrajin, siap melengkapi gaya Anda dari hari kerja hingga momen istimewa.
             </p>
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-amber-200">
