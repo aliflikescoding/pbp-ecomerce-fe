@@ -156,3 +156,14 @@ export const updateCartQty = async (id, qty) => {
     throw error;
   }
 };
+
+export const getAllOrders = async () => {
+  try {
+    const response = await api.get("/order/all");
+    return response.data;
+  } catch (error) {
+    console.error("Get all orders error:", error);
+    throw error;
+  }
+};
+  
