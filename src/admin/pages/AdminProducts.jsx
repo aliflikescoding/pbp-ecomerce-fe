@@ -75,7 +75,7 @@ const AdminProducts = () => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await adminAPI.get("/product");
+      const response = await adminAPI.get("/product/all");
       // Backend returns products with pagination info
       setProducts(response.data.products || []);
     } catch (error) {
