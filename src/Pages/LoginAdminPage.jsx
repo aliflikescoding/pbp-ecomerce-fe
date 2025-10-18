@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginUser } from "../api";
+import { loginAdmin } from "../api";
 import { toast } from "react-toastify";
 
 // 🧩 Zod validation schema
@@ -29,9 +29,9 @@ const LoginPage = () => {
         password: data.password,
       };
 
-      const response = await loginUser(body);
-      toast.success(`✅ Login successful ${response.user.name}`);
-      document.location.href = "/";
+      const response = await loginAdmin(body);
+      toast.success(`✅ Login successful ${response.admin.name}`);
+      document.location.href = "/admin";
 
       reset();
     } catch (error) {
@@ -46,7 +46,7 @@ const LoginPage = () => {
         <div className="flex flex-col items-center gap-4">
           <img src="/logo-vertical.svg" alt="Aurora & CO" className="h-14" />
           <h1 className="text-3xl font-semibold text-primary">
-            Aurora &amp; CO
+            Aurora &amp; CO Admin Login
           </h1>
           <p className="text-sm text-neutral/70">
             Your Gateway to Intelligent Interaction

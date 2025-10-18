@@ -67,12 +67,52 @@ export const loginUser = async (userData) => {
   }
 };
 
+export const loginAdmin = async (userData) => {
+  try {
+    const response = await api.post("/admin/login", userData);
+    return response.data;
+  } catch (error) {
+    console.error("Login admin error:", error);
+    throw error;
+  }
+};
+
+export const verifyUser = async () => {
+  try {
+    const response = await api.get("/user/me");
+    return response.data;
+  } catch (error) {
+    console.error("Verify user error:", error);
+    throw error;
+  }
+};
+
+export const verifyAdmin = async () => {
+  try {
+    const response = await api.get("/admin/me");
+    return response.data;
+  } catch (error) {
+    console.error("Verify admin error:", error);
+    throw error;
+  }
+};
+
 export const logoutUser = async () => {
   try {
     const response = await api.post("/user/logout");
     return response.data;
   } catch (error) {
     console.error("Logout user error:", error);
+    throw error;
+  }
+};
+
+export const logoutAdmin = async () => {
+  try {
+    const response = await api.post("/admin/logout");
+    return response.data;
+  } catch (error) {
+    console.error("Logout admin error:", error);
     throw error;
   }
 };
