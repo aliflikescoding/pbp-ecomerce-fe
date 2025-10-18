@@ -8,7 +8,7 @@ import {
   FaBan,
   FaSpinner,
 } from "react-icons/fa";
-import { getAllOrders } from "../../api"; // adjust if needed
+import { getAllOrders, updateOrderStatus } from "../../api";
 
 const AdminOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -78,6 +78,50 @@ const AdminOrders = () => {
       hour: "2-digit",
       minute: "2-digit",
     });
+
+  const handleUpdatePending = async (orderId) => {
+    try {
+      await updateOrderStatus(orderId, "pending");
+      toast.success("Order status updated to pending");
+      fetchOrders();
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      toast.error("Failed to update order status");
+    }
+  };
+
+  const handleUpdateShipped = async (orderId) => {
+    try {
+      await updateOrderStatus(orderId, "shipped");
+      toast.success("Order status updated to shipped");
+      fetchOrders();
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      toast.error("Failed to update order status");
+    }
+  };
+
+  const handleUpdateCompleted = async (orderId) => {
+    try {
+      await updateOrderStatus(orderId, "completed");
+      toast.success("Order status updated to completed");
+      fetchOrders();
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      toast.error("Failed to update order status");
+    }
+  };
+
+  const handleUpdateCancelled = async (orderId) => {
+    try {
+      await updateOrderStatus(orderId, "cancelled");
+      toast.success("Order status updated to cancelled");
+      fetchOrders();
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      toast.error("Failed to update order status");
+    }
+  };
 
   if (loading) {
     return (
@@ -205,7 +249,7 @@ const AdminOrders = () => {
                       </div>
                     </td>
                     <td>{formatDate(order.created_at)}</td>
-                    <td>
+                    <td className="flex items-center gap-2">
                       <button
                         onClick={() =>
                           setSelectedOrder(
@@ -217,6 +261,32 @@ const AdminOrders = () => {
                         <FaEye />
                         View Details
                       </button>
+                      <div className="dropdown dropdown-bottom dropdown-end">
+                        <div
+                          tabIndex={0}
+                          role="button"
+                          className="btn btn-sm btn-primary"
+                        >
+                          Change status
+                        </div>
+                        <ul
+                          tabIndex="-1"
+                          className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
+                        >
+                          <li>
+                            <a onClick={() => handleUpdatePending(order.id)}>Change to pending</a>
+                          </li>
+                          <li>
+                            <a onClick={() => handleUpdateShipped(order.id)}>Change to shipped</a>
+                          </li>
+                          <li>
+                            <a onClick={() => handleUpdateCompleted(order.id)}>Change to received</a>
+                          </li>
+                          <li>
+                            <a onClick={() => handleUpdateCancelled(order.id)}>Change to cancelled</a>
+                          </li>
+                        </ul>
+                      </div>
                     </td>
                   </tr>
                 );

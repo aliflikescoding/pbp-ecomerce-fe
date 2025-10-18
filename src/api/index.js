@@ -176,3 +176,13 @@ export const createOrder = async (address) => {
     throw error;
   }
 };
+
+export const updateOrderStatus = async (orderId, status) => {
+  try {
+    const response = await api.put(`/order/${orderId}/status`, { status });
+    return response.data;
+  } catch (error) {
+    console.error("Update order status error:", error);
+    throw error;
+  }
+};
