@@ -44,30 +44,41 @@ const NewProduct = () => {
   ];
 
   return (
-    <div className="py-12 custom-container">
-      <h1 className="text-5xl font-bold font-playfair text-center mb-8">
-        New Arrivals
-      </h1>
+    <section className="custom-container">
+      <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-[2rem] px-8 py-12 shadow-[0_40px_120px_-70px_rgba(0,0,0,0.9)]">
+        <div className="text-center text-neutral-content mb-12">
+          <div className="inline-block mb-6">
+            <div className="h-px w-10 bg-gradient-to-r from-transparent via-amber-400 to-transparent mb-4 mx-auto"></div>
+            <span className="text-xs font-light tracking-[0.3em] text-amber-200 uppercase">
+              Freshly Curated
+            </span>
+            <div className="h-px w-10 bg-gradient-to-r from-transparent via-amber-400 to-transparent mt-4 mx-auto"></div>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-light font-playfair">
+            New Arrivals
+          </h2>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {newProducts.map((product) => (
-          <ProductCard
-            key={product.id}
-            title={product.title}
-            categoryText={product.categoryText}
-            thumbnailSrc={product.thumbnailSrc}
-            hoverImageSrc={product.hoverImageSrc}
-            previewText={product.previewText}
-            stock={product.stock}
-            price={product.price}
-            link={product.link}
-          />
-        ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {newProducts.map((product) => (
+            <ProductCard
+              key={product.id}
+              title={product.title}
+              categoryText={product.categoryText}
+              thumbnailSrc={product.thumbnailSrc}
+              hoverImageSrc={product.hoverImageSrc}
+              previewText={product.previewText}
+              stock={product.stock}
+              price={product.price}
+              link={product.link}
+            />
+          ))}
+        </div>
+        <div className="mt-10 flex justify-center">
+          <ArrowText text="Go to store" link="/store" />
+        </div>
       </div>
-      <div className="mt-7">
-        <ArrowText text="Go to shop" link="/shop" />
-      </div>
-    </div>
+    </section>
   );
 };
 
