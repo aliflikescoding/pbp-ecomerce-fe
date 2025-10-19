@@ -89,21 +89,24 @@ const ValueCard = ({ icon, title, description }) => {
 
 const AboutSection = () => {
   const team = [
-    { name: "Alif Putra Wibowo", role: "Founder & Creative Director", imgSrc: "/hero-image.png" },
+    { name: "Alif Putra Wibowo", 
+      role: "Founder & Creative Director", 
+      imgSrc: "/alip.jpeg" 
+    },
     {
       name: "Favian Hanindito",
       role: "Head of Product",
-      imgSrc: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&q=80",
+      imgSrc: "/otid.jpeg",
     },
     {
       name: "Duta Adi",
       role: "Head of Marketing",
-      imgSrc: "https://images.unsplash.com/photo-1545996124-1e9f3b7a3f5b?w=800&q=80",
+      imgSrc: "/duta.jpeg",
     },
     {
       name: "Diaz Cahyo Utomo",
       role: "Lead Engineer",
-      imgSrc: "https://images.unsplash.com/photo-1529665253569-6d01c0eaf7b6?w=800&q=80",
+      imgSrc: "/dias.jpeg",
     },
   ];
 
