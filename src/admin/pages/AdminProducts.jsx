@@ -43,6 +43,7 @@ const AdminProducts = () => {
   });
   const [imageFiles, setImageFiles] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
+  const [hasImageChanges, setHasImageChanges] = useState(false); // Track if user changed images
 
   useEffect(() => {
     fetchProducts();
@@ -115,46 +116,100 @@ const AdminProducts = () => {
       submitData.append("category_id", formData.category_id);
       submitData.append("is_active", formData.is_active);
 
-      // Only append first image for main product create/update (backend uses single upload)
-      if (imageFiles.length > 0) {
-        submitData.append("image", imageFiles[0]);
-      }
-
       let productId;
+
       if (editProduct) {
-        // Update product
-        const response = await adminAPI.put(
-          `/product/${editProduct.id}`,
-          submitData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
         productId = editProduct.id;
+
+        console.log("🔍 DEBUG INFO:");
+        console.log("- Edit Product ID:", productId);
+        console.log("- Has Image Changes:", hasImageChanges);
+        console.log("- Image Files:", imageFiles);
+        console.log("- Image Files Length:", imageFiles.length);
+
+        // Step 1: Update product data WITHOUT images first
+        await adminAPI.put(`/product/${productId}`, submitData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        console.log("✅ Product data updated");
+
+        // Step 2: If user changed images (uploaded new OR removed existing), REPLACE all old images
+        if (hasImageChanges) {
+          console.log("🔄 Image changes detected, replacing images...");
+
+          // Delete all old images first
+          try {
+            const deleteResponse = await adminAPI.delete(
+              `/product/${productId}/images`
+            );
+            console.log("✅ Old images deleted:", deleteResponse.data);
+          } catch (error) {
+            console.log("Delete error:", error.response?.data || error.message);
+          }
+
+          // Upload new images if any
+          if (imageFiles.length > 0) {
+            const allImages = new FormData();
+            imageFiles.forEach((file, index) => {
+              allImages.append("images", file);
+              console.log(`Preparing to upload image ${index + 1}:`, file.name);
+            });
+
+            try {
+              const uploadResponse = await adminAPI.post(
+                `/product/${productId}/images`,
+                allImages,
+                {
+                  headers: {
+                    "Content-Type": "multipart/form-data",
+                  },
+                }
+              );
+              console.log("✅ New images uploaded:", uploadResponse.data);
+            } catch (error) {
+              console.log(
+                "Upload error:",
+                error.response?.data || error.message
+              );
+            }
+          } else {
+            console.log("ℹNo new images to upload");
+          }
+        } else {
+          console.log("ℹNo image changes, skipping image operations");
+        }
       } else {
-        // Create product
+        // CREATE mode: Add first image to product creation
+        if (imageFiles.length > 0) {
+          submitData.append("image", imageFiles[0]);
+        }
+
         const response = await adminAPI.post("/product", submitData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
         productId = response.data.id;
-      }
 
-      // If there are additional images (more than 1), upload them separately
-      if (imageFiles.length > 1) {
-        const additionalImages = new FormData();
-        for (let i = 1; i < imageFiles.length; i++) {
-          additionalImages.append("images", imageFiles[i]);
+        // Upload additional images (if more than 1)
+        if (imageFiles.length > 1) {
+          const additionalImages = new FormData();
+          for (let i = 1; i < imageFiles.length; i++) {
+            additionalImages.append("images", imageFiles[i]);
+          }
+
+          await adminAPI.post(
+            `/product/${productId}/images`,
+            additionalImages,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
         }
-
-        await adminAPI.post(`/product/${productId}/images`, additionalImages, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
       }
 
       fetchProducts();
@@ -198,6 +253,7 @@ const AdminProducts = () => {
       is_active: product.is_active,
     });
     setImageFiles([]);
+    setHasImageChanges(false); // Reset flag when opening edit modal
     // Set existing images preview
     if (product.images && product.images.length > 0) {
       const existingPreviews = product.images.map(
@@ -294,6 +350,7 @@ const AdminProducts = () => {
     setEditProduct(null);
     setImageFiles([]);
     setImagePreviews([]);
+    setHasImageChanges(false); // Reset image changes flag
   };
 
   const handleImageChange = (e) => {
@@ -318,6 +375,7 @@ const AdminProducts = () => {
     // Append new files to existing ones
     const newFiles = [...imageFiles, ...files];
     setImageFiles(newFiles);
+    setHasImageChanges(true); // Mark that user changed images
 
     // Create previews for new files only
     const newPreviews = [...imagePreviews];
@@ -346,6 +404,7 @@ const AdminProducts = () => {
     const newPreviews = imagePreviews.filter((_, i) => i !== index);
     setImageFiles(newFiles);
     setImagePreviews(newPreviews);
+    setHasImageChanges(true); // Mark that user changed images (removed one)
   };
 
   const getImageUrl = (product) => {
