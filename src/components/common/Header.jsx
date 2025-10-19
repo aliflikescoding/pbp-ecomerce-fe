@@ -1,3 +1,4 @@
+// src/components/common/Header.jsx
 import React, { useEffect, useRef, useState } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { FaShoppingCart, FaClipboardList } from "react-icons/fa";
@@ -43,12 +44,12 @@ const Header = () => {
   // Check auth on mount
   useEffect(() => {
     let mounted = true;
-    
+
     const fetchAuth = async () => {
       try {
         const res = await checkUserAuth();
         if (!mounted) return;
-        
+
         if (res?.status === "success" && res?.user) {
           setIsAuth(true);
           setUser(res.user);
@@ -96,27 +97,39 @@ const Header = () => {
   }, [pathname]);
 
   const AuthActions = () => {
-    const myOrdersShortcut = showMyOrdersShortcut ? (
-      <NavLink
-        to="/my-orders"
-        className={`
-          inline-flex items-center justify-center w-10 h-10 
-          border transition-all duration-500
-          ${isDarkPage 
-            ? 'border-amber-300/30 bg-amber-400/5 text-amber-200 hover:border-amber-300/60 hover:bg-amber-400/10 hover:scale-110' 
-            : 'border-slate-300 bg-slate-100 text-slate-700 hover:border-amber-400 hover:bg-amber-50 hover:scale-110'}
-        `}
-        aria-label="My Orders"
-      >
-        <FaClipboardList className="w-4 h-4" />
-      </NavLink>
-    ) : null;
+    // 🔒 Only render the My Orders shortcut when the user is authenticated
+    const myOrdersShortcut =
+      showMyOrdersShortcut && isAuth && user ? (
+        <NavLink
+          to="/my-orders"
+          className={`
+            inline-flex items-center justify-center w-10 h-10 
+            border transition-all duration-500
+            ${
+              isDarkPage
+                ? "border-amber-300/30 bg-amber-400/5 text-amber-200 hover:border-amber-300/60 hover:bg-amber-400/10 hover:scale-110"
+                : "border-slate-300 bg-slate-100 text-slate-700 hover:border-amber-400 hover:bg-amber-50 hover:scale-110"
+            }
+          `}
+          aria-label="My Orders"
+        >
+          <FaClipboardList className="w-4 h-4" />
+        </NavLink>
+      ) : null;
 
     if (authLoading) {
       return (
         <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 rounded animate-pulse ${isDarkPage ? 'bg-amber-400/20' : 'bg-slate-200'}`}></div>
-          <div className={`w-20 h-10 rounded animate-pulse ${isDarkPage ? 'bg-amber-400/20' : 'bg-slate-200'}`}></div>
+          <div
+            className={`w-10 h-10 rounded animate-pulse ${
+              isDarkPage ? "bg-amber-400/20" : "bg-slate-200"
+            }`}
+          ></div>
+          <div
+            className={`w-20 h-10 rounded animate-pulse ${
+              isDarkPage ? "bg-amber-400/20" : "bg-slate-200"
+            }`}
+          ></div>
         </div>
       );
     }
@@ -130,22 +143,26 @@ const Header = () => {
             className={`
               inline-flex items-center justify-center w-10 h-10 
               border transition-all duration-500
-              ${isDarkPage 
-                ? 'border-amber-300/30 bg-amber-400/5 text-amber-200 hover:border-amber-300/60 hover:bg-amber-400/10 hover:scale-110' 
-                : 'border-slate-300 bg-slate-100 text-slate-700 hover:border-amber-400 hover:bg-amber-50 hover:scale-110'}
+              ${
+                isDarkPage
+                  ? "border-amber-300/30 bg-amber-400/5 text-amber-200 hover:border-amber-300/60 hover:bg-amber-400/10 hover:scale-110"
+                  : "border-slate-300 bg-slate-100 text-slate-700 hover:border-amber-400 hover:bg-amber-50 hover:scale-110"
+              }
             `}
             aria-label="Cart"
           >
             <FaShoppingCart className="w-4 h-4" />
           </NavLink>
-          <button 
+          <button
             onClick={handleLogout}
             className={`
               px-5 py-2 font-light tracking-wider uppercase text-sm 
               transition-all duration-500
-              ${isDarkPage
-                ? 'bg-amber-400/10 border border-amber-300/50 text-amber-200 hover:bg-amber-400/20 hover:border-amber-300/80 hover:scale-105'
-                : 'bg-slate-800 border border-slate-800 text-white hover:bg-slate-900 hover:scale-105'}
+              ${
+                isDarkPage
+                  ? "bg-amber-400/10 border border-amber-300/50 text-amber-200 hover:bg-amber-400/20 hover:border-amber-300/80 hover:scale-105"
+                  : "bg-slate-800 border border-slate-800 text-white hover:bg-slate-900 hover:scale-105"
+              }
             `}
           >
             Logout
@@ -154,29 +171,33 @@ const Header = () => {
       );
     }
 
+    // Not authenticated (no My Orders shortcut here)
     return (
       <>
-        {myOrdersShortcut}
-        <NavLink 
-          to="/login" 
+        <NavLink
+          to="/login"
           className={`
             px-5 py-2 font-light tracking-wider uppercase text-sm 
             transition-all duration-500
-            ${isDarkPage
-              ? 'border border-amber-300/50 text-amber-200 hover:bg-amber-400/10 hover:border-amber-300/80 hover:scale-105'
-              : 'border border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 hover:scale-105'}
+            ${
+              isDarkPage
+                ? "border border-amber-300/50 text-amber-200 hover:bg-amber-400/10 hover:border-amber-300/80 hover:scale-105"
+                : "border border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 hover:scale-105"
+            }
           `}
         >
           Login
         </NavLink>
-        <NavLink 
-          to="/register" 
+        <NavLink
+          to="/register"
           className={`
             px-5 py-2 font-light tracking-wider uppercase text-sm 
             transition-all duration-500
-            ${isDarkPage
-              ? 'bg-amber-400/10 border border-amber-300/50 text-amber-200 hover:bg-amber-400/20 hover:border-amber-300/80 hover:scale-105'
-              : 'bg-slate-800 border border-slate-800 text-white hover:bg-slate-900 hover:scale-105'}
+            ${
+              isDarkPage
+                ? "bg-amber-400/10 border border-amber-300/50 text-amber-200 hover:bg-amber-400/20 hover:border-amber-300/80 hover:scale-105"
+                : "bg-slate-800 border border-slate-800 text-white hover:bg-slate-900 hover:scale-105"
+            }
           `}
         >
           Register
@@ -196,11 +217,12 @@ const Header = () => {
         </li>
       );
     }
-    
+
     if (isAuth && user) {
       return (
         <li className="mt-4 px-2">
           <div className="flex gap-2">
+            {/* 🔒 Only show My Orders on mobile if authenticated */}
             {showMyOrdersShortcut && (
               <NavLink
                 to="/my-orders"
@@ -216,7 +238,7 @@ const Header = () => {
             >
               <FaShoppingCart className="inline w-5 h-5" />
             </NavLink>
-            <button 
+            <button
               onClick={handleLogout}
               className="flex-1 py-3 bg-slate-800 text-white hover:bg-slate-900 transition-colors rounded font-light tracking-wider uppercase text-sm"
             >
@@ -226,27 +248,19 @@ const Header = () => {
         </li>
       );
     }
-    
+
+    // Not authenticated (no My Orders shortcut here)
     return (
       <li className="mt-4 px-2">
         <div className="flex gap-2">
-          {showMyOrdersShortcut && (
-            <NavLink
-              to="/my-orders"
-              className="flex-none w-12 h-12 inline-flex items-center justify-center border border-slate-300 text-slate-600 hover:bg-slate-50 transition-colors rounded"
-              aria-label="My Orders"
-            >
-              <FaClipboardList className="w-5 h-5" />
-            </NavLink>
-          )}
-          <NavLink 
-            to="/login" 
+          <NavLink
+            to="/login"
             className="flex-1 py-3 text-center border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors rounded font-light tracking-wider uppercase text-sm"
           >
             Login
           </NavLink>
-          <NavLink 
-            to="/register" 
+          <NavLink
+            to="/register"
             className="flex-1 py-3 text-center bg-slate-800 text-white hover:bg-slate-900 transition-colors rounded font-light tracking-wider uppercase text-sm"
           >
             Register
@@ -259,24 +273,29 @@ const Header = () => {
   return (
     <>
       {isFixed && <div style={{ height: height }} aria-hidden="true" />}
-      
+
       <div
         ref={headerRef}
         className={`
           w-full transition-all duration-300 z-50
-          ${isDarkPage 
-            ? isFixed 
-              ? 'fixed top-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-b border-amber-300/20 shadow-lg' 
-              : 'absolute bg-transparent'
-            : isFixed 
-              ? 'fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-xl shadow-md' 
-              : 'bg-white border-b border-slate-200'
+          ${
+            isDarkPage
+              ? isFixed
+                ? "fixed top-0 left-0 right-0 bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 backdrop-blur-2xl border-b border-amber-300/25 shadow-[0_20px_60px_rgba(8,8,12,0.45)]"
+                : "absolute bg-transparent"
+              : isFixed
+              ? "fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-xl shadow-md"
+              : "bg-white border-b border-slate-200"
           }
         `}
       >
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           {/* Logo */}
-          <NavLink to="/" aria-label="Home" className="transition-transform duration-300 hover:scale-105">
+          <NavLink
+            to="/"
+            aria-label="Home"
+            className="transition-transform duration-300 hover:scale-105"
+          >
             <img
               src="/logo-horizontal-white.svg"
               className="h-10 w-auto"
@@ -302,7 +321,7 @@ const Header = () => {
                   ${isDarkPage ? "bg-amber-300" : "bg-slate-800"}
                   ${pathname === "/" ? "w-full" : "w-0 group-hover:w-full"}
                 `}
-              ></span>
+              />
             </NavLink>
             {links.map((link) => (
               <NavLink
@@ -319,9 +338,13 @@ const Header = () => {
                   className={`
                     absolute left-0 -bottom-1 h-px transition-all duration-300
                     ${isDarkPage ? "bg-amber-300" : "bg-slate-800"}
-                    ${pathname === `/${link}` ? "w-full" : "w-0 group-hover:w-full"}
+                    ${
+                      pathname === `/${link}`
+                        ? "w-full"
+                        : "w-0 group-hover:w-full"
+                    }
                   `}
-                ></span>
+                />
               </NavLink>
             ))}
           </nav>
@@ -351,27 +374,27 @@ const Header = () => {
       </div>
 
       {/* Mobile Drawer */}
-      <div 
+      <div
         className={`
           fixed inset-0 z-40 md:hidden transition-all duration-300
-          ${mobileMenuOpen ? 'visible' : 'invisible'}
+          ${mobileMenuOpen ? "visible" : "invisible"}
         `}
       >
         {/* Backdrop */}
-        <div 
+        <div
           className={`
             absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300
-            ${mobileMenuOpen ? 'opacity-100' : 'opacity-0'}
+            ${mobileMenuOpen ? "opacity-100" : "opacity-0"}
           `}
           onClick={() => setMobileMenuOpen(false)}
         />
-        
+
         {/* Drawer */}
-        <div 
+        <div
           className={`
             absolute right-0 top-0 bottom-0 w-80 bg-white shadow-2xl
             transform transition-transform duration-300
-            ${mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}
+            ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"}
           `}
         >
           <div className="p-6">
@@ -398,9 +421,11 @@ const Header = () => {
                   to="/"
                   className={({ isActive }) => `
                     block px-4 py-3 rounded transition-colors font-light tracking-wide
-                    ${isActive 
-                      ? "bg-amber-50 text-amber-600 font-medium" 
-                      : "text-slate-700 hover:bg-slate-50"}
+                    ${
+                      isActive
+                        ? "bg-amber-50 text-amber-600 font-medium"
+                        : "text-slate-700 hover:bg-slate-50"
+                    }
                   `}
                 >
                   Home
@@ -412,9 +437,11 @@ const Header = () => {
                     to={`/${link}`}
                     className={({ isActive }) => `
                       block px-4 py-3 rounded capitalize transition-colors font-light tracking-wide
-                      ${isActive 
-                        ? "bg-amber-50 text-amber-600 font-medium" 
-                        : "text-slate-700 hover:bg-slate-50"}
+                      ${
+                        isActive
+                          ? "bg-amber-50 text-amber-600 font-medium"
+                          : "text-slate-700 hover:bg-slate-50"
+                      }
                     `}
                   >
                     {link}

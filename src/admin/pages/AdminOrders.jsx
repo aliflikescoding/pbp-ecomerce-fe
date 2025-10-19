@@ -1,19 +1,14 @@
+// src/admin/pages/AdminOrders.jsx
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { toast } from "react-toastify";
 import {
   FaEye,
-  FaBox,
   FaTruck,
   FaCheckCircle,
   FaBan,
   FaSpinner,
 } from "react-icons/fa";
-
-// Create axios instance for admin API calls
-const adminAPI = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
-  withCredentials: true,
-});
+import { getAllOrders, updateOrderStatus } from "../../api";
 
 const AdminOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -27,26 +22,13 @@ const AdminOrders = () => {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const response = await adminAPI.get("/admin/orders");
-      if (response.data.status === "success") {
-        setOrders(response.data.data || []);
-      }
+      const data = await getAllOrders();
+      setOrders(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error fetching orders:", error);
+      toast.error("Failed to fetch orders");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const updateOrderStatus = async (orderId, newStatus) => {
-    try {
-      await adminAPI.put(`/admin/orders/${orderId}/status`, {
-        status: newStatus,
-      });
-      fetchOrders(); // Refresh the list
-    } catch (error) {
-      console.error("Error updating order status:", error);
-      alert("Error updating order status");
     }
   };
 
@@ -54,16 +36,14 @@ const AdminOrders = () => {
     switch (status) {
       case "pending":
         return <FaSpinner className="text-yellow-500" />;
-      case "processing":
-        return <FaBox className="text-blue-500" />;
       case "shipped":
         return <FaTruck className="text-purple-500" />;
-      case "completed":
+      case "received":
         return <FaCheckCircle className="text-green-500" />;
       case "cancelled":
         return <FaBan className="text-red-500" />;
       default:
-        return <FaBox className="text-gray-500" />;
+        return <FaTruck className="text-gray-500" />;
     }
   };
 
@@ -71,11 +51,9 @@ const AdminOrders = () => {
     switch (status) {
       case "pending":
         return "badge-warning";
-      case "processing":
-        return "badge-info";
       case "shipped":
         return "badge-secondary";
-      case "completed":
+      case "received":
         return "badge-success";
       case "cancelled":
         return "badge-error";
@@ -85,27 +63,64 @@ const AdminOrders = () => {
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("id-ID", {
+    const n = Number(amount) || 0;
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "IDR",
-    }).format(amount);
+      currency: "USD",
+    }).format(n);
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("id-ID", {
+  const formatDate = (dateString) =>
+    new Date(dateString).toLocaleDateString("id-ID", {
       year: "numeric",
       month: "short",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
     });
+
+  const handleUpdatePending = async (orderId) => {
+    try {
+      await updateOrderStatus(orderId, "pending");
+      toast.success("Order status updated to pending");
+      fetchOrders();
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      toast.error("Failed to update order status");
+    }
   };
 
-  const getImageUrl = (product) => {
-    if (product.images && product.images.length > 0) {
-      return `http://localhost:5000${product.images[0].url}`;
+  const handleUpdateShipped = async (orderId) => {
+    try {
+      await updateOrderStatus(orderId, "shipped");
+      toast.success("Order status updated to shipped");
+      fetchOrders();
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      toast.error("Failed to update order status");
     }
-    return "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop";
+  };
+
+  const handleUpdateReceived = async (orderId) => {
+    try {
+      await updateOrderStatus(orderId, "received");
+      toast.success("Order status updated to received");
+      fetchOrders();
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      toast.error("Failed to update order status");
+    }
+  };
+
+  const handleUpdateCancelled = async (orderId) => {
+    try {
+      await updateOrderStatus(orderId, "cancelled");
+      toast.success("Order status updated to cancelled");
+      fetchOrders();
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      toast.error("Failed to update order status");
+    }
   };
 
   if (loading) {
@@ -122,7 +137,7 @@ const AdminOrders = () => {
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Order Management</h1>
         <p className="text-gray-600 mt-2">
-          Manage customer orders and update status
+          View customer orders (layout only — no admin actions)
         </p>
       </div>
 
@@ -147,16 +162,6 @@ const AdminOrders = () => {
         </div>
 
         <div className="stat">
-          <div className="stat-figure text-info">
-            <FaBox className="text-2xl" />
-          </div>
-          <div className="stat-title">Processing</div>
-          <div className="stat-value text-info">
-            {orders.filter((o) => o.status === "processing").length}
-          </div>
-        </div>
-
-        <div className="stat">
           <div className="stat-figure text-secondary">
             <FaTruck className="text-2xl" />
           </div>
@@ -170,9 +175,9 @@ const AdminOrders = () => {
           <div className="stat-figure text-success">
             <FaCheckCircle className="text-2xl" />
           </div>
-          <div className="stat-title">Completed</div>
+          <div className="stat-title">Received</div>
           <div className="stat-value text-success">
-            {orders.filter((o) => o.status === "completed").length}
+            {orders.filter((o) => o.status === "received").length}
           </div>
         </div>
       </div>
@@ -189,112 +194,119 @@ const AdminOrders = () => {
                 <th>Total</th>
                 <th>Status</th>
                 <th>Date</th>
-                <th>Actions</th>
+                <th className="w-40">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {orders.map((order) => (
-                <tr key={order.id}>
-                  <td>
-                    <div className="font-bold">#{order.id}</div>
-                  </td>
-                  <td>
-                    <div>
-                      <div className="font-semibold">
-                        {order.user?.name || "N/A"}
-                      </div>
-                      <div className="text-sm opacity-50">
-                        {order.user?.email || "N/A"}
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="flex items-center space-x-2">
-                      {order.order_items?.slice(0, 3).map((item, index) => (
-                        <div key={index} className="avatar">
-                          <div className="w-8 h-8 rounded">
-                            <img
-                              src={getImageUrl(item.product)}
-                              alt={item.product?.name}
-                            />
-                          </div>
+              {orders.map((order) => {
+                const firstThree =
+                  order.order_items
+                    ?.slice(0, 3)
+                    .map((it) => it.product?.name) || [];
+                return (
+                  <tr key={order.id}>
+                    <td className="font-bold">#{order.id}</td>
+                    <td>
+                      <div>
+                        <div className="font-semibold">
+                          {order.user?.name || "N/A"}
                         </div>
-                      ))}
-                      {order.order_items?.length > 3 && (
-                        <span className="text-sm text-gray-500">
-                          +{order.order_items.length - 3}
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      {order.order_items?.length || 0} items
-                    </div>
-                  </td>
-                  <td className="font-bold">{formatCurrency(order.total)}</td>
-                  <td>
-                    <div
-                      className={`badge ${getStatusColor(order.status)} gap-2`}
-                    >
-                      {getStatusIcon(order.status)}
-                      <span className="capitalize">{order.status}</span>
-                    </div>
-                  </td>
-                  <td>{formatDate(order.created_at)}</td>
-                  <td>
-                    <div className="flex space-x-2">
+                        <div className="text-sm opacity-50">
+                          {order.user?.email || "N/A"}
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="flex flex-wrap gap-2 items-center">
+                        {firstThree.map((name, idx) => (
+                          <span
+                            key={idx}
+                            className="badge badge-outline whitespace-nowrap"
+                            title={name}
+                          >
+                            {name || "Product"}
+                          </span>
+                        ))}
+                        {order.order_items?.length > 3 && (
+                          <span className="text-sm text-gray-500">
+                            +{order.order_items.length - 3}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {order.order_items?.length || 0} items
+                      </div>
+                    </td>
+                    <td className="font-bold">{formatCurrency(order.total)}</td>
+                    <td>
+                      <div
+                        className={`badge ${getStatusColor(
+                          order.status
+                        )} gap-2`}
+                      >
+                        {getStatusIcon(order.status)}
+                        <span className="capitalize">{order.status}</span>
+                      </div>
+                    </td>
+                    <td>{formatDate(order.created_at)}</td>
+                    <td className="flex items-center gap-2">
                       <button
                         onClick={() =>
                           setSelectedOrder(
                             selectedOrder?.id === order.id ? null : order
                           )
                         }
-                        className="btn btn-sm btn-outline"
+                        className="btn btn-sm btn-outline btn-info gap-2 w-full"
                       >
                         <FaEye />
+                        View Details
                       </button>
-
-                      {/* Status Update Dropdown */}
-                      <div className="dropdown dropdown-end">
+                      <div className="dropdown dropdown-bottom dropdown-end">
                         <div
                           tabIndex={0}
                           role="button"
                           className="btn btn-sm btn-primary"
                         >
-                          Update Status
+                          Change status
                         </div>
                         <ul
-                          tabIndex={0}
-                          className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+                          tabIndex="-1"
+                          className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
                         >
-                          {[
-                            "pending",
-                            "processing",
-                            "shipped",
-                            "completed",
-                            "cancelled",
-                          ].map((status) => (
-                            <li key={status}>
-                              <button
-                                onClick={() =>
-                                  updateOrderStatus(order.id, status)
-                                }
-                                className={`flex items-center space-x-2 ${
-                                  order.status === status
-                                    ? "bg-primary text-white"
-                                    : ""
-                                }`}
-                              >
-                                {getStatusIcon(status)}
-                                <span className="capitalize">{status}</span>
-                              </button>
-                            </li>
-                          ))}
+                          <li>
+                            <a onClick={() => handleUpdatePending(order.id)}>
+                              Change to pending
+                            </a>
+                          </li>
+                          <li>
+                            <a onClick={() => handleUpdateShipped(order.id)}>
+                              Change to shipped
+                            </a>
+                          </li>
+                          <li>
+                            <a onClick={() => handleUpdateReceived(order.id)}>
+                              Change to received
+                            </a>
+                          </li>
+                          <li>
+                            <a onClick={() => handleUpdateCancelled(order.id)}>
+                              Change to cancelled
+                            </a>
+                          </li>
                         </ul>
                       </div>
-                    </div>
+                    </td>
+                  </tr>
+                );
+              })}
+
+              {orders.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="text-center py-10 text-gray-500">
+                    No orders found.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
@@ -364,13 +376,8 @@ const AdminOrders = () => {
                     {selectedOrder.order_items?.map((item) => (
                       <div
                         key={item.id}
-                        className="flex items-center space-x-3 p-2 bg-white rounded"
+                        className="flex items-center justify-between gap-3 p-2 bg-white rounded"
                       >
-                        <img
-                          src={getImageUrl(item.product)}
-                          alt={item.product?.name}
-                          className="w-12 h-12 object-cover rounded"
-                        />
                         <div className="flex-1">
                           <p className="font-medium text-sm">
                             {item.product?.name || "Product"}
@@ -380,7 +387,7 @@ const AdminOrders = () => {
                           </p>
                         </div>
                         <p className="font-bold text-sm">
-                          {formatCurrency(item.price * item.qty)}
+                          {formatCurrency(Number(item.price) * item.qty)}
                         </p>
                       </div>
                     ))}

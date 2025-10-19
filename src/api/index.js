@@ -67,12 +67,52 @@ export const loginUser = async (userData) => {
   }
 };
 
+export const loginAdmin = async (userData) => {
+  try {
+    const response = await api.post("/admin/login", userData);
+    return response.data;
+  } catch (error) {
+    console.error("Login admin error:", error);
+    throw error;
+  }
+};
+
+export const verifyUser = async () => {
+  try {
+    const response = await api.get("/user/me");
+    return response.data;
+  } catch (error) {
+    console.error("Verify user error:", error);
+    throw error;
+  }
+};
+
+export const verifyAdmin = async () => {
+  try {
+    const response = await api.get("/admin/me");
+    return response.data;
+  } catch (error) {
+    console.error("Verify admin error:", error);
+    throw error;
+  }
+};
+
 export const logoutUser = async () => {
   try {
     const response = await api.post("/user/logout");
     return response.data;
   } catch (error) {
     console.error("Logout user error:", error);
+    throw error;
+  }
+};
+
+export const logoutAdmin = async () => {
+  try {
+    const response = await api.post("/admin/logout");
+    return response.data;
+  } catch (error) {
+    console.error("Logout admin error:", error);
     throw error;
   }
 };
@@ -113,6 +153,56 @@ export const updateCartQty = async (id, qty) => {
     return response.data;
   } catch (error) {
     console.error("Update Cart Qty error:", error);
+    throw error;
+  }
+};
+
+export const getAllOrders = async () => {
+  try {
+    const response = await api.get("/order/all");
+    return response.data;
+  } catch (error) {
+    console.error("Get all orders error:", error);
+    throw error;
+  }
+};
+
+export const createOrder = async (address) => {
+  try {
+    const response = await api.post("/order", { address });
+    return response.data;
+  } catch (error) {
+    console.error("Create order error:", error);
+    throw error;
+  }
+};
+
+export const updateOrderStatus = async (orderId, status) => {
+  try {
+    const response = await api.put(`/order/${orderId}/status`, { status });
+    return response.data;
+  } catch (error) {
+    console.error("Update order status error:", error);
+    throw error;
+  }
+};
+
+export const getUserOrders = async () => {
+  try {
+    const response = await api.get("/order");
+    return response.data;
+  } catch (error) {
+    console.error("Get user orders error:", error);
+    throw error;
+  }
+};
+
+export const getUserOrdersByStatus = async (status) => {
+  try {
+    const response = await api.get(`/order/${status}`);
+    return response.data;
+  } catch (error) {
+    console.error("Get user orders by status error:", error);
     throw error;
   }
 };

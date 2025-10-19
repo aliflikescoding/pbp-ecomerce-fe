@@ -1,40 +1,110 @@
 import React, { useState, useEffect } from "react";
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
-import { useAdmin } from "../context/AdminContext";
+import { verifyAdmin, /* add this */ logoutAdmin } from "../../api";
+
+// OPTIONAL: only needed if you also store readable (non-httpOnly) helper cookies like "admin_name"
+const getCookie = (name) => {
+  const match = document.cookie.match(new RegExp("(^|; )" + name + "=([^;]+)"));
+  return match ? decodeURIComponent(match[2]) : null;
+};
 
 const AdminLayout = () => {
-  const { admin, logout, isAuthenticated, loading } = useAdmin();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [admin, setAdmin] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Protection: redirect to main login if not authenticated
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
-      navigate("/login");
-    }
-  }, [isAuthenticated, loading, navigate]);
+    let alive = true;
+
+    (async () => {
+      try {
+        // 1) Quick gate by cookie presence (client-visible only if NOT httpOnly)
+        //    This is just a fast-path; httpOnly cookies won't be visible here.
+        const hasClientVisibleAdminCookie =
+          !!getCookie("admin_session") || // only works if NOT httpOnly
+          document.cookie.includes("admin_session="); // cautious check
+
+        // 2) Definitive check via API (uses httpOnly cookie server-side)
+        const res = await verifyAdmin(); // GET /admin/me withCredentials
+        if (!alive) return;
+
+        const ok =
+          (res?.status && String(res.status).toLowerCase() === "success") ||
+          !!res?.id ||
+          !!res?.email ||
+          !!res?.is_admin;
+
+        if (!ok) {
+          setIsAuthenticated(false);
+          setAdmin(null);
+          setLoading(false);
+          navigate("/admin/login", {
+            replace: true,
+            state: { from: location },
+          });
+          return;
+        }
+
+        // Try to show a name:
+        // - Prefer readable cookie "admin_name" if you set it (non-httpOnly)
+        // - Otherwise use the API response fields
+        const nameFromCookie = getCookie("admin_name");
+        const hydratedAdmin = {
+          name:
+            nameFromCookie ||
+            res?.name ||
+            res?.full_name ||
+            res?.email ||
+            "Admin",
+          email: res?.email,
+          ...res,
+        };
+
+        setIsAuthenticated(true);
+        setAdmin(hydratedAdmin);
+        setLoading(false);
+      } catch (e) {
+        if (!alive) return;
+        setIsAuthenticated(false);
+        setAdmin(null);
+        setLoading(false);
+        navigate("/admin/login", { replace: true, state: { from: location } });
+      }
+    })();
+
+    return () => {
+      alive = false;
+    };
+    // re-run when path changes (optional)
+  }, [location.pathname, navigate, location]);
 
   const handleLogout = async () => {
-    const result = await logout();
-    if (result.success) {
-      navigate("/login");
+    try {
+      await logoutAdmin(); // POST /admin/logout (httpOnly cookie cleared server-side)
+    } catch (e) {
+      // ignore; still redirect
+    } finally {
+      // clear any client-visible helper cookies you may have set
+      // (only affects non-httpOnly cookies)
+      document.cookie = "admin_session=; Max-Age=0; path=/";
+      document.cookie = "admin_name=; Max-Age=0; path=/";
+      navigate("/admin/login", { replace: true });
     }
   };
 
-  // Show loading while checking authentication
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="loading loading-spinner loading-lg"></div>
+        <div className="loading loading-spinner loading-lg" />
       </div>
     );
   }
 
-  // If not authenticated, don't render anything (redirect will happen)
-  if (!isAuthenticated) {
-    return null;
-  }
+  if (!isAuthenticated) return null;
 
   const menuItems = [
     { path: "/admin/dashboard", label: "Dashboard", icon: "📊" },
@@ -46,11 +116,11 @@ const AdminLayout = () => {
 
   return (
     <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
-      {/* Navigation Bar - Fixed Header */}
+      {/* Top Bar */}
       <nav className="bg-white shadow-lg border-b fixed top-0 left-0 right-0 z-50 h-16">
         <div className="w-full pl-4 pr-4">
           <div className="flex justify-between h-16">
-            {/* Left side - Admin Panel Header */}
+            {/* Left */}
             <div className="flex items-center">
               <div className="flex items-center mr-4">
                 <img
@@ -66,7 +136,7 @@ const AdminLayout = () => {
                 </div>
               </div>
               <button
-                onClick={() => setSidebarOpen(!sidebarOpen)}
+                onClick={() => setSidebarOpen((s) => !s)}
                 className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden ml-4"
               >
                 <svg
@@ -85,10 +155,11 @@ const AdminLayout = () => {
               </button>
             </div>
 
-            {/* Right side */}
+            {/* Right */}
             <div className="flex items-center space-x-4">
               <div className="text-sm text-gray-700">
-                Welcome, <span className="font-semibold">{admin?.name}</span>
+                Welcome,{" "}
+                <span className="font-semibold">{admin?.name || "Admin"}</span>
               </div>
               <Link
                 to="/"
@@ -107,9 +178,9 @@ const AdminLayout = () => {
         </div>
       </nav>
 
-      {/* Content Area - Full Height */}
+      {/* Body */}
       <div className="flex flex-1 pt-16 overflow-hidden">
-        {/* Sidebar - Fixed */}
+        {/* Sidebar */}
         <div
           className={`${
             sidebarOpen ? "block" : "hidden"
@@ -135,7 +206,7 @@ const AdminLayout = () => {
           </nav>
         </div>
 
-        {/* Main Content - Full Height and Scrollable */}
+        {/* Main */}
         <div className="flex-1 md:ml-64 overflow-y-auto">
           <div className="p-6 min-h-full">
             <Outlet />

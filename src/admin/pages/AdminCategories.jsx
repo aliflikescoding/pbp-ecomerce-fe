@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 // Create axios instance for admin API calls
 import axios from "axios";
@@ -13,6 +14,8 @@ const AdminCategories = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editCategory, setEditCategory] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -67,13 +70,19 @@ const AdminCategories = () => {
             cat.id === editCategory.id ? { ...cat, ...formData } : cat
           )
         );
-        alert("Category updated successfully");
+        toast.success("Category updated successfully!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
       } else {
         // Create new category
         const response = await adminAPI.post("/category", formData);
         // Backend returns category object directly
         setCategories([...categories, response.data]);
-        alert("Category created successfully");
+        toast.success("Category created successfully!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
       }
 
       setShowModal(false);
@@ -82,25 +91,33 @@ const AdminCategories = () => {
         description: "",
       });
     } catch (error) {
-      alert(
-        "Error saving category: " +
-          (error.response?.data?.message || "Unknown error")
-      );
+      toast.error(error.response?.data?.message || "Error saving category", {
+        position: "top-right",
+        autoClose: 3000,
+      });
     }
   };
 
-  const handleDeleteCategory = async (categoryId) => {
-    if (window.confirm("Are you sure you want to delete this category?")) {
-      try {
-        await adminAPI.delete(`/category/${categoryId}`);
-        setCategories(categories.filter((cat) => cat.id !== categoryId));
-        alert("Category deleted successfully");
-      } catch (error) {
-        alert(
-          "Error deleting category: " +
-            (error.response?.data?.message || "Unknown error")
-        );
-      }
+  const handleDeleteCategory = (category) => {
+    setCategoryToDelete(category);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteCategory = async () => {
+    try {
+      await adminAPI.delete(`/category/${categoryToDelete.id}`);
+      setCategories(categories.filter((cat) => cat.id !== categoryToDelete.id));
+      setShowDeleteModal(false);
+      setCategoryToDelete(null);
+      toast.success("Category deleted successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Error deleting category", {
+        position: "top-right",
+        autoClose: 3000,
+      });
     }
   };
 
@@ -154,19 +171,13 @@ const AdminCategories = () => {
                     <FaEdit />
                   </button>
                   <button
-                    onClick={() => handleDeleteCategory(category.id)}
+                    onClick={() => handleDeleteCategory(category)}
                     className="btn btn-ghost btn-sm text-red-600"
                   >
                     <FaTrash />
                   </button>
                 </div>
               </div>
-
-              {category.description && (
-                <p className="text-base-content/70 text-sm mb-4">
-                  {category.description}
-                </p>
-              )}
 
               <div className="flex justify-between items-center text-sm opacity-70">
                 <span>{category._count?.products || 0} products</span>
@@ -213,20 +224,6 @@ const AdminCategories = () => {
                 />
               </div>
 
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-medium">Description</span>
-                </label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  rows="3"
-                  className="textarea textarea-bordered w-full"
-                  placeholder="Enter category description..."
-                />
-              </div>
-
               <div className="modal-action mt-6">
                 <button
                   type="button"
@@ -240,6 +237,44 @@ const AdminCategories = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && categoryToDelete && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg text-error mb-4">
+              🗑️ Delete Category
+            </h3>
+            <p className="py-4">
+              Are you sure you want to delete category{" "}
+              <strong className="text-primary">
+                "{categoryToDelete.name}"
+              </strong>
+              ?
+              {categoryToDelete._count?.products > 0 && (
+                <span className="block mt-2 text-warning">
+                  ⚠️ This category has {categoryToDelete._count.products}{" "}
+                  product(s) associated with it.
+                </span>
+              )}
+            </p>
+            <div className="modal-action">
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setCategoryToDelete(null);
+                }}
+                className="btn btn-outline"
+              >
+                Cancel
+              </button>
+              <button onClick={confirmDeleteCategory} className="btn btn-error">
+                Delete Category
+              </button>
+            </div>
           </div>
         </div>
       )}
