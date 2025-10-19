@@ -114,23 +114,23 @@ const AboutSection = () => {
     {
       icon: "✨",
       title: "Timeless Elegance",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco."
+      description: "Pieces that pair with everything — clean lines, classic silhouettes, and a touch of shine so you look polished from coffee runs to evening events.",
     },
     {
       icon: "💎",
       title: "Exceptional Quality",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco."
+      description: "Every item is vetted by our team and passes a multi‑point quality check. If it doesn’t meet our standard, it doesn’t make it to the shop.",
     },
     {
       icon: "🌿",
       title: "Sustainable Luxury",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco."
+      description: "We champion longer product lifecycles, responsible sourcing, and low‑impact packaging — luxury that feels good to wear and better to keep.",
     },
     {
       icon: "🎨",
       title: "Artisan Craftsmanship",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco."
-    }
+      description: "We partner with independent studios and select boutiques, bringing you small‑batch pieces with character you won’t find everywhere.",
+    },
   ];
 
   const milestones = [
@@ -173,7 +173,7 @@ const AboutSection = () => {
             Meets <span className="italic text-amber-200">Artistry</span>
           </h1>
           <p className="text-lg text-neutral-content/80 max-w-3xl mx-auto leading-relaxed font-light">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+            Aurora & Co curates modern luxury — from statement jewelry to heirloom‑worthy accessories — sourced from trusted makers and select boutiques. Ready to wear, verified for quality, and delivered with care.
           </p>
         </div>
 
@@ -185,23 +185,23 @@ const AboutSection = () => {
             </h2>
             <div className="h-px w-16 bg-gradient-to-r from-amber-300/50 to-transparent mb-6"></div>
             <p className="text-neutral-content/70 mb-6 font-light leading-relaxed">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+              We started as a small, carefully edited selection of pieces our friends kept borrowing. Today, we’re a destination for everyday elegance — a place to find the one item that completes your look without trying too hard.
             </p>
             <p className="text-neutral-content/70 mb-8 font-light leading-relaxed">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+              We don’t manufacture; we curate. Our team scouts labels with a point of view, checks materials and finishing, and brings them together in a seamless shopping experience you can trust.
             </p>
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-amber-200">
                 <span className="text-2xl">→</span>
-                <span className="font-light">Handcrafted Excellence</span>
+                <span className="font-light">Expertly Curated Selection</span>
               </div>
               <div className="flex items-center gap-3 text-amber-200">
                 <span className="text-2xl">→</span>
-                <span className="font-light">Ethically Sourced Materials</span>
+                <span className="font-light">Certified Materials & Vendors</span>
               </div>
               <div className="flex items-center gap-3 text-amber-200">
                 <span className="text-2xl">→</span>
-                <span className="font-light">Timeless Design Philosophy</span>
+                <span className="font-light">Effortless, Secure Checkout</span>
               </div>
             </div>
           </div>
@@ -209,7 +209,7 @@ const AboutSection = () => {
             <div className="backdrop-blur-xl bg-white/5 border border-white/10 p-2">
               <img 
                 src="/hero-image.png" 
-                alt="Aurora & Co Craftsmanship" 
+                alt="Aurora & Co — Curated Luxury" 
                 className="w-full h-[500px] object-cover"
                 onError={(e)=>{e.target.src='/hero-image.png'}}
               />
@@ -266,7 +266,7 @@ const AboutSection = () => {
             </h2>
             <div className="h-px w-16 bg-gradient-to-r from-transparent via-amber-300 to-transparent mx-auto mb-6"></div>
             <p className="text-neutral-content/70 max-w-2xl mx-auto font-light">
-              Behind every piece of Aurora & Co jewelry is a team of passionate individuals dedicated to perfection and artistry.
+              Behind every piece we carry is a maker with vision. Our team brings their work together so you can discover your next favorite thing in one beautiful place.
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -284,7 +284,7 @@ const AboutSection = () => {
               Begin Your <span className="italic text-amber-200">Journey</span>
             </h3>
             <p className="text-neutral-content/70 mb-8 font-light leading-relaxed">
-              Discover our curated collections and find the piece that speaks to your soul. Each creation is waiting to become part of your story.
+              Explore new arrivals, limited drops, and editor’s picks — curated for everyday luxury. Find the piece that feels unmistakably you.
             </p>
             <button className="backdrop-blur-xl bg-amber-400/10 border border-amber-300/50 text-amber-200 px-8 py-3 font-light tracking-wider uppercase text-sm transition-all duration-500 hover:bg-amber-400/20 hover:border-amber-300/80 hover:scale-105">
               Explore Collections
