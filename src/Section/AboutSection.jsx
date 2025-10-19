@@ -111,22 +111,22 @@ const AboutSection = () => {
     {
       icon: "✨",
       title: "Timeless Elegance",
-      description: "Koleksi kami dirancang klasik sekaligus modern dan mudah dipadu, menawan di setiap momen, dan tetap relevan dari musim ke musim."
+      description: "Our collections are designed to be both classic and modern, easy to style, captivating in every moment, and relevant season after season."
     },
     {
       icon: "💎",
       title: "Exceptional Quality",
-      description: "Material premium dan detail presisi, melalui kontrol kualitas berlapis agar nyaman dipakai setiap hari dan awet bertahun-tahun."
+      description: "Premium materials and precise detailing, backed by layered quality control for everyday comfort and durability that lasts for years."
     },
     {
       icon: "🌿",
       title: "Sustainable Luxury",
-      description: "Kami memilih bahan yang lebih bertanggung jawab, proses produksi minim limbah, dan kemasan ramah lingkungan serta kemewahan yang peduli bumi."
+      description: "We choose more responsible materials, low-waste production, and eco-friendly packaging—a luxury that cares for the planet."
     },
     {
       icon: "🎨",
-      title: "Artisan Craftsmanship",
-      description: "Setiap produk dikerjakan pengrajin berpengalaman dengan sentuhan tangan, menghadirkan karakter unik dan finishing yang rapi."
+      title: "Precision Manufacturing",
+      description: "Made with modern manufacturing standards, consistent finishes, and rigorous inspections for dependable, repeatable quality."
     }
   ];
 
@@ -170,7 +170,7 @@ const AboutSection = () => {
             Meets <span className="italic text-amber-200">Artistry</span>
           </h1>
           <p className="text-lg text-neutral-content/80 max-w-3xl mx-auto leading-relaxed font-light">
-            Aurora hadir sebagai rumah bagi koleksi premium yang memadukan elegansi abadi dengan kenyamanan modern. Kami merancang produk yang mudah dipadu, menawan di setiap momen, dan tahan lama untuk menemani perjalanan Anda.
+            Aurora is a home for premium collections that blend timeless elegance with modern comfort. We design products that are easy to style, captivating in every moment, and made to accompany your journey for years.
           </p>
         </div>
 
@@ -182,19 +182,19 @@ const AboutSection = () => {
             </h2>
             <div className="h-px w-16 bg-gradient-to-r from-amber-300/50 to-transparent mb-6"></div>
             <p className="text-neutral-content/70 mb-6 font-light leading-relaxed">
-              Berawal dari ketertarikan pada desain yang sederhana namun bermakna, kami membangun Aurora dengan tujuan menghadirkan kualitas tanpa kompromi. Setiap material dipilih dengan cermat, melalui proses produksi rapi dan kontrol kualitas berlapis.
+              Born from a passion for simple yet meaningful design, we built Aurora to deliver uncompromising quality. Every material is carefully selected, guided by meticulous production and layered quality control.
             </p>
             <p className="text-neutral-content/70 mb-8 font-light leading-relaxed">
-              Kami juga berkomitmen pada praktik yang lebih bertanggung jawab, mulai dari bahan yang lebih ramah lingkungan hingga kemasan minim limbah. Hasilnya adalah produk dengan karakter hangat dan sentuhan pengrajin, siap melengkapi gaya Anda dari hari kerja hingga momen istimewa.
+              We are also committed to more responsible practices-from more eco-friendly materials to low-waste packaging. The result is a product with warm character and a polished finish, ready to complement your style from workdays to special moments.
             </p>
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-amber-200">
                 <span className="text-2xl">→</span>
-                <span className="font-light">Handcrafted Excellence</span>
+                <span className="font-light">Trusted Quality Assurance</span>
               </div>
               <div className="flex items-center gap-3 text-amber-200">
                 <span className="text-2xl">→</span>
-                <span className="font-light">Ethically Sourced Materials</span>
+                <span className="font-light">Responsible Materials</span>
               </div>
               <div className="flex items-center gap-3 text-amber-200">
                 <span className="text-2xl">→</span>
@@ -206,7 +206,7 @@ const AboutSection = () => {
             <div className="backdrop-blur-xl bg-white/5 border border-white/10 p-2">
               <img 
                 src="/hero-image.png" 
-                alt="Aurora & Co Craftsmanship" 
+                alt="Aurora & Co Quality" 
                 className="w-full h-[500px] object-cover"
                 onError={(e)=>{e.target.src='/hero-image.png'}}
               />
@@ -259,11 +259,11 @@ const AboutSection = () => {
         <div className="mb-20">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-light text-neutral-content mb-4 tracking-wide font-playfair">
-              Meet the <span className="italic text-amber-200">Artisans</span>
+              Meet the <span className="italic text-amber-200">Team</span>
             </h2>
             <div className="h-px w-16 bg-gradient-to-r from-transparent via-amber-300 to-transparent mx-auto mb-6"></div>
             <p className="text-neutral-content/70 max-w-2xl mx-auto font-light">
-              Behind every piece of Aurora & Co jewelry is a team of passionate individuals dedicated to perfection and artistry.
+              Behind every Aurora & Co product is a team dedicated to quality, innovation, and customer experience.
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
