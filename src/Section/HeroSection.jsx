@@ -1,7 +1,39 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
+import { checkUserAuth } from "../api";
 
 const HeroSection = () => {
+  const [isAuth, setIsAuth] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+
+    const verifyAuth = async () => {
+      try {
+        const res = await checkUserAuth();
+        if (!active) return;
+
+        if (res?.status === "success" && res?.user) {
+          setIsAuth(true);
+        } else {
+          setIsAuth(false);
+        }
+      } catch (error) {
+        if (active) {
+          setIsAuth(false);
+        }
+      }
+    };
+
+    verifyAuth();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const showRegisterCta = isAuth === false;
+
   return (
     <section className="relative">
       <div className="custom-container py-24">
@@ -25,15 +57,17 @@ const HeroSection = () => {
               your story.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
-              <NavLink
-                to="/register"
-                className="w-full sm:w-auto"
-                aria-label="Register"
-              >
-                <span className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3 text-sm uppercase tracking-[0.3em] font-light bg-amber-400/20 border border-amber-300/60 text-amber-100 hover:bg-amber-400/30 hover:border-amber-200/80 transition-all duration-500 rounded-full">
-                  Register
-                </span>
-              </NavLink>
+              {showRegisterCta && (
+                <NavLink
+                  to="/register"
+                  className="w-full sm:w-auto"
+                  aria-label="Register"
+                >
+                  <span className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3 text-sm uppercase tracking-[0.3em] font-light bg-amber-400/20 border border-amber-300/60 text-amber-100 hover:bg-amber-400/30 hover:border-amber-200/80 transition-all duration-500 rounded-full">
+                    Register
+                  </span>
+                </NavLink>
+              )}
               <NavLink
                 to="/store"
                 className="w-full sm:w-auto"
