@@ -38,7 +38,7 @@ const AdminOrders = () => {
         return <FaSpinner className="text-yellow-500" />;
       case "shipped":
         return <FaTruck className="text-purple-500" />;
-      case "completed":
+      case "received":
         return <FaCheckCircle className="text-green-500" />;
       case "cancelled":
         return <FaBan className="text-red-500" />;
@@ -53,7 +53,7 @@ const AdminOrders = () => {
         return "badge-warning";
       case "shipped":
         return "badge-secondary";
-      case "completed":
+      case "received":
         return "badge-success";
       case "cancelled":
         return "badge-error";
@@ -101,10 +101,10 @@ const AdminOrders = () => {
     }
   };
 
-  const handleUpdateCompleted = async (orderId) => {
+  const handleUpdateReceived = async (orderId) => {
     try {
-      await updateOrderStatus(orderId, "completed");
-      toast.success("Order status updated to completed");
+      await updateOrderStatus(orderId, "received");
+      toast.success("Order status updated to received");
       fetchOrders();
     } catch (error) {
       console.error("Error updating order status:", error);
@@ -141,7 +141,7 @@ const AdminOrders = () => {
         </p>
       </div>
 
-      {/* Stats (Processing removed) */}
+      {/* Stats */}
       <div className="stats stats-vertical lg:stats-horizontal shadow mb-8">
         <div className="stat">
           <div className="stat-figure text-primary">
@@ -175,9 +175,9 @@ const AdminOrders = () => {
           <div className="stat-figure text-success">
             <FaCheckCircle className="text-2xl" />
           </div>
-          <div className="stat-title">Completed</div>
+          <div className="stat-title">Received</div>
           <div className="stat-value text-success">
-            {orders.filter((o) => o.status === "completed").length}
+            {orders.filter((o) => o.status === "received").length}
           </div>
         </div>
       </div>
@@ -274,16 +274,24 @@ const AdminOrders = () => {
                           className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
                         >
                           <li>
-                            <a onClick={() => handleUpdatePending(order.id)}>Change to pending</a>
+                            <a onClick={() => handleUpdatePending(order.id)}>
+                              Change to pending
+                            </a>
                           </li>
                           <li>
-                            <a onClick={() => handleUpdateShipped(order.id)}>Change to shipped</a>
+                            <a onClick={() => handleUpdateShipped(order.id)}>
+                              Change to shipped
+                            </a>
                           </li>
                           <li>
-                            <a onClick={() => handleUpdateCompleted(order.id)}>Change to received</a>
+                            <a onClick={() => handleUpdateReceived(order.id)}>
+                              Change to received
+                            </a>
                           </li>
                           <li>
-                            <a onClick={() => handleUpdateCancelled(order.id)}>Change to cancelled</a>
+                            <a onClick={() => handleUpdateCancelled(order.id)}>
+                              Change to cancelled
+                            </a>
                           </li>
                         </ul>
                       </div>

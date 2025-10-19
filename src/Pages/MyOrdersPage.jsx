@@ -1,32 +1,33 @@
+// src/Pages/MyOrdersPage.jsx
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-// import { getUserOrders, getUserOrdersByStatus } from "../api";
+import { getUserOrders, getUserOrdersByStatus } from "../api";
 import { FaClipboardList, FaShippingFast, FaCheckCircle } from "react-icons/fa";
 import { PiHourglassHighFill } from "react-icons/pi";
 
 const statusFilters = [
   {
     key: "all",
-    label: "Semua",
-    description: "Semua pesanan terbaru kamu",
+    label: "All",
+    description: "All of your orders",
     icon: <FaClipboardList className="w-5 h-5" />,
   },
   {
     key: "pending",
-    label: "Menunggu",
-    description: "Pesanan yang sedang diproses",
+    label: "Pending",
+    description: "Orders that are pending",
     icon: <PiHourglassHighFill className="w-5 h-5" />,
   },
   {
     key: "shipped",
-    label: "Dikirim",
-    description: "Pesanan yang sedang dikirim",
+    label: "Shipped",
+    description: "Orders that are on the way",
     icon: <FaShippingFast className="w-5 h-5" />,
   },
   {
     key: "received",
-    label: "Selesai",
-    description: "Pesanan yang sudah diterima",
+    label: "Received",
+    description: "Orders you have received",
     icon: <FaCheckCircle className="w-5 h-5" />,
   },
 ];
@@ -37,19 +38,28 @@ const statusStyles = {
   received: "bg-emerald-100 text-emerald-700 border-emerald-200",
 };
 
+const toNumber = (val) => {
+  if (typeof val === "number") return val;
+  if (typeof val === "string") {
+    const n = Number(val);
+    return Number.isNaN(n) ? 0 : n;
+  }
+  return 0;
+};
+
 const formatCurrency = (value) => {
-  if (typeof value !== "number") return "-";
-  return value.toLocaleString("id-ID", {
+  const num = toNumber(value);
+  return num.toLocaleString("en-US", {
     style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
+    currency: "USD",
+    minimumFractionDigits: 2,
   });
 };
 
 const formatDate = (value) => {
   if (!value) return "-";
   const date = new Date(value);
-  return date.toLocaleString("id-ID", {
+  return date.toLocaleString("en-US", {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -85,7 +95,7 @@ const MyOrdersPage = () => {
         if (!isMounted) return;
         const status = err?.response?.status;
         const message =
-          err?.response?.data?.message || "Gagal memuat data pesanan.";
+          err?.response?.data?.message || "Failed to load your orders.";
         setError(message);
 
         if (status === 401) {
@@ -97,7 +107,6 @@ const MyOrdersPage = () => {
     };
 
     fetchOrders();
-
     return () => {
       isMounted = false;
     };
@@ -105,6 +114,7 @@ const MyOrdersPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-50">
+      {/* Hero */}
       <section className="relative h-[320px] w-full overflow-hidden">
         <img
           src="/hero-image.png"
@@ -118,26 +128,28 @@ const MyOrdersPage = () => {
               <FaClipboardList className="h-5 w-5" />
             </span>
             <h1 className="mt-6 text-4xl font-light tracking-wide md:text-5xl">
-              Riwayat Pesanan Kamu
+              Your Order History
             </h1>
             <p className="mt-3 text-sm font-light text-amber-100/80 md:text-base">
-              Pantau setiap pesanan dari Aurora &amp; Co dalam satu tempat.
-              Gunakan filter untuk melihat progres pengirimanmu.
+              Track every Aurora &amp; Co order in one place. Use filters to
+              check your delivery progress.
             </p>
           </div>
         </div>
       </section>
 
+      {/* Content */}
       <section className="mt-12 pb-16 relative z-10">
         <div className="max-w-6xl mx-auto px-6">
           <div className="rounded-3xl border border-white/40 bg-white/95 p-8 shadow-2xl shadow-slate-900/10 backdrop-blur-sm">
             <div className="grid gap-10">
+              {/* Filters */}
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 {statusFilters.map((item) => (
                   <button
                     key={item.key}
                     onClick={() => setActiveFilter(item.key)}
-                    className={`group rounded-xl border px-5 py-4 text-left transition-all duration-300 ${
+                    className={`group cursor-pointer rounded-xl border px-5 py-4 text-left transition-all duration-300 ${
                       activeFilter === item.key
                         ? "border-amber-400 bg-white shadow-lg shadow-amber-500/10 -translate-y-1"
                         : "border-slate-200 bg-white/70 hover:border-amber-200 hover:-translate-y-1"
@@ -162,12 +174,13 @@ const MyOrdersPage = () => {
                 ))}
               </div>
 
+              {/* Orders List */}
               <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
                 {loading ? (
                   <div className="p-12 text-center">
                     <div className="mx-auto h-12 w-12 animate-spin rounded-full border-2 border-amber-300 border-t-transparent"></div>
                     <p className="mt-4 text-sm text-slate-500">
-                      Memuat data pesanan...
+                      Loading your orders…
                     </p>
                   </div>
                 ) : error ? (
@@ -177,8 +190,8 @@ const MyOrdersPage = () => {
                 ) : orders.length === 0 ? (
                   <div className="p-12 text-center">
                     <p className="text-sm text-slate-500">
-                      Belum ada pesanan pada kategori ini. Yuk lanjut belanja di
-                      Store kami!
+                      No orders found for this category. Visit our store to
+                      start shopping!
                     </p>
                   </div>
                 ) : (
@@ -207,7 +220,7 @@ const MyOrdersPage = () => {
                             {order.address_text && (
                               <p className="mt-3 text-sm text-slate-600">
                                 <span className="font-medium text-slate-700">
-                                  Alamat Pengiriman:
+                                  Shipping Address:
                                 </span>{" "}
                                 {order.address_text}
                               </p>
@@ -215,7 +228,7 @@ const MyOrdersPage = () => {
                           </div>
                           <div className="text-left lg:text-right">
                             <p className="text-xs uppercase tracking-wide text-slate-500">
-                              Total Pembayaran
+                              Total Payment
                             </p>
                             <p className="text-2xl font-semibold text-slate-900">
                               {formatCurrency(order.total)}
@@ -225,7 +238,7 @@ const MyOrdersPage = () => {
 
                         <div className="mt-6 rounded-xl border border-slate-100 bg-slate-50/50 p-4">
                           <p className="text-xs uppercase tracking-wide text-slate-400">
-                            Item Pesanan
+                            Order Items
                           </p>
                           <div className="mt-3 space-y-3">
                             {order.order_items?.map((item) => (
@@ -235,10 +248,10 @@ const MyOrdersPage = () => {
                               >
                                 <div>
                                   <p className="text-sm font-medium text-slate-800">
-                                    {item.product?.name || "Produk"}
+                                    {item.product?.name || "Product"}
                                   </p>
                                   <p className="text-xs text-slate-500">
-                                    Qty: {item.qty} &middot; Harga:{" "}
+                                    Qty: {item.qty} &middot; Price:{" "}
                                     {formatCurrency(item.price)}
                                   </p>
                                 </div>
@@ -254,6 +267,7 @@ const MyOrdersPage = () => {
                   </ul>
                 )}
               </div>
+              {/* End Orders List */}
             </div>
           </div>
         </div>
