@@ -93,50 +93,31 @@ const StorePage = () => {
   };
 
   return (
-    <section
-      className="relative min-h-screen py-20 overflow-hidden"
-      style={{
-        backgroundImage: "url(/hero-image.png)",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundAttachment: "fixed",
-      }}
-    >
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-amber-950/85 to-slate-900/90"></div>
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/3 w-[28rem] h-[28rem] bg-amber-600/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-[26rem] h-[26rem] bg-yellow-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute -top-10 right-0 w-[20rem] h-[20rem] bg-white/5 rounded-full blur-3xl opacity-20"></div>
-      </div>
-
-      <div className="relative custom-container">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-block mb-6">
-            <div className="h-px w-12 bg-gradient-to-r from-transparent via-amber-400 to-transparent mb-4 mx-auto"></div>
-            <span className="text-xs font-light tracking-[0.3em] text-amber-200 uppercase">
-              Discover The Collection
+    <section className="min-h-screen py-8 bg-gray-50">
+      <div className="custom-container">
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <div className="mb-4">
+            <span className="text-sm font-medium tracking-wide text-blue-600 uppercase">
+              Browse Our Products
             </span>
-            <div className="h-px w-12 bg-gradient-to-r from-transparent via-amber-400 to-transparent mt-4 mx-auto"></div>
           </div>
-          <h1 className="text-5xl md:text-6xl font-light text-neutral-content font-playfair mb-6">
-            Curated Pieces For{" "}
-            <span className="italic text-amber-200">Every Story</span>
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Find What You <span className="text-blue-600">Love</span>
           </h1>
-          <p className="text-neutral-content/70 font-light leading-relaxed">
-            Explore our handpicked selection of timeless creations. Filter by
-            category, search for specific pieces, and find the design that
-            complements your personal narrative.
+          <p className="text-gray-600 leading-relaxed">
+            Explore our collection. Filter by category, search for specific items, 
+            and find exactly what you're looking for.
           </p>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-[280px_minmax(0,1fr)] xl:gap-10">
-          <aside className="space-y-6">
-            <div className="backdrop-blur-xl bg-white/5 border border-white/10 p-6 rounded-2xl shadow-lg shadow-slate-900/25">
+        <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+          <aside className="space-y-4">
+            <div className="bg-white border border-gray-200 p-6 rounded-lg shadow-sm">
               <div className="flex items-center justify-between mb-4">
-                <p className="text-xs uppercase tracking-[0.4em] text-amber-200">
+                <p className="text-sm font-semibold text-gray-900 uppercase">
                   Categories
                 </p>
-                <span className="text-[0.7rem] font-light text-neutral-content/60">
+                <span className="text-xs text-gray-500">
                   {categories.length} options
                 </span>
               </div>
@@ -145,17 +126,15 @@ const StorePage = () => {
                   const isActive = selectedCategory === category.id;
                   return (
                     <button
-                      className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-500 font-light tracking-wide ${
+                      className={`w-full text-left px-4 py-2.5 rounded-lg transition-all duration-200 font-medium text-sm ${
                         isActive
-                          ? "bg-amber-400/20 border border-amber-300/60 text-amber-100 shadow-lg shadow-amber-500/25"
-                          : "bg-white/5 border border-white/10 text-neutral-content/75 hover:bg-white/10 hover:border-amber-300/40 hover:text-amber-100"
+                          ? "bg-blue-600 text-white shadow-md"
+                          : "bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200"
                       }`}
                       key={category.id === null ? "all" : category.id}
                       onClick={() => handleCategorySelect(category.id)}
                     >
-                      <span className="uppercase text-xs tracking-[0.25em]">
-                        {category.name}
-                      </span>
+                      {category.name}
                     </button>
                   );
                 })}
@@ -163,20 +142,20 @@ const StorePage = () => {
             </div>
           </aside>
 
-          <div className="space-y-8">
-            <div className="backdrop-blur-xl bg-white/5 border border-white/10 p-6 rounded-2xl shadow-lg shadow-slate-900/20">
+          <div className="space-y-6">
+            <div className="bg-white border border-gray-200 p-4 rounded-lg shadow-sm">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div className="join w-full md:max-w-md">
                   <input
                     type="text"
-                    className="input join-item w-full bg-white/10 border border-white/20 text-neutral-content placeholder:text-neutral-content/60"
+                    className="input join-item w-full bg-white border border-gray-300 text-gray-900 placeholder:text-gray-400"
                     placeholder="Search by product name"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   />
                   <button
-                    className="btn join-item bg-amber-400/20 border border-amber-300/60 text-amber-100 hover:bg-amber-400/30"
+                    className="btn join-item bg-blue-600 border-blue-600 text-white hover:bg-blue-700"
                     onClick={handleSearch}
                   >
                     <IoIosSearch />
@@ -187,13 +166,13 @@ const StorePage = () => {
                   <div
                     tabIndex={0}
                     role="button"
-                    className="btn bg-white/10 border border-white/20 text-neutral-content hover:bg-white/20 hover:border-amber-300/40"
+                    className="btn bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
                   >
                     Sort <FaSort className="ml-2" />
                   </div>
                   <ul
                     tabIndex={0}
-                    className="dropdown-content menu bg-slate-900/90 backdrop-blur-xl rounded-box z-10 w-52 p-2 shadow-2xl border border-white/10 text-neutral-content"
+                    className="dropdown-content menu bg-white rounded-lg z-10 w-52 p-2 shadow-lg border border-gray-200"
                   >
                     <li>
                       <button onClick={() => handleSort("newest")}>
@@ -226,7 +205,7 @@ const StorePage = () => {
 
             {loading ? (
               <div className="flex justify-center items-center py-24">
-                <div className="loading loading-spinner loading-lg text-amber-200"></div>
+                <div className="loading loading-spinner loading-lg text-blue-600"></div>
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
@@ -244,26 +223,26 @@ const StorePage = () => {
                     />
                   ))
                 ) : (
-                  <div className="col-span-full text-center py-16 backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl text-neutral-content/70">
+                  <div className="col-span-full text-center py-16 bg-white border border-gray-200 rounded-lg text-gray-500">
                     No products found. Try adjusting your filters.
                   </div>
                 )}
               </div>
             )}
 
-            <div className="backdrop-blur-xl bg-white/5 border border-white/10 px-4 py-3 rounded-full shadow-lg shadow-slate-900/20 flex items-center justify-center gap-3">
+            <div className="bg-white border border-gray-200 px-4 py-3 rounded-lg shadow-sm flex items-center justify-center gap-3">
               <button
-                className="btn btn-sm bg-white/10 border border-white/20 text-neutral-content hover:bg-white/20 hover:border-amber-300/40"
+                className="btn btn-sm bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
                 disabled={!pagination.hasPreviousPage}
                 onClick={() => handlePageChange(pagination.currentPage - 1)}
               >
                 <FaChevronLeft />
               </button>
-              <span className="text-sm font-light uppercase tracking-[0.3em] text-neutral-content/80">
+              <span className="text-sm font-medium text-gray-700">
                 {pagination.currentPage} / {pagination.totalPages}
               </span>
               <button
-                className="btn btn-sm bg-white/10 border border-white/20 text-neutral-content hover:bg-white/20 hover:border-amber-300/40"
+                className="btn btn-sm bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
                 disabled={!pagination.hasNextPage}
                 onClick={() => handlePageChange(pagination.currentPage + 1)}
               >

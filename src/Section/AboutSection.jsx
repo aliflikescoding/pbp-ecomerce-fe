@@ -10,46 +10,34 @@ const TeamCard = ({ name, role, imgSrc, index }) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className={`
-        relative overflow-hidden backdrop-blur-xl bg-white/5 border border-white/10
-        transition-all duration-700
-        ${isHovered ? 'border-amber-300/50 shadow-2xl shadow-amber-500/10 scale-105' : ''}
+        relative overflow-hidden bg-white border border-gray-200 rounded-xl
+        transition-all duration-300
+        ${isHovered ? 'border-blue-300 shadow-lg -translate-y-1' : 'shadow'}
       `}>
         {/* Image container */}
         <div className="relative h-80 overflow-hidden">
           <img
             src={imgSrc}
             alt={name}
-            className={`w-full h-full object-cover transition-transform duration-700 ${isHovered ? 'scale-110' : 'scale-100'}`}
+            className={`w-full h-full object-cover transition-transform duration-500 ${isHovered ? 'scale-110' : 'scale-100'}`}
             onError={(event) => {
               event.currentTarget.onerror = null;
               event.currentTarget.src = "/hero-image.png";
             }}
           />
           {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent"></div>
-          
-          {/* Shimmer effect */}
-          <div className={`
-            absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent
-            transition-transform duration-1000
-            ${isHovered ? 'translate-x-full' : '-translate-x-full'}
-          `}></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 via-transparent to-transparent"></div>
         </div>
 
         {/* Content */}
-        <div className="relative p-6">
-          <div className="h-px w-12 bg-gradient-to-r from-amber-300/50 to-transparent mb-4"></div>
-          <h4 className="text-xl font-light text-neutral-content mb-2 tracking-wide font-playfair">
+        <div className="relative p-6 bg-white">
+          <h4 className="text-xl font-semibold text-gray-900 mb-2">
             {name}
           </h4>
-          <p className="text-sm text-amber-200 font-light tracking-wider uppercase">
+          <p className="text-sm text-blue-600 font-medium uppercase">
             {role}
           </p>
         </div>
-
-        {/* Corner accents */}
-        <div className="absolute top-0 right-0 w-16 h-16 border-t border-r border-amber-300/20"></div>
-        <div className="absolute bottom-0 left-0 w-16 h-16 border-b border-l border-amber-300/20"></div>
       </div>
     </div>
   );
@@ -65,21 +53,20 @@ const ValueCard = ({ icon, title, description }) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className={`
-        backdrop-blur-xl bg-white/5 border border-white/10 p-8
-        transition-all duration-700
-        ${isHovered ? 'border-amber-300/50 shadow-xl shadow-amber-500/10 -translate-y-2' : ''}
+        bg-white border border-gray-200 rounded-xl p-6
+        transition-all duration-300
+        ${isHovered ? 'border-blue-300 shadow-lg -translate-y-1' : 'shadow'}
       `}>
         <div className={`
-          text-4xl mb-6 transition-transform duration-700
-          ${isHovered ? 'scale-110 rotate-6' : 'scale-100'}
+          text-4xl mb-4 transition-transform duration-300
+          ${isHovered ? 'scale-110' : 'scale-100'}
         `}>
           {icon}
         </div>
-        <div className="h-px w-12 bg-gradient-to-r from-amber-300/50 to-transparent mb-4"></div>
-        <h4 className="text-xl font-light text-neutral-content mb-3 tracking-wide font-playfair">
+        <h4 className="text-xl font-semibold text-gray-900 mb-3">
           {title}
         </h4>
-        <p className="text-neutral-content/70 font-light text-sm leading-relaxed">
+        <p className="text-gray-600 text-sm leading-relaxed">
           {description}
         </p>
       </div>
@@ -113,119 +100,99 @@ const AboutSection = () => {
   const values = [
     {
       icon: "✨",
-      title: "Timeless Elegance",
-      description: "Pieces that pair with everything — clean lines, classic silhouettes, and a touch of shine so you look polished from coffee runs to evening events.",
+      title: "Quality Products",
+      description: "Every item is carefully selected and passes our quality standards. We only offer products that meet our high expectations.",
     },
     {
       icon: "💎",
-      title: "Exceptional Quality",
-      description: "Every item is vetted by our team and passes a multi‑point quality check. If it doesn’t meet our standard, it doesn’t make it to the shop.",
+      title: "Best Prices",
+      description: "Competitive pricing with regular promotions and discounts. Get the best value for your money with us.",
     },
     {
       icon: "🌿",
-      title: "Sustainable Luxury",
-      description: "We champion longer product lifecycles, responsible sourcing, and low‑impact packaging — luxury that feels good to wear and better to keep.",
+      title: "Eco-Friendly",
+      description: "We care about the environment. Our packaging is sustainable and we work with responsible suppliers.",
     },
     {
       icon: "🎨",
-      title: "Artisan Craftsmanship",
-      description: "We partner with independent studios and select boutiques, bringing you small‑batch pieces with character you won’t find everywhere.",
+      title: "Wide Selection",
+      description: "Browse through thousands of products across multiple categories. Find exactly what you're looking for.",
     },
   ];
 
   const milestones = [
-    { year: "2020", event: "Aurora & Co Founded" },
-    { year: "2021", event: "First Flagship Store Opens" },
-    { year: "2023", event: "International Expansion" },
-    { year: "2024", event: "Sustainability Award Winner" },
+    { year: "2020", event: "Store Founded" },
+    { year: "2021", event: "Reached 10,000 Customers" },
+    { year: "2023", event: "Expanded Product Range" },
+    { year: "2024", event: "Customer Satisfaction Award" },
   ];
 
   return (
-    <section 
-      className="relative min-h-screen py-20 overflow-hidden"
-      style={{
-        backgroundImage: "url(/hero-image.png)",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundAttachment: "fixed",
-      }}
-    >
-      {/* Dark elegant overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-amber-950/85 to-slate-900/90"></div>
-
-      {/* Luxury light effects */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-amber-600/15 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-yellow-600/10 rounded-full blur-3xl"></div>
-      </div>
-
-      <div className="relative max-w-7xl mx-auto px-6">
+    <section className="min-h-screen py-16 bg-gray-50">
+      <div className="max-w-7xl mx-auto px-6">
         {/* Hero Header */}
-        <div className="text-center mb-20">
-          <div className="inline-block mb-6">
-            <div className="h-px w-12 bg-gradient-to-r from-transparent via-amber-400 to-transparent mb-4 mx-auto"></div>
-            <span className="text-xs font-light tracking-[0.3em] text-amber-200 uppercase">Our Story</span>
-            <div className="h-px w-12 bg-gradient-to-r from-transparent via-amber-400 to-transparent mt-4 mx-auto"></div>
+        <div className="text-center mb-16">
+          <div className="mb-4">
+            <span className="text-sm font-medium tracking-wide text-blue-600 uppercase">Our Story</span>
           </div>
-          <h1 className="text-5xl md:text-6xl font-light mb-6 text-neutral-content tracking-wide font-playfair">
-            Where <span className="italic">Brilliance</span>
-            <br />
-            Meets <span className="italic text-amber-200">Artistry</span>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900">
+            About Us
           </h1>
-          <p className="text-lg text-neutral-content/80 max-w-3xl mx-auto leading-relaxed font-light">
-            Aurora & Co curates modern luxury — from statement jewelry to heirloom‑worthy accessories — sourced from trusted makers and select boutiques. Ready to wear, verified for quality, and delivered with care.
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            We're an online store dedicated to bringing you quality products at great prices.
+            From the latest trends to everyday essentials, we've got you covered.
           </p>
         </div>
 
         {/* Our Story Section */}
-        <div className="grid md:grid-cols-2 gap-12 items-center mb-32">
+        <div className="grid md:grid-cols-2 gap-12 items-center mb-24">
           <div>
-            <h2 className="text-4xl font-light text-neutral-content mb-6 tracking-wide font-playfair">
-              The Aurora <span className="italic text-amber-200">Legacy</span>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">
+              Our Journey
             </h2>
-            <div className="h-px w-16 bg-gradient-to-r from-amber-300/50 to-transparent mb-6"></div>
-            <p className="text-neutral-content/70 mb-6 font-light leading-relaxed">
-              We started as a small, carefully edited selection of pieces our friends kept borrowing. Today, we’re a destination for everyday elegance — a place to find the one item that completes your look without trying too hard.
+            <p className="text-gray-600 mb-6 leading-relaxed">
+              What started as a small online store has grown into a trusted destination for
+              thousands of customers. We're committed to providing quality products, excellent
+              service, and a seamless shopping experience.
             </p>
-            <p className="text-neutral-content/70 mb-8 font-light leading-relaxed">
-              We don’t manufacture; we curate. Our team scouts labels with a point of view, checks materials and finishing, and brings them together in a seamless shopping experience you can trust.
+            <p className="text-gray-600 mb-8 leading-relaxed">
+              Every product in our catalog is carefully selected to ensure it meets our quality
+              standards. We work directly with suppliers to bring you the best prices without
+              compromising on quality.
             </p>
             <div className="space-y-3">
-              <div className="flex items-center gap-3 text-amber-200">
-                <span className="text-2xl">→</span>
-                <span className="font-light">Expertly Curated Selection</span>
+              <div className="flex items-center gap-3 text-blue-600">
+                <span className="text-2xl">✓</span>
+                <span className="font-medium">Carefully Selected Products</span>
               </div>
-              <div className="flex items-center gap-3 text-amber-200">
-                <span className="text-2xl">→</span>
-                <span className="font-light">Certified Materials & Vendors</span>
+              <div className="flex items-center gap-3 text-blue-600">
+                <span className="text-2xl">✓</span>
+                <span className="font-medium">Competitive Pricing</span>
               </div>
-              <div className="flex items-center gap-3 text-amber-200">
-                <span className="text-2xl">→</span>
-                <span className="font-light">Effortless, Secure Checkout</span>
+              <div className="flex items-center gap-3 text-blue-600">
+                <span className="text-2xl">✓</span>
+                <span className="font-medium">Fast & Secure Checkout</span>
               </div>
             </div>
           </div>
           <div className="relative">
-            <div className="backdrop-blur-xl bg-white/5 border border-white/10 p-2">
+            <div className="bg-white border border-gray-200 rounded-xl p-2 shadow-lg">
               <img 
                 src="/hero-image.png" 
-                alt="Aurora & Co — Curated Luxury" 
-                className="w-full h-[500px] object-cover"
+                alt="Our Store" 
+                className="w-full h-[500px] object-cover rounded-lg"
                 onError={(e)=>{e.target.src='/hero-image.png'}}
               />
-              <div className="absolute top-0 left-0 w-24 h-24 border-t border-l border-amber-300/30"></div>
-              <div className="absolute bottom-0 right-0 w-24 h-24 border-b border-r border-amber-300/30"></div>
             </div>
           </div>
         </div>
 
         {/* Values Section */}
-        <div className="mb-32">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-light text-neutral-content mb-4 tracking-wide font-playfair">
-              Our <span className="italic text-amber-200">Values</span>
+        <div className="mb-24">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              What We Stand For
             </h2>
-            <div className="h-px w-16 bg-gradient-to-r from-transparent via-amber-300 to-transparent mx-auto"></div>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {values.map((value, index) => (
@@ -235,22 +202,21 @@ const AboutSection = () => {
         </div>
 
         {/* Journey Timeline */}
-        <div className="mb-32">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-light text-neutral-content mb-4 tracking-wide font-playfair">
-              Our <span className="italic text-amber-200">Journey</span>
+        <div className="mb-24">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Our Milestones
             </h2>
-            <div className="h-px w-16 bg-gradient-to-r from-transparent via-amber-300 to-transparent mx-auto"></div>
           </div>
           <div className="max-w-3xl mx-auto">
-            <div className="space-y-8">
+            <div className="space-y-6">
               {milestones.map((milestone, index) => (
                 <div key={index} className="flex gap-6 items-start group">
-                  <div className="backdrop-blur-xl bg-white/5 border border-amber-300/30 px-6 py-3 transition-all duration-500 group-hover:border-amber-300/60 group-hover:bg-amber-400/10">
-                    <span className="text-2xl font-light text-amber-200 font-playfair">{milestone.year}</span>
+                  <div className="bg-blue-600 text-white px-6 py-3 rounded-lg transition-all duration-300 group-hover:bg-blue-700 group-hover:scale-105 shadow">
+                    <span className="text-xl font-bold">{milestone.year}</span>
                   </div>
                   <div className="flex-1 pt-2">
-                    <p className="text-lg text-neutral-content font-light">{milestone.event}</p>
+                    <p className="text-lg text-gray-700 font-medium">{milestone.event}</p>
                   </div>
                 </div>
               ))}
@@ -259,14 +225,14 @@ const AboutSection = () => {
         </div>
 
         {/* Team Section */}
-        <div className="mb-20">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-light text-neutral-content mb-4 tracking-wide font-playfair">
-              Meet the <span className="italic text-amber-200">Artisans</span>
+        <div className="mb-16">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Meet Our Team
             </h2>
-            <div className="h-px w-16 bg-gradient-to-r from-transparent via-amber-300 to-transparent mx-auto mb-6"></div>
-            <p className="text-neutral-content/70 max-w-2xl mx-auto font-light">
-              Behind every piece we carry is a maker with vision. Our team brings their work together so you can discover your next favorite thing in one beautiful place.
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              The people behind our success. Meet the team that works hard to bring you
+              the best shopping experience.
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -278,18 +244,17 @@ const AboutSection = () => {
 
         {/* CTA Section */}
         <div className="text-center">
-          <div className="inline-block backdrop-blur-xl bg-white/5 border border-white/10 px-12 py-12 max-w-3xl">
-            <div className="h-px w-16 bg-gradient-to-r from-transparent via-amber-300 to-transparent mb-6 mx-auto"></div>
-            <h3 className="text-3xl font-light text-neutral-content mb-4 tracking-wide font-playfair">
-              Begin Your <span className="italic text-amber-200">Journey</span>
+          <div className="inline-block bg-white border border-gray-200 rounded-xl px-12 py-12 max-w-3xl shadow-sm">
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              Start Shopping Today
             </h3>
-            <p className="text-neutral-content/70 mb-8 font-light leading-relaxed">
-              Explore new arrivals, limited drops, and editor’s picks — curated for everyday luxury. Find the piece that feels unmistakably you.
+            <p className="text-gray-600 mb-6 leading-relaxed">
+              Browse our latest products and discover great deals. Quality products,
+              competitive prices, and excellent service await you.
             </p>
-            <button className="backdrop-blur-xl bg-amber-400/10 border border-amber-300/50 text-amber-200 px-8 py-3 font-light tracking-wider uppercase text-sm transition-all duration-500 hover:bg-amber-400/20 hover:border-amber-300/80 hover:scale-105">
-              Explore Collections
+            <button className="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium transition-all duration-300 hover:bg-blue-700 hover:scale-105 shadow">
+              Browse Products
             </button>
-            <div className="h-px w-16 bg-gradient-to-r from-transparent via-amber-300 to-transparent mt-6 mx-auto"></div>
           </div>
         </div>
       </div>

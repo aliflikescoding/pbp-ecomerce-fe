@@ -65,35 +65,33 @@ const FaqSection = () => {
   ];
 
   return (
-    <section className="custom-container pb-12">
-      <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-[2rem] px-8 py-12 shadow-[0_40px_120px_-70px_rgba(0,0,0,0.9)]">
-        <div className="text-center text-neutral-content mb-10">
-          <div className="inline-block mb-6">
-            <div className="h-px w-10 bg-gradient-to-r from-transparent via-amber-400 to-transparent mb-4 mx-auto"></div>
-            <span className="text-xs font-light tracking-[0.3em] text-amber-200 uppercase">
-              Need Assistance?
+    <section className="custom-container py-16">
+      <div className="bg-white rounded-2xl px-8 py-12 shadow-lg border border-gray-200">
+        <div className="text-center mb-10">
+          <div className="mb-4">
+            <span className="text-sm font-medium tracking-wide text-blue-600 uppercase">
+              Need Help?
             </span>
-            <div className="h-px w-10 bg-gradient-to-r from-transparent via-amber-400 to-transparent mt-4 mx-auto"></div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-light font-playfair">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
             Frequently Asked Questions
           </h1>
         </div>
-        <div className="space-y-4">
+        <div className="space-y-3">
           {faqData.map((faq, index) => (
             <div
               key={faq.id}
-              className="collapse collapse-arrow bg-white/5 border border-white/10 text-neutral-content backdrop-blur-md rounded-2xl transition-all duration-500 hover:border-amber-300/50 hover:bg-white/10"
+              className="collapse collapse-arrow bg-gray-50 border border-gray-200 text-gray-900 rounded-lg transition-all duration-300 hover:border-blue-300 hover:bg-blue-50"
             >
               <input
                 type="radio"
                 name="faq-accordion"
                 defaultChecked={index === 0}
               />
-              <div className="collapse-title font-light text-lg tracking-wide">
+              <div className="collapse-title font-semibold text-base">
                 {faq.question}
               </div>
-              <div className="collapse-content text-sm text-neutral-content/70 leading-relaxed">
+              <div className="collapse-content text-sm text-gray-600 leading-relaxed">
                 {faq.answer}
               </div>
             </div>

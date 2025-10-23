@@ -64,118 +64,88 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-amber-950/40 to-slate-900">
-      {/* Subtle texture overlay */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 2px 2px, white 1px, transparent 0)`,
-          backgroundSize: '40px 40px'
-        }}></div>
-      </div>
-
-      {/* Elegant light accents - warm tones */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-amber-600/8 rounded-full blur-3xl"></div>
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-amber-500/8 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-yellow-700/5 rounded-full blur-3xl"></div>
-      </div>
-
-      <div className="relative">
-        {/* Top decorative line */}
-        <div className="h-px bg-gradient-to-r from-transparent via-amber-300/30 to-transparent"></div>
-
-        {/* Main Footer Content */}
-        <div className="max-w-7xl mx-auto px-6 py-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-12">
-            {/* Brand Section */}
-            <div className="lg:col-span-2">
-              <img
-                src="/logo-horizontal-white.svg"
-                alt="Aurora & Co"
-                className="w-48 h-auto mb-6 opacity-90"
-              />
-              <div className="h-px w-16 bg-gradient-to-r from-amber-300/50 to-transparent mb-4"></div>
-              <p className="text-lg text-white/90 italic mb-6 font-light" style={{ fontFamily: 'Playfair Display, serif' }}>
-                Where Elegance Meets Brilliance.
-              </p>
-              <p className="text-sm text-white/60 font-light leading-relaxed mb-6 max-w-sm">
-                Crafting timeless luxury jewelry with exceptional artistry and dedication to perfection since 2020.
-              </p>
-              
-              {/* Social Links */}
-              <div className="flex gap-3">
-                {socialLinks.map((social, index) => (
-                  <a
-                    key={social.name}
-                    href={social.url}
-                    className={`
-                      inline-flex items-center justify-center w-10 h-10 
-                      border border-amber-300/30 bg-amber-400/5 text-amber-200
-                      transition-all duration-500
-                      ${hoveredSocial === index ? 'border-amber-300/60 bg-amber-400/10 scale-110 rotate-6' : ''}
-                    `}
-                    onMouseEnter={() => setHoveredSocial(index)}
-                    onMouseLeave={() => setHoveredSocial(null)}
-                    aria-label={social.name}
-                  >
-                    {social.icon}
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            {/* Navigation Sections */}
-            {navSections.map((section, index) => (
-              <div key={index}>
-                <h6 className="text-sm font-light tracking-widest text-amber-200 uppercase mb-6">
-                  {section.title}
-                </h6>
-                <div className="h-px w-12 bg-gradient-to-r from-amber-300/30 to-transparent mb-4"></div>
-                <ul className="space-y-3">
-                  {section.links.map((link, linkIndex) => (
-                    <li key={linkIndex}>
-                      <a 
-                        href={link.to}
-                        className="group inline-flex items-center gap-2 text-white/70 font-light text-sm transition-all duration-300 hover:text-amber-200 hover:translate-x-1"
-                      >
-                        <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-amber-200">→</span>
-                        {link.name}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-
-          {/* Divider */}
-          <div className="h-px bg-gradient-to-r from-transparent via-amber-300/20 to-transparent my-8"></div>
-
-          {/* Bottom Section */}
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="text-white/60 text-sm font-light text-center md:text-left">
-              <p>© {new Date().getFullYear()} Aurora & Co. All rights reserved.</p>
-              <p className="text-xs mt-1">Crafted with passion and precision.</p>
-            </div>
+    <footer className="bg-gray-900 text-gray-300">
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-12">
+          {/* Brand Section */}
+          <div className="lg:col-span-2">
+            <img
+              src="/logo-horizontal.svg"
+              alt="Store Logo"
+              className="w-48 h-auto mb-6 brightness-0 invert"
+            />
+            <p className="text-lg text-white mb-4 font-semibold">
+              Your Trusted Online Store
+            </p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-6 max-w-sm">
+              Quality products with fast shipping and excellent customer service since 2020.
+            </p>
             
-            <div className="flex gap-6 text-xs">
-              <a href="#" className="text-white/60 hover:text-amber-200 transition-colors duration-300 font-light">
-                Privacy Policy
-              </a>
-              <span className="text-white/30">•</span>
-              <a href="#" className="text-white/60 hover:text-amber-200 transition-colors duration-300 font-light">
-                Terms of Service
-              </a>
-              <span className="text-white/30">•</span>
-              <a href="#" className="text-white/60 hover:text-amber-200 transition-colors duration-300 font-light">
-                Cookie Policy
-              </a>
+            {/* Social Links */}
+            <div className="flex gap-3">
+              {socialLinks.map((social, index) => (
+                <a
+                  key={social.name}
+                  href={social.url}
+                  className={`
+                    inline-flex items-center justify-center w-10 h-10 
+                    border border-gray-700 bg-gray-800 text-gray-400
+                    rounded-lg transition-all duration-300
+                    hover:border-blue-500 hover:bg-blue-500 hover:text-white hover:scale-110
+                  `}
+                  aria-label={social.name}
+                >
+                  {social.icon}
+                </a>
+              ))}
             </div>
           </div>
+
+          {/* Navigation Sections */}
+          {navSections.map((section, index) => (
+            <div key={index}>
+              <h6 className="text-sm font-semibold text-white uppercase mb-4">
+                {section.title}
+              </h6>
+              <ul className="space-y-3">
+                {section.links.map((link, linkIndex) => (
+                  <li key={linkIndex}>
+                    <a 
+                      href={link.to}
+                      className="text-gray-400 text-sm transition-colors duration-300 hover:text-blue-400"
+                    >
+                      {link.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
-        {/* Bottom decorative line */}
-        <div className="h-px bg-gradient-to-r from-transparent via-amber-300/30 to-transparent"></div>
+        {/* Divider */}
+        <div className="border-t border-gray-800 my-8"></div>
+
+        {/* Bottom Section */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="text-gray-400 text-sm text-center md:text-left">
+            <p>© {new Date().getFullYear()} Your Store. All rights reserved.</p>
+          </div>
+          
+          <div className="flex gap-6 text-xs">
+            <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors duration-300">
+              Privacy Policy
+            </a>
+            <span className="text-gray-600">•</span>
+            <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors duration-300">
+              Terms of Service
+            </a>
+            <span className="text-gray-600">•</span>
+            <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors duration-300">
+              Cookie Policy
+            </a>
+          </div>
+        </div>
       </div>
     </footer>
   );

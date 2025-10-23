@@ -23,8 +23,8 @@ const Header = () => {
   const [user, setUser] = useState(null);
 
   // Check which pages should have dark header
-  const darkPages = ["/", "/contact", "/about", "/store", "/my-orders"];
-  const isDarkPage = darkPages.includes(pathname);
+  const lightPages = ["/", "/contact", "/about", "/store", "/my-orders", "/cart"];
+  const isLightPage = lightPages.includes(pathname);
 
   useEffect(() => {
     const onScroll = () => setIsFixed(window.scrollY > 20);
@@ -102,15 +102,7 @@ const Header = () => {
       showMyOrdersShortcut && isAuth && user ? (
         <NavLink
           to="/my-orders"
-          className={`
-            inline-flex items-center justify-center w-10 h-10 
-            border transition-all duration-500
-            ${
-              isDarkPage
-                ? "border-amber-300/30 bg-amber-400/5 text-amber-200 hover:border-amber-300/60 hover:bg-amber-400/10 hover:scale-110"
-                : "border-slate-300 bg-slate-100 text-slate-700 hover:border-amber-400 hover:bg-amber-50 hover:scale-110"
-            }
-          `}
+          className="inline-flex items-center justify-center w-10 h-10 border-2 border-gray-300 bg-white text-gray-700 hover:border-blue-500 hover:bg-blue-50 hover:scale-110 transition-all duration-300 rounded-lg"
           aria-label="My Orders"
         >
           <FaClipboardList className="w-4 h-4" />
@@ -120,16 +112,8 @@ const Header = () => {
     if (authLoading) {
       return (
         <div className="flex items-center gap-3">
-          <div
-            className={`w-10 h-10 rounded animate-pulse ${
-              isDarkPage ? "bg-amber-400/20" : "bg-slate-200"
-            }`}
-          ></div>
-          <div
-            className={`w-20 h-10 rounded animate-pulse ${
-              isDarkPage ? "bg-amber-400/20" : "bg-slate-200"
-            }`}
-          ></div>
+          <div className="w-10 h-10 rounded bg-gray-200 animate-pulse"></div>
+          <div className="w-20 h-10 rounded bg-gray-200 animate-pulse"></div>
         </div>
       );
     }
@@ -140,30 +124,14 @@ const Header = () => {
           {myOrdersShortcut}
           <NavLink
             to="/cart"
-            className={`
-              inline-flex items-center justify-center w-10 h-10 
-              border transition-all duration-500
-              ${
-                isDarkPage
-                  ? "border-amber-300/30 bg-amber-400/5 text-amber-200 hover:border-amber-300/60 hover:bg-amber-400/10 hover:scale-110"
-                  : "border-slate-300 bg-slate-100 text-slate-700 hover:border-amber-400 hover:bg-amber-50 hover:scale-110"
-              }
-            `}
+            className="inline-flex items-center justify-center w-10 h-10 border-2 border-gray-300 bg-white text-gray-700 hover:border-blue-500 hover:bg-blue-50 hover:scale-110 transition-all duration-300 rounded-lg"
             aria-label="Cart"
           >
             <FaShoppingCart className="w-4 h-4" />
           </NavLink>
           <button
             onClick={handleLogout}
-            className={`
-              px-5 py-2 font-light tracking-wider uppercase text-sm 
-              transition-all duration-500
-              ${
-                isDarkPage
-                  ? "bg-amber-400/10 border border-amber-300/50 text-amber-200 hover:bg-amber-400/20 hover:border-amber-300/80 hover:scale-105"
-                  : "bg-slate-800 border border-slate-800 text-white hover:bg-slate-900 hover:scale-105"
-              }
-            `}
+            className="px-5 py-2 font-medium text-sm bg-blue-600 border-2 border-blue-600 text-white hover:bg-blue-700 hover:scale-105 transition-all duration-300 rounded-lg"
           >
             Logout
           </button>
@@ -176,31 +144,9 @@ const Header = () => {
       <>
         <NavLink
           to="/login"
-          className={`
-            px-5 py-2 font-light tracking-wider uppercase text-sm 
-            transition-all duration-500
-            ${
-              isDarkPage
-                ? "border border-amber-300/50 text-amber-200 hover:bg-amber-400/10 hover:border-amber-300/80 hover:scale-105"
-                : "border border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 hover:scale-105"
-            }
-          `}
+          className="px-5 py-2 font-medium text-sm border-2 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 hover:scale-105 transition-all duration-300 rounded-lg"
         >
           Login
-        </NavLink>
-        <NavLink
-          to="/register"
-          className={`
-            px-5 py-2 font-light tracking-wider uppercase text-sm 
-            transition-all duration-500
-            ${
-              isDarkPage
-                ? "bg-amber-400/10 border border-amber-300/50 text-amber-200 hover:bg-amber-400/20 hover:border-amber-300/80 hover:scale-105"
-                : "bg-slate-800 border border-slate-800 text-white hover:bg-slate-900 hover:scale-105"
-            }
-          `}
-        >
-          Register
         </NavLink>
       </>
     );
@@ -211,8 +157,8 @@ const Header = () => {
       return (
         <li className="mt-4 px-2">
           <div className="flex gap-2">
-            <div className="flex-1 h-12 bg-slate-200 animate-pulse rounded"></div>
-            <div className="flex-1 h-12 bg-slate-200 animate-pulse rounded"></div>
+            <div className="flex-1 h-12 bg-gray-200 animate-pulse rounded"></div>
+            <div className="flex-1 h-12 bg-gray-200 animate-pulse rounded"></div>
           </div>
         </li>
       );
@@ -226,7 +172,7 @@ const Header = () => {
             {showMyOrdersShortcut && (
               <NavLink
                 to="/my-orders"
-                className="flex-1 py-3 text-center border border-amber-300/50 text-amber-600 hover:bg-amber-50 transition-colors rounded"
+                className="flex-1 py-3 text-center border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors rounded-lg"
                 aria-label="My Orders"
               >
                 <FaClipboardList className="inline w-5 h-5" />
@@ -234,13 +180,13 @@ const Header = () => {
             )}
             <NavLink
               to="/cart"
-              className="flex-1 py-3 text-center border border-amber-300/50 text-amber-600 hover:bg-amber-50 transition-colors rounded"
+              className="flex-1 py-3 text-center border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors rounded-lg"
             >
               <FaShoppingCart className="inline w-5 h-5" />
             </NavLink>
             <button
               onClick={handleLogout}
-              className="flex-1 py-3 bg-slate-800 text-white hover:bg-slate-900 transition-colors rounded font-light tracking-wider uppercase text-sm"
+              className="flex-1 py-3 bg-blue-600 text-white hover:bg-blue-700 transition-colors rounded-lg font-medium text-sm"
             >
               Logout
             </button>
@@ -252,42 +198,27 @@ const Header = () => {
     // Not authenticated (no My Orders shortcut here)
     return (
       <li className="mt-4 px-2">
-        <div className="flex gap-2">
+        <div className="flex justify-center">
           <NavLink
             to="/login"
-            className="flex-1 py-3 text-center border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors rounded font-light tracking-wider uppercase text-sm"
+            className="w-full py-3 text-center border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors rounded-lg font-medium text-sm"
           >
             Login
-          </NavLink>
-          <NavLink
-            to="/register"
-            className="flex-1 py-3 text-center bg-slate-800 text-white hover:bg-slate-900 transition-colors rounded font-light tracking-wider uppercase text-sm"
-          >
-            Register
           </NavLink>
         </div>
       </li>
     );
-  };
-
-  return (
+  };  return (
     <>
       {isFixed && <div style={{ height: height }} aria-hidden="true" />}
 
       <div
         ref={headerRef}
-        className={`
-          w-full transition-all duration-300 z-50
-          ${
-            isDarkPage
-              ? isFixed
-                ? "fixed top-0 left-0 right-0 bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 backdrop-blur-2xl border-b border-amber-300/25 shadow-[0_20px_60px_rgba(8,8,12,0.45)]"
-                : "absolute bg-transparent"
-              : isFixed
-              ? "fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-xl shadow-md"
-              : "bg-white border-b border-slate-200"
-          }
-        `}
+        className={`w-full transition-all duration-300 z-50 ${
+          isFixed
+            ? "fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm shadow-md"
+            : "bg-white border-b border-gray-200"
+        }`}
       >
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           {/* Logo */}
@@ -297,10 +228,9 @@ const Header = () => {
             className="transition-transform duration-300 hover:scale-105"
           >
             <img
-              src="/logo-horizontal-white.svg"
+              src="/logo-horizontal.svg"
               className="h-10 w-auto"
-              style={{ filter: isDarkPage ? "none" : "invert(1)" }}
-              alt="Aurora & Co"
+              alt="Store Logo"
             />
           </NavLink>
 
@@ -309,18 +239,15 @@ const Header = () => {
             <NavLink
               to="/"
               className={({ isActive }) => `
-                relative font-light tracking-wide transition-all duration-300 group
-                ${isActive ? "font-medium" : ""}
-                ${isDarkPage ? "text-white" : "text-slate-700"}
+                relative font-medium transition-all duration-300 group text-gray-700
+                ${isActive ? "text-blue-600" : ""}
               `}
             >
               Home
               <span
-                className={`
-                  absolute left-0 -bottom-1 h-px transition-all duration-300
-                  ${isDarkPage ? "bg-amber-300" : "bg-slate-800"}
-                  ${pathname === "/" ? "w-full" : "w-0 group-hover:w-full"}
-                `}
+                className={`absolute left-0 -bottom-1 h-0.5 bg-blue-600 transition-all duration-300 ${
+                  pathname === "/" ? "w-full" : "w-0 group-hover:w-full"
+                }`}
               />
             </NavLink>
             {links.map((link) => (
@@ -328,22 +255,15 @@ const Header = () => {
                 key={link}
                 to={`/${link}`}
                 className={({ isActive }) => `
-                  relative capitalize font-light tracking-wide transition-all duration-300 group
-                  ${isActive ? "font-medium" : ""}
-                  ${isDarkPage ? "text-white" : "text-slate-700"}
+                  relative capitalize font-medium transition-all duration-300 group text-gray-700
+                  ${isActive ? "text-blue-600" : ""}
                 `}
               >
                 {link}
                 <span
-                  className={`
-                    absolute left-0 -bottom-1 h-px transition-all duration-300
-                    ${isDarkPage ? "bg-amber-300" : "bg-slate-800"}
-                    ${
-                      pathname === `/${link}`
-                        ? "w-full"
-                        : "w-0 group-hover:w-full"
-                    }
-                  `}
+                  className={`absolute left-0 -bottom-1 h-0.5 bg-blue-600 transition-all duration-300 ${
+                    pathname === `/${link}` ? "w-full" : "w-0 group-hover:w-full"
+                  }`}
                 />
               </NavLink>
             ))}
@@ -357,11 +277,7 @@ const Header = () => {
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={`
-              md:hidden inline-flex items-center justify-center w-10 h-10
-              transition-all duration-300
-              ${isDarkPage ? "text-white" : "text-slate-700"}
-            `}
+            className="md:hidden inline-flex items-center justify-center w-10 h-10 transition-all duration-300 text-gray-700"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? (
@@ -420,11 +336,11 @@ const Header = () => {
                 <NavLink
                   to="/"
                   className={({ isActive }) => `
-                    block px-4 py-3 rounded transition-colors font-light tracking-wide
+                    block px-4 py-3 rounded-lg transition-colors font-medium
                     ${
                       isActive
-                        ? "bg-amber-50 text-amber-600 font-medium"
-                        : "text-slate-700 hover:bg-slate-50"
+                        ? "bg-blue-50 text-blue-600"
+                        : "text-gray-700 hover:bg-gray-50"
                     }
                   `}
                 >
@@ -436,11 +352,11 @@ const Header = () => {
                   <NavLink
                     to={`/${link}`}
                     className={({ isActive }) => `
-                      block px-4 py-3 rounded capitalize transition-colors font-light tracking-wide
+                      block px-4 py-3 rounded-lg capitalize transition-colors font-medium
                       ${
                         isActive
-                          ? "bg-amber-50 text-amber-600 font-medium"
-                          : "text-slate-700 hover:bg-slate-50"
+                          ? "bg-blue-50 text-blue-600"
+                          : "text-gray-700 hover:bg-gray-50"
                       }
                     `}
                   >
